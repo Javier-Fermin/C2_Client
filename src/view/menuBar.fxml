@@ -9,12 +9,12 @@
    <children>
       <MenuBar fx:id="menuMenuBar" prefHeight="26.0" prefWidth="1366.0">
         <menus>
-          <Menu fx:id="windowOptionMenu" mnemonicParsing="false" text="League">
+          <Menu fx:id="leagueOptionMenu" mnemonicParsing="false" text="League">
             <items>
               <MenuItem fx:id="allLeaguesMenuItem" mnemonicParsing="false" text="All leagues" />
             </items>
           </Menu>
-            <Menu fx:id="windowOptionMenu1" mnemonicParsing="false" text="Match">
+            <Menu fx:id="matchOptionMenu" mnemonicParsing="false" text="Match">
                <items>
                   <MenuItem fx:id="allMatchesMenuItem" mnemonicParsing="false" text="All matches" />
                </items>
@@ -29,7 +29,7 @@
                   <MenuItem fx:id="allStatsMenuItem" mnemonicParsing="false" text="All stats" />
                </items>
             </Menu>
-            <Menu fx:id="blankSpaceMenu" disable="true" mnemonicParsing="false" text="                                                                                                                                                                                                                                                                                                                                   " />
+            <Menu fx:id="blankSpaceMenu" disable="true" mnemonicParsing="false" text="                                                                                                                                                                                                                                                                                                                                  " />
             <Menu fx:id="exitOptionMenu" mnemonicParsing="false" text="Exit">
                <items>
                   <MenuItem fx:id="logOutMenuItem" mnemonicParsing="false" text="Log out" />

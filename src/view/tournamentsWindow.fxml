@@ -15,7 +15,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fx:id="tournamentsBackground" fitHeight="768.0" fitWidth="1366.0" pickOnBounds="true">
+      <ImageView fx:id="tournamentBackground" fitHeight="768.0" fitWidth="1367.0" pickOnBounds="true">
          <image>
             <Image url="@../resources/images/tournamentsBackground.jpg" />
          </image>
@@ -23,42 +23,101 @@
       <fx:include fx:id="tournamentsMenuBar" source="menuBar.fxml" />
       <AnchorPane fx:id="tournamentViewMainPane" layoutY="26.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="742.0" prefWidth="1366.0">
          <children>
-            <ImageView fx:id="tournamentsSmoke" fitHeight="742.0" fitWidth="1366.0" pickOnBounds="true">
+            <ImageView fx:id="tournamentSmoke" fitHeight="742.0" fitWidth="1367.0" layoutX="-231.0" layoutY="-14.0" pickOnBounds="true">
                <image>
                   <Image url="@../resources/images/smokeBackground.png" />
                </image>
             </ImageView>
-            <Label fx:id="tournamentsTitleLabel" alignment="CENTER" layoutX="65.0" layoutY="72.0" prefHeight="70.0" prefWidth="426.0" text="TOURNAMENTS" textFill="WHITE">
+            <Separator fx:id="tournamentsSeparator" layoutX="49.0" layoutY="124.0" prefHeight="12.0" prefWidth="501.0" />
+            <ChoiceBox fx:id="chbTournamentSearch" layoutX="71.0" layoutY="150.0" prefHeight="30.0" prefWidth="99.0" />
+            <TextField fx:id="tfTournamentSearch" layoutX="170.0" layoutY="150.0" prefHeight="30.0" prefWidth="271.0" />
+            <Button fx:id="bTournamentSearch" layoutX="441.0" layoutY="150.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="33.0">
                <font>
-                  <Font name="Arial Black" size="48.0" />
+                  <Font size="11.0" />
                </font>
-            </Label>
-            <Separator fx:id="tournamentsSeparator" layoutX="43.0" layoutY="136.0" prefHeight="12.0" prefWidth="470.0" />
-            <ChoiceBox fx:id="tournamentSearchChoiceBox" layoutX="65.0" layoutY="162.0" prefHeight="30.0" prefWidth="99.0" />
-            <TextField fx:id="tournamentSearchTextField" layoutX="164.0" layoutY="162.0" prefHeight="30.0" prefWidth="271.0" />
-            <Button fx:id="tournamentSearchButton" layoutX="435.0" layoutY="162.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="59.0" text="Search">
-               <font>
-                  <Font size="13.0" />
-               </font></Button>
-            <TableView fx:id="tournamentsTable" layoutX="600.0" layoutY="70.0" prefHeight="572.0" prefWidth="727.0">
+               <graphic>
+                  <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/search.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <TableView fx:id="tvTournaments" editable="true" layoutX="599.0" layoutY="52.0" prefHeight="618.0" prefWidth="727.0" styleClass="tableText">
               <columns>
-                <TableColumn fx:id="tournamentNameColumn" prefWidth="108.26663208007812" resizable="false" text="Name" />
-                <TableColumn fx:id="tournamentDescriptionColumn" prefWidth="352.79998779296875" resizable="false" text="Description" />
-                  <TableColumn fx:id="tournamentBestOfColumn" prefWidth="87.9998779296875" resizable="false" text="Best of" />
-                  <TableColumn fx:id="tournamentDateColumn" prefWidth="176.80009765625005" resizable="false" text="Date" />
+                <TableColumn fx:id="tcName" prefWidth="108.26663208007812" resizable="false" styleClass="tableText" text="Name" />
+                <TableColumn fx:id="tcDescription" prefWidth="418.4000244140625" resizable="false" styleClass="tableText" text="Description" />
+                  <TableColumn fx:id="tcBestOf" prefWidth="60.7999267578125" resizable="false" styleClass="tableText" text="Best of" />
+                  <TableColumn fx:id="tcDate" prefWidth="140.0" resizable="false" styleClass="tableText" text="Date" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <Button fx:id="tournamentAddButton" layoutX="600.0" layoutY="662.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="59.0" text="Add" />
-            <Button fx:id="tournamentDeleteButton" layoutX="707.0" layoutY="662.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="59.0" text="Delete" />
-            <Button fx:id="tournamentsPrintButton" layoutX="1257.0" layoutY="662.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="59.0" text="Print" />
-            <ImageView fx:id="tournamentsAgentImage" fitHeight="510.0" fitWidth="610.0" layoutX="-44.0" layoutY="232.0" pickOnBounds="true" preserveRatio="true">
+            <Button fx:id="bTournamentMatches" layoutX="1248.0" layoutY="689.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Matches">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
+            <ImageView fx:id="tournamentAgentImage" fitHeight="510.0" fitWidth="610.0" layoutX="-44.0" layoutY="232.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../resources/images/smokeAgent.png" />
                </image>
             </ImageView>
+            <Label fx:id="lTournamentTitle" alignment="CENTER" layoutX="87.0" layoutY="53.0" prefHeight="70.0" prefWidth="426.0" text="TOURNAMENTS" textFill="WHITE">
+               <font>
+                  <Font size="55.0" />
+               </font>
+            </Label>
+            <Button fx:id="bTournamentClean" layoutX="481.0" layoutY="150.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="33.0">
+               <font>
+                  <Font name="Century Gothic" size="11.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/clear.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="bTournamentHelp" alignment="CENTER" contentDisplay="CENTER" layoutX="500.0" layoutY="53.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0" styleClass="boton">
+               <font>
+                  <Font name="Century Gothic" size="11.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/info.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="bbTournamentPrint" layoutX="1194.0" layoutY="689.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="33.0">
+               <graphic>
+                  <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/print.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="bTournamentDelete" layoutX="599.0" layoutY="689.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="33.0">
+               <graphic>
+                  <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/delete.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="bTournamentAdd" layoutX="653.0" layoutY="689.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="33.0">
+               <graphic>
+                  <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/add.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
       </AnchorPane>
    </children>
