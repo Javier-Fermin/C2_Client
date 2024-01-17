@@ -7,11 +7,17 @@ package view;
 
 import businessLogic.LeagueManage;
 import businessLogic.LeagueManageFactory;
+import exceptions.DeleteException;
+import exceptions.ReadException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -81,21 +87,13 @@ public class LeagueWindowController {
 
     public void initStage(Parent root, User user) {
         try {
+            //Window inicialice
             LOGGER.info("Init League Window");
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            //Set relizable to false
             stage.setResizable(false);
             stage.setTitle("Leagues Manage");
-            btnDelete.setDisable(true);
-            btnMatches.setDisable(true);
-            if (user.getUserType().equals(UserType.PLAYER)) {
-                btnCreate.setDisable(true);
-            }
-
-            if (!user.getUserType().equals(UserType.PLAYER)) {
-                tvLeagues.setEditable(true);
-            }
-            tfsearch.setDisable(true);
 
             // create a menu 
             ContextMenu leagueContextMenu = new ContextMenu();
@@ -109,22 +107,33 @@ public class LeagueWindowController {
             leagueContextMenu.getItems().add(miSearch);
             leagueContextMenu.getItems().add(miCreate);
             leagueContextMenu.getItems().add(miDelete);
-            
-            /////////MENU DE CONTEXTO PARA QUE APAREZCA CON EL CLICK DERECHO////////////////////////////////
-            
+
+            /////////MENU DE CONTEXTO PARA QUE APAREZCA CON EL CLICK DERECHO//////////////////////////////// 
+            //Delete and Matches button diable by default
+            btnDelete.setDisable(true);
+            miDelete.setDisable(true);
+            btnMatches.setDisable(true);
+            tfsearch.setDisable(true);
+
+            //If user is player, diable create button
+            if (user.getUserType().equals(UserType.PLAYER)) {
+                btnCreate.setDisable(true);
+                miCreate.setDisable(true);
+            }
+            //if user is Admin, set League table editable
+            if (!user.getUserType().equals(UserType.PLAYER)) {
+                tvLeagues.setEditable(true);
+            }
             /**
              * When user click to exit form the window, ask confirmation to
              * close the app
              */
-            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
-                    Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit Storio?").showAndWait();
-                    if (result.isPresent() && result.get() == ButtonType.OK) {
-                        return;
-                    }
-                    event.consume();
+            stage.setOnCloseRequest((WindowEvent event) -> {
+                Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit Storio?").showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    return;
                 }
+                event.consume();
             });
 
             stage.addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, (javafx.scene.input.KeyEvent event) -> {
@@ -137,7 +146,32 @@ public class LeagueWindowController {
                 }
             });
 
+            tvLeagues.getSelectionModel().selectedItemProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
+                //Check whether item is selected and set value of selected item to Label
+                if (tvLeagues.getSelectionModel().getSelectedItem() != null) {
+                    btnMatches.setDisable(false);
+                    if (!user.getUserType().equals(UserType.PLAYER)) {
+                        btnDelete.setDisable(false);
+                        miDelete.setDisable(false);
+                    }
+                } else {
+                    btnMatches.setDisable(true);
+                    btnDelete.setDisable(true);
+                    miDelete.setDisable(true);
+                }
+            });
+
             cbSeachType.setItems(FXCollections.observableArrayList("ALL", "FINISHED", "UNSTARTED", "NAME", "MATCH"));
+            cbSeachType.getSelectionModel().selectFirst();
+
+            cbSeachType.getSelectionModel().selectedItemProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
+                //Check whether item is selected and set value of selected item to Label
+                if (cbSeachType.getSelectionModel().getSelectedItem().equals("NAME") || cbSeachType.getSelectionModel().getSelectedItem().equals("MATCH")) {
+                    tfsearch.setDisable(false);
+                } else {
+                    tfsearch.setDisable(true);
+                }
+            });
 
             leagueList = FXCollections.observableArrayList(leagueManage.findAllLeagues());
 
@@ -154,12 +188,18 @@ public class LeagueWindowController {
             tcEndDate.setCellValueFactory(new PropertyValueFactory<>("endDate"));
             tcEndDate.setCellFactory(dateCellFactory);
 
+            
+            btnClear.setOnAction(this::ClearLeagueTableButtonAction);
+            btnSearch.setOnAction(this::SearchLeagueButtonAction);
+            btnDelete.setOnAction(this::DeleteLeagueButtonAction);
+            miDelete.setOnAction(this::DeleteLeagueButtonAction);
+
             tvLeagues.setItems(leagueList);
 
             stage.show();
 
         } catch (Exception e) {
-            e.printStackTrace();
+
             Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Inicialize error" + e.getMessage());
         }
     }
@@ -169,4 +209,90 @@ public class LeagueWindowController {
 
     }
 
+    @FXML
+    private void ClearLeagueTableButtonAction(ActionEvent event) {
+        cbSeachType.getSelectionModel().selectFirst();
+        tfsearch.setText("");
+        refreshTable();
+    }
+    
+    @FXML
+    private void SearchLeagueButtonAction(ActionEvent event) {
+        try {
+            if (cbSeachType.getSelectionModel().getSelectedItem().equals("ALL")) {
+                refreshTable();
+            } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("FINISHED")) {
+                //NO FUNCIONA
+                ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findAllFinishLeagues(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+                tvLeagues.setItems(finishedLeagueList);
+            } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("UNSTARTED")) {
+                ////HACER METODO
+            } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("NAME")) {
+                if (tfsearch.getText().trim().isEmpty()) {
+                    new Alert(Alert.AlertType.ERROR, "this field is required to fill", ButtonType.OK).showAndWait();
+                    throw new ReadException();
+                } else {
+                    char[] chars = tfsearch.getText().toCharArray();
+                    StringBuilder sb = new StringBuilder();
+                    for (char c : chars) {
+                        if (Character.isDigit(c)) {
+                            new Alert(Alert.AlertType.ERROR, "Values can only be characters", ButtonType.OK).showAndWait();
+                            throw new ReadException();
+                        }
+                    }
+                    ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findLeagueByName(tfsearch.getText()));
+                    tvLeagues.setItems(finishedLeagueList);
+                }
+            } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("MATCH")) {
+                if (tfsearch.getText().trim().isEmpty()) {
+                    new Alert(Alert.AlertType.ERROR, "this field is required to fill", ButtonType.OK).showAndWait();
+                    throw new ReadException();
+                } else {
+                    char[] chars = tfsearch.getText().toCharArray();
+                    StringBuilder sb = new StringBuilder();
+                    for (char c : chars) {
+                        if (!Character.isDigit(c)) {
+                            new Alert(Alert.AlertType.ERROR, "Values can only be numbers", ButtonType.OK).showAndWait();
+                            throw new ReadException();
+                        }
+                    }
+                    ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findLeagueForMatch(Integer.parseInt(tfsearch.getText())));
+                    tvLeagues.setItems(finishedLeagueList);
+                }
+            }
+        } catch (ReadException e) {
+            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Search Error" + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void DeleteLeagueButtonAction(ActionEvent event) {
+        try {
+            Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this League?").showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                League league = (League) tvLeagues.getSelectionModel().getSelectedItem();
+                leagueManage.deleteLeague(league);
+                refreshTable();
+                new Alert(Alert.AlertType.CONFIRMATION, "League delete correctly", ButtonType.OK).showAndWait();
+                tvLeagues.getSelectionModel().clearSelection();
+            } else {
+                new Alert(Alert.AlertType.CONFIRMATION, "Cancel league delete", ButtonType.OK).showAndWait();
+                tvLeagues.getSelectionModel().clearSelection();
+            }
+        } catch (DeleteException e) {
+            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Delete error" + e.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Delete Error", ButtonType.OK).showAndWait();
+        }
+    }
+
+    private void refreshTable() {
+        try {
+            ObservableList<League> refreshList = FXCollections.observableArrayList(leagueManage.findAllLeagues());
+            tvLeagues.setItems(refreshList);
+        } catch (Exception e) {
+            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Refresh error" + e.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Refresh Error", ButtonType.OK).showAndWait();
+        }
+
+    }
 }

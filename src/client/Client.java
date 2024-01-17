@@ -10,6 +10,8 @@ import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import model.User;
+import model.UserType;
 import view.LeagueWindowController;
 
 /**
@@ -40,10 +42,12 @@ public class Client extends javafx.application.Application{
         //Get the controller from SignIn
         LeagueWindowController cont = ((LeagueWindowController) loader.getController());
 
+        User user = new User("", "", "", "", "", UserType.ADMIN);
+        
         //Set the stage
         cont.setLeagueStage(stage);
         //Initialize the window
-        cont.initStage(root, null);
+        cont.initStage(root, user);
     }
 
     /**
