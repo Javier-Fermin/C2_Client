@@ -41,7 +41,7 @@ public class User implements Serializable{
     /**
      * Id field for User entity
      */
-    private SimpleStringProperty id;
+    private Integer id;
     /**
      * UserType field for the User entity
      */
@@ -69,16 +69,16 @@ public class User implements Serializable{
      *
      * @return
      */
-    public String getId() {
-        return id.get();
+    public Integer getId() {
+        return id;
     }
 
     /**
      *
      * @param id
      */
-    public void setId(String id) {
-        this.id.set(id); 
+    public void setId(Integer id) {
+        this.id = id; 
     }
 
     /**
