@@ -7,6 +7,7 @@ package view;
 
 import businessLogic.LeagueManage;
 import businessLogic.LeagueManageFactory;
+import exceptions.CreateException;
 import exceptions.DeleteException;
 import exceptions.ReadException;
 import java.time.LocalDate;
@@ -16,12 +17,10 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -70,6 +69,10 @@ public class LeagueWindowController {
     private TextField tfsearch;
     @FXML
     private ToolBar tbLeague;
+    @FXML
+    private ContextMenu leagueContextMenu;
+    @FXML
+    private MenuItem miSearch, miCreate, miDelete;
 
     /**
      * The window stage
@@ -95,20 +98,11 @@ public class LeagueWindowController {
             stage.setResizable(false);
             stage.setTitle("Leagues Manage");
 
-            // create a menu 
-            ContextMenu leagueContextMenu = new ContextMenu();
-
-            // create menuitems 
-            MenuItem miSearch = new MenuItem("Search");
-            MenuItem miCreate = new MenuItem("Create");
-            MenuItem miDelete = new MenuItem("Delete");
-
             // add menu items to menu 
             leagueContextMenu.getItems().add(miSearch);
             leagueContextMenu.getItems().add(miCreate);
             leagueContextMenu.getItems().add(miDelete);
 
-            /////////MENU DE CONTEXTO PARA QUE APAREZCA CON EL CLICK DERECHO//////////////////////////////// 
             //Delete and Matches button diable by default
             btnDelete.setDisable(true);
             miDelete.setDisable(true);
@@ -188,8 +182,10 @@ public class LeagueWindowController {
             tcEndDate.setCellValueFactory(new PropertyValueFactory<>("endDate"));
             tcEndDate.setCellFactory(dateCellFactory);
 
-            
+            miCreate.setOnAction(this::createLeagueButtonAction);
+            btnCreate.setOnAction(this::createLeagueButtonAction);
             btnClear.setOnAction(this::ClearLeagueTableButtonAction);
+            miSearch.setOnAction(this::SearchLeagueButtonAction);
             btnSearch.setOnAction(this::SearchLeagueButtonAction);
             btnDelete.setOnAction(this::DeleteLeagueButtonAction);
             miDelete.setOnAction(this::DeleteLeagueButtonAction);
@@ -199,14 +195,35 @@ public class LeagueWindowController {
             stage.show();
 
         } catch (Exception e) {
-
             Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Inicialize error" + e.getMessage());
         }
     }
 
     @FXML
     private void createLeagueButtonAction(ActionEvent event) {
-
+        try {
+            League league = new League(null, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), "Default name", "Default description", null);
+            ObservableList<League> findLeague = FXCollections.observableArrayList(leagueManage.findLeagueByName("Default name"));
+            if (findLeague.isEmpty()) {
+                leagueManage.createLeague(league);
+                refreshTable();
+                
+            } else {
+                tvLeagues.getSelectionModel().clearSelection();
+                throw new ReadException();
+            }            
+        } catch (CreateException e) {
+            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Create error" + e.getMessage());
+        } catch (ReadException ex) {
+            new Alert(Alert.AlertType.ERROR, "The name already exist", ButtonType.OK).showAndWait();
+            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The name already exist");
+        }
+    }
+    
+    
+    @FXML
+    private void updateLeagueButtonAction(ActionEvent event) {
+        
     }
 
     @FXML
@@ -215,18 +232,20 @@ public class LeagueWindowController {
         tfsearch.setText("");
         refreshTable();
     }
-    
+
     @FXML
     private void SearchLeagueButtonAction(ActionEvent event) {
         try {
             if (cbSeachType.getSelectionModel().getSelectedItem().equals("ALL")) {
                 refreshTable();
             } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("FINISHED")) {
-                //NO FUNCIONA
-                ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findAllFinishLeagues(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+                String date = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toString();
+                ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findAllFinishLeagues(date));
                 tvLeagues.setItems(finishedLeagueList);
             } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("UNSTARTED")) {
-                ////HACER METODO
+                String date = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toString();
+                ObservableList<League> unstartedLeagueList = FXCollections.observableArrayList(leagueManage.findAllUnstartedLeagues(date));
+                tvLeagues.setItems(unstartedLeagueList);
             } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("NAME")) {
                 if (tfsearch.getText().trim().isEmpty()) {
                     new Alert(Alert.AlertType.ERROR, "this field is required to fill", ButtonType.OK).showAndWait();
@@ -256,10 +275,11 @@ public class LeagueWindowController {
                             throw new ReadException();
                         }
                     }
-                    ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findLeagueForMatch(Integer.parseInt(tfsearch.getText())));
-                    tvLeagues.setItems(finishedLeagueList);
+                    ObservableList<League> MatchLeagueList = FXCollections.observableArrayList(leagueManage.findLeagueForMatch(Integer.parseInt(tfsearch.getText())));
+                    tvLeagues.setItems(MatchLeagueList);
                 }
             }
+            tvLeagues.getSelectionModel().clearSelection();
         } catch (ReadException e) {
             Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Search Error" + e.getMessage());
         }

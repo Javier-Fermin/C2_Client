@@ -34,25 +34,25 @@ public class LeagueRESTClient {
         webTarget = client.target(BASE_URI).path("entities.League");
     }
 
-    public <T> T findLeagueForMatch_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findLeagueForMatch_XML(GenericType<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findLeagueForMatch_JSON(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findLeagueForMatch_JSON(GenericType<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findLeagueByName_XML(Class<T> responseType, String name) throws ClientErrorException {
+    public <T> T findLeagueByName_XML(GenericType<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("league/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findLeagueByName_JSON(Class<T> responseType, String name) throws ClientErrorException {
+    public <T> T findLeagueByName_JSON(GenericType<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("league/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);

@@ -132,16 +132,16 @@ public class LeagueManageImplementation implements LeagueManage {
      * @throws ReadException if have any errors
      */
     @Override
-    public League findLeagueByName(String name) throws ReadException {
-        League league = null;
+    public List<League> findLeagueByName(String name) throws ReadException {
+        List<League> leagues = null;
         try {
             LOGGER.info("LeagueManager: Finding league by name.");
-            league = leagueWebClient.findLeagueByName_XML(League.class, name);
+            leagues = leagueWebClient.findLeagueByName_XML(new GenericType<List<League>>() {}, name);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "LeagueManage: Exception finding league:", e.getMessage());
             throw new ReadException("Error findin League by name " +e.getMessage());
         }
-        return league;
+        return leagues;
     }
 
     /**
@@ -152,11 +152,11 @@ public class LeagueManageImplementation implements LeagueManage {
      * @throws ReadException if have any errors
      */
     @Override
-    public List<League> findAllFinishLeagues(Date date) throws ReadException {
+    public List<League> findAllFinishLeagues(String date) throws ReadException {
         List<League> leagues = null;
         try {
             LOGGER.info("LeagueManager: Finding all finished leagues.");
-            leagues = leagueWebClient.findAllFinishLeagues_XML(new GenericType<List<League>>() {}, date.toString());
+            leagues = leagueWebClient.findAllFinishLeagues_XML(new GenericType<List<League>>() {}, date);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "LeagueManage: Exception finding leagues:", e.getMessage());
             throw new ReadException("Error finding all finished Leagues " +e.getMessage());
@@ -172,11 +172,11 @@ public class LeagueManageImplementation implements LeagueManage {
      * @throws ReadException if have any errors
      */
     @Override
-    public List<League> findAllUnstartedLeagues(Date date) throws ReadException {
+    public List<League> findAllUnstartedLeagues(String date) throws ReadException {
         List<League> leagues = null;
         try {
             LOGGER.info("LeagueManager: Finding all unstarted leagues.");
-            leagues = leagueWebClient.findAllUnstartedLeagues_XML(new GenericType<List<League>>() {}, date.toString());
+            leagues = leagueWebClient.findAllUnstartedLeagues_XML(new GenericType<List<League>>() {}, date);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "LeagueManage: Exception finding leagues:", e.getMessage());
             throw new ReadException("Error finding all unstarted Leagues " +e.getMessage());
@@ -192,16 +192,16 @@ public class LeagueManageImplementation implements LeagueManage {
      * @throws ReadException if have any errors
      */
     @Override
-    public League findLeagueForMatch(Integer id) throws ReadException {
-        League league = null;
+    public List<League> findLeagueForMatch(Integer id) throws ReadException {
+        List<League> leagues = null;
         try {
             LOGGER.info("LeagueManager: Finding league by id.");
-            league = leagueWebClient.findLeagueForMatch_XML(League.class, id.toString());
+            leagues = leagueWebClient.findLeagueForMatch_XML(new GenericType<List<League>>() {}, id.toString());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "LeagueManage: Exception finding league:", e.getMessage());
             throw new ReadException("Error finding League by the match " +e.getMessage());
         }
-        return league;
+        return leagues;
     }
 
 }

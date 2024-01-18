@@ -10,7 +10,6 @@ import exceptions.UpdateException;
 import exceptions.ReadException;
 import exceptions.CreateException;
 import model.League;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -68,7 +67,7 @@ public interface LeagueManage {
      * @return league finded by the name
      * @throws ReadException if have any errors
      */
-    public League findLeagueByName(String name) throws ReadException;
+    public List<League> findLeagueByName(String name) throws ReadException;
     
     /**
      * Find all finished leagues taking locals date, throws ReadException in case of error
@@ -77,7 +76,7 @@ public interface LeagueManage {
      * @return leagues finished
      * @throws ReadException if have any errors
      */
-    public List<League> findAllFinishLeagues(Date today) throws ReadException;
+    public List<League> findAllFinishLeagues(String today) throws ReadException;
 
     /**
      * find all unstarted leagues taking locals date, throws ReadException in case of error
@@ -86,7 +85,7 @@ public interface LeagueManage {
      * @return leagues unstarted
      * @throws ReadException if have any errors
      */
-    public List<League> findAllUnstartedLeagues(Date today) throws ReadException;
+    public List<League> findAllUnstartedLeagues(String today) throws ReadException;
     
     /**
      * Find a league by a match id, throws ReadException in case of error
@@ -95,6 +94,6 @@ public interface LeagueManage {
      * @return league by the match id
      * @throws ReadException if have any errors
      */
-    public League findLeagueForMatch(Integer id) throws ReadException;
+    public List<League> findLeagueForMatch(Integer id) throws ReadException;
     
 }

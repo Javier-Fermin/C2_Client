@@ -75,7 +75,6 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
         datePicker.setOnAction((e) -> {
             System.out.println("Committed: " + datePicker.getValue().toString());
             commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
         });
 
     }
