@@ -26,14 +26,14 @@ public class MatchRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/MyFirstWebApplication/webresources";
+    private static final String BASE_URI = "http://localhost:8080/C2_SERVER/webresources";
 
     public MatchRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.match");
     }
 
-    public <T> T findMatchesByUserNickname_XML(Class<T> responseType, String nickname) throws ClientErrorException {
+    public <T> T findMatchesByUserNickname_XML(GenericType<T> responseType, String nickname) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("nickname/{0}", new Object[]{nickname}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -45,7 +45,7 @@ public class MatchRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findMatchesByLeagueId_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findMatchesByLeagueId_XML(GenericType<T> responseType, Integer id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("league/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -85,7 +85,7 @@ public class MatchRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findMatchesByTournamentId_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findMatchesByTournamentId_XML(GenericType<T> responseType, Integer id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

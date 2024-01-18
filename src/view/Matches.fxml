@@ -15,7 +15,7 @@
 
 <Pane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MatchWindowController">
    <children>
-      <ImageView fx:id="imgBackground" fitHeight="812.0" fitWidth="1573.0" layoutX="-72.0" layoutY="-12.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imgBackground" fitHeight="847.0" fitWidth="1501.0" layoutX="-72.0" layoutY="-12.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../resources/images/r6bg.jpg" />
          </image>
@@ -25,12 +25,12 @@
             <Image url="@../resources/images/Pink-Smoke.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="imgValkyrie" fitHeight="672.0" fitWidth="394.0" layoutX="986.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imgValkyrie" fitHeight="644.0" fitWidth="379.0" layoutX="993.0" layoutY="171.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../resources/images/Valkyrie.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="imgSmoke2" fitHeight="439.0" fitWidth="958.0" layoutX="414.0" layoutY="368.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imgSmoke2" fitHeight="439.0" fitWidth="958.0" layoutX="459.0" layoutY="368.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../resources/images/YellowSmoke.png" />
          </image>
@@ -67,10 +67,10 @@
       </Text>
       <TableView fx:id="tvMatches" layoutX="54.0" layoutY="202.0" prefHeight="535.0" prefWidth="932.0">
         <columns>
-          <TableColumn fx:id="tvDescription" prefWidth="299.9999313354492" text="Description" />
-            <TableColumn fx:id="tcPlayedDate" minWidth="0.0" prefWidth="209.60012817382812" text="Played date" />
-            <TableColumn fx:id="tcWinnerTeam" prefWidth="107.20001220703125" text="Winner team" />
-            <TableColumn fx:id="tcLeagueTournament" prefWidth="270.39990234375" text="League/Tournament name" />
+          <TableColumn fx:id="tcDescription" prefWidth="302.3999710083008" text="Description" />
+            <TableColumn fx:id="tcPlayedDate" minWidth="0.0" prefWidth="215.99996948242188" text="Played date" />
+            <TableColumn fx:id="tcWinnerTeam" prefWidth="197.5999755859375" text="Winner team" />
+            <TableColumn fx:id="tcLeagueTournament" prefWidth="217.5999755859375" text="League/Tournament name" />
         </columns>
          <contextMenu>
             <ContextMenu fx:id="cmContextMenu">
