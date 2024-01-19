@@ -94,9 +94,9 @@ public class Player extends User {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        /*if (getClass() != obj.getClass()) {
             return false;
-        }
+        }*/
         final Player other = (Player) obj;
         if (!Objects.equals(this.nickname, other.nickname)) {
             return false;

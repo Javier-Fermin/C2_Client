@@ -65,9 +65,9 @@ public class Admin extends User{
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        /*if (getClass() != obj.getClass()) {
             return false;
-        }
+        }*/
         final Admin other = (Admin) obj;
         if (!Objects.equals(this.joinDate, other.joinDate)) {
             return false;

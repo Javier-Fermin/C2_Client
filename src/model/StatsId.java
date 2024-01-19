@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleStringProperty;
  * @author javie
  */
 public class StatsId implements Serializable{
+
     private SimpleStringProperty playerId;
     private SimpleStringProperty matchId;
 
