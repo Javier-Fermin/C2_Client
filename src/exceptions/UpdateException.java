@@ -6,19 +6,18 @@
 
 package exceptions;
 
+/**
+ *
+ * @author javie
+ */
+public class UpdateException extends Exception {
+
     /**
      * Creates a new instance of <code>UpdateException</code> without detail
      * message.
-     * @author 2dam
-     */
-public class UpdateException extends Exception{
-    
-     /**
-     * Creates a new instance of <code>CreateException</code> without detail message.
      */
     public UpdateException() {
     }
-
 
     /**
      * Constructs an instance of <code>UpdateException</code> with the specified

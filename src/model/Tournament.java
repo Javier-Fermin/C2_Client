@@ -7,6 +7,7 @@ package model;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -18,7 +19,7 @@ public class Tournament {
     /**
      * Id field for the tournament entity
      */
-    
+
     private Integer idTournament;
     
     /***
@@ -38,6 +39,7 @@ public class Tournament {
     /**
      * Date field for the tournament entity
      */
+
   
     private Date date;
     
@@ -45,7 +47,7 @@ public class Tournament {
      * Matches of the tournament
      */
 
-    //private Set<Match> matches;
+    private Set<Match> matches;
     
     
 // -------------- TOURNAMENT || SETTERS & GETTERS ---------------
@@ -53,13 +55,15 @@ public class Tournament {
     public Tournament() {
     }
 
-    public Tournament(Integer idTournament, String name, String description, Integer bestOf, Date date/*, Set<Match> matches*/) {
+
+    public Tournament(Integer idTournament, String name, String description, Integer bestOf, Date date, Set<Match> matches) {
+
         this.idTournament = idTournament;
         this.name = name;
         this.description = description;
         this.bestOf = bestOf;
         this.date = date;
-        //this.matches = matches;
+        this.matches = matches;
     }
    
     
@@ -141,23 +145,24 @@ public class Tournament {
     public void setDate(Date date) {
         this.date = date;
     }
-
     
     /***
      * Method that returns all the matches of the Tournament
      * @return a collection of {@link Match} objects
      */
-//     public Set<Match> getMatches() {
-//        return matches;
-//    }
+
+     public Set<Match> getMatches() {
+        return matches;
+    }
 
      /***
      * Method that defines the collection of match of the Tournament
      * @param matches a collection of {@link Match}
      */
-//    public void setMatches(Set<Match> matches) {
-//        this.matches = matches;
-//    }
+
+    public void setMatches(Set<Match> matches) {
+        this.matches = matches;
+    }
 
  // ------------------- METHODS --------------------   
     
@@ -202,6 +207,8 @@ public class Tournament {
      */
     @Override
     public String toString() {
-        return "Tournament{" + "idTournament=" + idTournament + ", name=" + name + ", description=" + description + ", bestOf=" + bestOf + ", date=" + date + "}";
+
+        return "Tournament{" + "idTournament=" + idTournament + ", name=" + name + ", description=" + description + ", bestOf=" + bestOf + ", date=" + date + ", matches=" + matches + '}';
     }
+    
 }

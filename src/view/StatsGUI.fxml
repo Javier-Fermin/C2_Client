@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+
+<Pane fx:id="statsViewMainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../resources/css/ClientCSS.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.StatsWindowController">
+   <children>
+      <ImageView fx:id="backgroundImage" fitHeight="768.0" fitWidth="1366.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../resources/images/r6bg.jpg" />
+         </image>
+      </ImageView>
+      <AnchorPane fx:id="secondaryAnchorPane" layoutX="900.0" layoutY="60.0" prefHeight="735.0" prefWidth="698.0">
+         <children>
+            <ImageView fx:id="decorativeImage" fitHeight="736.0" fitWidth="860.0" layoutX="-162.0" layoutY="-27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/hibana_elite.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="mainAnchorPane" layoutY="61.0" prefHeight="711.0" prefWidth="900.0">
+         <children>
+            <TableView fx:id="statsTableView" editable="true" layoutX="22.0" layoutY="77.0" prefHeight="525.0" prefWidth="770.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="90.0">
+               <columns>
+                  <TableColumn fx:id="tcPlayer" prefWidth="180.0" text="Player" />
+                  <TableColumn fx:id="tcMatch" minWidth="0.0" prefWidth="300.0" text="Match">
+                     <columns>
+                        <TableColumn fx:id="tcDescription" prefWidth="150.0" text="Description" />
+                        <TableColumn fx:id="tcDate" prefWidth="150.0" text="Date" />
+                     </columns></TableColumn>
+                  <TableColumn fx:id="tcKDA" prefWidth="150.0" text="K.D.A">
+                     <columns>
+                        <TableColumn fx:id="tcKills" prefWidth="50.0" text="Kills" />
+                        <TableColumn fx:id="tcDeaths" prefWidth="50.0" text="Deaths" />
+                        <TableColumn fx:id="tcAssists" prefWidth="50.0" text="Assists" />
+                     </columns>
+                  </TableColumn>
+                  <TableColumn fx:id="tcTeam" prefWidth="140.0" text="Team" />
+               </columns>
+               <contextMenu>
+                  <ContextMenu fx:id="tvContextMenu">
+                    <items>
+                        <MenuItem fx:id="cmAdd" mnemonicParsing="false" text="Add" />
+                      <MenuItem fx:id="cmDelete" mnemonicParsing="false" text="Delete" />
+                        <MenuItem fx:id="cmPrint" mnemonicParsing="false" text="Print" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="cmRefresh" mnemonicParsing="false" text="Refresh" />
+                        <MenuItem fx:id="cmClear" disable="true" mnemonicParsing="false" text="Clear filters" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="cmHelp" mnemonicParsing="false" text="Help" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
+            </TableView>
+            <Label fx:id="errorLbl" layoutX="22.0" layoutY="620.0" prefHeight="30.0" prefWidth="766.0" AnchorPane.bottomAnchor="10.0" />
+            <Label layoutX="32.0" layoutY="630.0" prefHeight="30.0" prefWidth="200.0" styleClass="lblInBG" text="Search By:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="10.0" />
+            <ComboBox fx:id="cbFilter" layoutX="22.0" layoutY="14.0" prefHeight="30.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0" />
+            <Label layoutX="42.0" layoutY="640.0" prefHeight="30.0" prefWidth="400.0" styleClass="lblInBG" text="To Be Searched:" AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="10.0" />
+            <TextField fx:id="tfFilter" layoutX="258.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0" AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="50.0" />
+            <Button fx:id="searchBtn" layoutX="666.0" layoutY="14.0" mnemonicParsing="false" prefHeight="30.0" AnchorPane.leftAnchor="660.0" AnchorPane.topAnchor="50.0">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/search.png" />
+                     </image></ImageView>
+               </graphic></Button>
+            <Button fx:id="clearBtn" disable="true" layoutX="738.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="50.0" AnchorPane.leftAnchor="740.0" AnchorPane.topAnchor="50.0">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/clear.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="addBtn" layoutX="817.0" layoutY="77.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" AnchorPane.leftAnchor="810.0" AnchorPane.topAnchor="90.0">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/add.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="deleteBtn" disable="true" layoutX="817.0" layoutY="129.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" AnchorPane.leftAnchor="810.0" AnchorPane.topAnchor="125.0">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/delete.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="PrintBtn" layoutX="817.0" layoutY="184.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="810.0">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/print.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+         </children>
+      </AnchorPane>
+      <ToolBar layoutY="26.0" prefHeight="35.0" prefWidth="1366.0">
+         <items>
+            <Button fx:id="tbHelp" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/info.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="tbAdd" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/addTB.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="tbDelete" disable="true" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/trash.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="tbClear" disable="true" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/clear.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="tbRefresh" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/refresh.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="tbPrint" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/print.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </items></ToolBar>
+      <fx:include source="menuBar.fxml" />
+   </children>
+</Pane>
