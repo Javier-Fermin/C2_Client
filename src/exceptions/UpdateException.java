@@ -3,22 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package exceptions;
+
+/**
+ *
+ * @author javie
+ */
+public class UpdateException extends Exception {
 
     /**
      * Creates a new instance of <code>UpdateException</code> without detail
      * message.
-     * @author 2dam
-     */
-public class UpdateException extends Exception{
-    
-     /**
-     * Creates a new instance of <code>CreateException</code> without detail message.
+>>>>>>> testing
      */
     public UpdateException() {
     }
-
 
     /**
      * Constructs an instance of <code>UpdateException</code> with the specified
