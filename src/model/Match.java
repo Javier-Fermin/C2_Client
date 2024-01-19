@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
         /**
          * winner field for the Match entity
          */
-        private Team winner;
+        private String winner;
 
         /**
          * tournament field for the Match entity
@@ -76,11 +76,11 @@ import javax.xml.bind.annotation.XmlRootElement;
             this.playedDate = playedDate;
         }
 
-        public Team getWinner() {
+        public String getWinner() {
             return winner;
         }
 
-        public void setWinner(Team winner) {
+        public void setWinner(String winner) {
             this.winner = winner;
         }
 

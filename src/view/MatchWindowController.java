@@ -2,6 +2,7 @@ package view;
 
 import businessLogic.MatchManager;
 import businessLogic.MatchManagerFactory;
+import businessLogic.MatchManagerImplementation;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -23,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javax.naming.ldap.ManageReferralControl;
 import model.Match;
 import model.Team;
 
@@ -124,6 +127,8 @@ public class MatchWindowController {
     private HBox mbMenuBar;
 
     private Stage stage;
+    
+    private ObservableList<Match> matches;
 
     @FXML
     private void initialize() {
@@ -136,7 +141,7 @@ public class MatchWindowController {
 
     public void initStage(Parent root) {
         MatchManager manager;
-        ObservableList<Match> matches;
+        
         try {
             //Receives a User object from the SignInWindow window.
             //LOGGER.info("Init Main Window");
@@ -144,11 +149,15 @@ public class MatchWindowController {
             stage.setScene(scene);
             stage.setResizable(false);
             stage.setTitle("Matches");
+            
             tvMatches.setEditable(true);
+            
             tcLeagueTournament.setEditable(false);
             
-            ObservableList<String> parameters = FXCollections.observableArrayList("All", "Tournament"
-            , "League","Description", "Nickname");
+            tfSearchBar.setDisable(true);
+
+            ObservableList<String> parameters = FXCollections.observableArrayList("All", "Tournament",
+                    "League", "Description", "Nickname");
             cbParameters.setItems(parameters);
             cbParameters.getSelectionModel().selectFirst();
             manager = MatchManagerFactory.getMatchManager();
@@ -190,6 +199,8 @@ public class MatchWindowController {
             btnFilterRemoval.setOnAction(this::handleButtonFilterRemovalOnAction);
             btnSearch.setOnAction(this::handleButtonSearchOnAction);
             btnPrint.setOnAction(this::handleButtonPrintOnAction);
+            
+            cbParameters.valueProperty().addListener(this::handleComboBoxParametersOnAction);
 
             stage.show();
 
@@ -216,12 +227,79 @@ public class MatchWindowController {
 
     public void handleButtonSearchOnAction(ActionEvent event) {
         btnSearch.requestFocus();
-        LOGGER.info("Searching...");
+        MatchManager manager;
+        try {
+            switch (cbParameters.getValue()) {
+                case "All":
+                    LOGGER.info("Searching all matches...");
+                    manager = new MatchManagerImplementation();
+                    tvMatches.setItems(FXCollections.observableArrayList(manager.findAllMatches()));
+                    break;
+
+                case "Tournament":
+                    LOGGER.info("Searching tournament matches...");
+                    if (!tfSearchBar.getText().equalsIgnoreCase("") || !tfSearchBar.getText().isEmpty()) {
+                        manager = new MatchManagerImplementation();
+                        
+                    }
+                    
+                    break;
+
+                case "League":
+                    LOGGER.info("Searching league matches...");
+                    
+                    break;
+
+                case "Nickname":
+                    LOGGER.info("Searching player matches");
+                    if (!tfSearchBar.getText().equals("") || !tfSearchBar.getText().isEmpty()) {
+                        manager = new MatchManagerImplementation();
+                        tvMatches.setItems(FXCollections.observableArrayList(manager.findMatchesByUserNickname(tfSearchBar.getText())));
+                        if(tvMatches.getItems().isEmpty()){
+                            new Alert(Alert.AlertType.ERROR,"No players found",ButtonType.OK).show();
+                        }
+                    }else{
+                        new Alert(Alert.AlertType.ERROR,"Please input a nickname",ButtonType.OK).show();
+                    }
+                    break;
+                case "Description":
+                    LOGGER.info("Searching tournament matches by description...");
+                    
+                    break;
+
+            }
+        } catch (Exception ex) {
+
+        }
     }
 
     public void handleButtonPrintOnAction(ActionEvent event) {
         btnPrint.requestFocus();
         LOGGER.info("Printing document");
+    }
+    
+    public void handleComboBoxParametersOnAction(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        switch (newValue) {
+                case "All":
+                    tfSearchBar.setDisable(true);
+                    break;
+
+                case "Tournament":
+                    tfSearchBar.setDisable(false);
+
+                    break;
+                case "League":
+                    tfSearchBar.setDisable(false);
+                    
+                    break;
+                case "Nickname":
+                    tfSearchBar.setDisable(false);
+                    break;
+                case "Description":
+                    tfSearchBar.setDisable(false);
+                    break;
+
+            }
     }
 
 }
