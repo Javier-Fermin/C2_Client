@@ -10,10 +10,12 @@
       <MenuBar fx:id="menuMenuBar" prefHeight="26.0" prefWidth="1366.0">
         <menus>
           <Menu fx:id="windowOptionMenu" mnemonicParsing="false" text="League">
+
             <items>
               <MenuItem fx:id="allLeaguesMenuItem" mnemonicParsing="false" text="All leagues" />
             </items>
           </Menu>
+
             <Menu fx:id="windowOptionMenu1" mnemonicParsing="false" text="Match">
                <items>
                   <MenuItem fx:id="allMatchesMenuItem" mnemonicParsing="false" text="All matches" />

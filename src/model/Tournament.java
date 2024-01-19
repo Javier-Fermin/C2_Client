@@ -5,20 +5,21 @@
  */
 package model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This class is for the Tournament entity
- * 
+ *
  * @author Fran
  */
-public class Tournament implements Serializable{
+@XmlRootElement
+public class Tournament {
     /**
      * Id field for the tournament entity
      */
+
     private Integer idTournament;
     
     /***
@@ -38,16 +39,14 @@ public class Tournament implements Serializable{
     /**
      * Date field for the tournament entity
      */
+
+  
     private Date date;
-    
-    /**
-     * Sponsors of the tournament entity
-     */
-    private Set<Sponsor> sponsors;
     
     /***
      * Matches of the tournament
      */
+
     private Set<Match> matches;
     
     
@@ -56,13 +55,14 @@ public class Tournament implements Serializable{
     public Tournament() {
     }
 
-    public Tournament(Integer idTournament, String name, String description, Integer bestOf, Date date, Set<Sponsor> sponsors, Set<Match> matches) {
+
+    public Tournament(Integer idTournament, String name, String description, Integer bestOf, Date date, Set<Match> matches) {
+
         this.idTournament = idTournament;
         this.name = name;
         this.description = description;
         this.bestOf = bestOf;
         this.date = date;
-        this.sponsors = sponsors;
         this.matches = matches;
     }
    
@@ -145,27 +145,12 @@ public class Tournament implements Serializable{
     public void setDate(Date date) {
         this.date = date;
     }
-
-    /***
-     * Method that returns all the Tournament sponsors
-     * @return sponsors A collection of Sponsor objects
-     */
-    public Set<Sponsor> getSponsors() {
-        return sponsors;
-    }
-
-    /***
-     * Method that defines the collection of sponsors of the Tournament
-     * @param sponsors a collection of Sponsor objects
-     */
-    public void setSponsors(Set<Sponsor> sponsors) {
-        this.sponsors = sponsors;
-    }
     
     /***
      * Method that returns all the matches of the Tournament
      * @return a collection of {@link Match} objects
      */
+
      public Set<Match> getMatches() {
         return matches;
     }
@@ -174,6 +159,7 @@ public class Tournament implements Serializable{
      * Method that defines the collection of match of the Tournament
      * @param matches a collection of {@link Match}
      */
+
     public void setMatches(Set<Match> matches) {
         this.matches = matches;
     }
@@ -221,7 +207,8 @@ public class Tournament implements Serializable{
      */
     @Override
     public String toString() {
-        return "Tournament{" + "idTournament=" + idTournament + ", name=" + name + ", description=" + description + ", bestOf=" + bestOf + ", date=" + date + ", sponsors=" + sponsors + ", matches=" + matches + '}';
+
+        return "Tournament{" + "idTournament=" + idTournament + ", name=" + name + ", description=" + description + ", bestOf=" + bestOf + ", date=" + date + ", matches=" + matches + '}';
     }
     
 }

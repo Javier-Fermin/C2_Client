@@ -6,17 +6,20 @@
 package client;
 
 import java.util.logging.Logger;
+
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import view.SignInController;
 
+
 /**
  *
  * @author javie
  */
 public class Client extends javafx.application.Application{
+
     /**
      * A Logger for the logs
      */
@@ -44,15 +47,4 @@ public class Client extends javafx.application.Application{
         //Initialize the window
         cont.initStage(root);
     }
-
-    /**
-     * Entry point for the Java application.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        LOGGER.info("Starting the application.");
-        launch(args);
-    }
-
 }
