@@ -7,37 +7,39 @@ package model;
 
 import java.util.Date;
 import java.util.Objects;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class has the data of a User that has admin privileges
  * 
  * @author javie
  */
+@XmlRootElement
 public class Admin extends User{
-
-    public Admin(Date joinDate) {
-        this.joinDate = joinDate;
-    }
 
     public Admin(Date joinDate, String name, String passwd, String phone, String email, String address, UserType userType) {
         super(name, passwd, phone, email, address, userType);
-        this.joinDate = joinDate;
+        this.joinDate = new SimpleObjectProperty<Date>(joinDate);
     }
 
     public Admin() {
+        super();
+        joinDate = new SimpleObjectProperty<Date>();
     }
     
     /**
      * This is the date when the Admin joined the application
      */
-    private Date joinDate;
+    private SimpleObjectProperty<Date> joinDate;
 
     /**
      * 
      * @return 
      */
     public Date getJoinDate() {
-        return joinDate;
+        return joinDate.get();
     }
 
     /**
@@ -45,7 +47,7 @@ public class Admin extends User{
      * @param joinDate 
      */
     public void setJoinDate(Date joinDate) {
-        this.joinDate = joinDate;
+        this.joinDate.set(joinDate);
     }
 
     @Override
@@ -63,9 +65,9 @@ public class Admin extends User{
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        /*if (getClass() != obj.getClass()) {
             return false;
-        }
+        }*/
         final Admin other = (Admin) obj;
         if (!Objects.equals(this.joinDate, other.joinDate)) {
             return false;

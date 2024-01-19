@@ -7,6 +7,9 @@ package model;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,14 +22,21 @@ import java.util.Objects;
  *
  * @author Javier, Emil, Imanol, Fran
  */
+@XmlRootElement  
 public class User implements Serializable{
 
     /**
      * Attributes for the user
      */
-    private String name, passwd, phone, address;
+    private SimpleStringProperty name;
     
-    private String email;
+    private SimpleStringProperty passwd; 
+    
+    private SimpleStringProperty phone; 
+
+    private SimpleStringProperty address;
+    
+    private SimpleStringProperty email;
 
     /**
      * Id field for User entity
@@ -35,18 +45,24 @@ public class User implements Serializable{
     /**
      * UserType field for the User entity
      */
-    private UserType userType;
+    private SimpleObjectProperty<UserType> userType;
 
     public User() {
+        name = new SimpleStringProperty();
+        passwd = new SimpleStringProperty();
+        phone = new SimpleStringProperty();
+        email = new SimpleStringProperty();
+        address = new SimpleStringProperty();
+        userType = new SimpleObjectProperty<UserType>();
     }
 
     public User(String name, String passwd, String phone, String email, String address, UserType userType) {
-        this.name = name;
-        this.passwd = passwd;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.userType = userType;
+        this.name = new SimpleStringProperty(name);
+        this.passwd = new SimpleStringProperty(passwd);
+        this.phone = new SimpleStringProperty(phone);
+        this.email = new SimpleStringProperty(email);
+        this.address = new SimpleStringProperty(address);
+        this.userType = new SimpleObjectProperty<UserType>(userType);
     }
 
     /**
@@ -62,7 +78,7 @@ public class User implements Serializable{
      * @param id
      */
     public void setId(Integer id) {
-        this.id = id;
+        this.id = id; 
     }
 
     /**
@@ -70,7 +86,7 @@ public class User implements Serializable{
      * @return
      */
     public UserType getUserType() {
-        return userType;
+        return userType.get();
     }
 
     /**
@@ -79,7 +95,7 @@ public class User implements Serializable{
      * @param userType
      */
     public void setUserType(UserType userType) {
-        this.userType = userType;
+        this.userType.set(userType);
     }
 
     /**
@@ -88,7 +104,7 @@ public class User implements Serializable{
      * @return the value of the name attribute
      */
     public String getName() {
-        return name;
+        return name.get();
     }
 
     /**
@@ -97,7 +113,7 @@ public class User implements Serializable{
      * @param name the value to set to the name attribute
      */
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     /**
@@ -106,7 +122,7 @@ public class User implements Serializable{
      * @return the value of the passwd attribute
      */
     public String getPasswd() {
-        return passwd;
+        return passwd.get();
     }
 
     /**
@@ -115,7 +131,7 @@ public class User implements Serializable{
      * @param passwd the value to set to the passwd attribute
      */
     public void setPasswd(String passwd) {
-        this.passwd = passwd;
+        this.passwd.set(passwd);
     }
 
     /**
@@ -124,7 +140,7 @@ public class User implements Serializable{
      * @return the value of the phone attribute
      */
     public String getPhone() {
-        return phone;
+        return phone.get();
     }
 
     /**
@@ -133,7 +149,7 @@ public class User implements Serializable{
      * @param phone the value to set to the phone attribute
      */
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone.set(phone);
     }
 
     /**
@@ -142,7 +158,7 @@ public class User implements Serializable{
      * @return the value of the email attribute
      */
     public String getEmail() {
-        return email;
+        return email.get();
     }
 
     /**
@@ -151,7 +167,7 @@ public class User implements Serializable{
      * @param email the value to set to the email attribute
      */
     public void setEmail(String email) {
-        this.email = email;
+        this.email.set(email);
     }
 
     /**
@@ -160,7 +176,7 @@ public class User implements Serializable{
      * @return the value of the address attribute
      */
     public String getAddress() {
-        return address;
+        return address.get();
     }
 
     /**
@@ -169,7 +185,7 @@ public class User implements Serializable{
      * @param address the value to set to the address attribute
      */
     public void setAddress(String address) {
-        this.address = address;
+        this.address.set(address);
     }
 
     @Override

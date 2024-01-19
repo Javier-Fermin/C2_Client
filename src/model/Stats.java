@@ -6,59 +6,72 @@
 package model;
 
 import java.io.Serializable;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The entity class for the Stats data.
  * 
  * @author Javier
  */
+@XmlRootElement
 public class Stats implements Serializable{
 
     /**
      * Id field for the Stats entity
      */
-    private StatsId id;
+    private SimpleObjectProperty<StatsId> id;
 
     /**
      * Kills field for the Stats entity
      */
-    private Integer kills;
+    private final SimpleStringProperty kills;
 
     /**
      * Deaths field for the Stats entity
      */
-    private Integer deaths; 
+    private final SimpleStringProperty deaths; 
 
     /**
      * Assists field for the Stats entity
      */
-    private Integer assists;
+    private final SimpleStringProperty assists;
 
     /**
      * Team field of the Stats entity
      */
-    private Team team;
+    private final SimpleObjectProperty<Team> team;
 
     /**
      * Player of the play entity
      */
-    private Player player;
+    private final SimpleObjectProperty<Player> player;
 
     /**
      * Match of the play entity
      */
-    private Match match;
+    private final SimpleObjectProperty<Match> match;
     
-    public Stats() {
+    public Stats(){
+        this.id = new SimpleObjectProperty<StatsId>();
+        this.kills = new SimpleStringProperty();
+        this.deaths = new SimpleStringProperty();
+        this.assists = new SimpleStringProperty();
+        this.team = new SimpleObjectProperty<Team>();
+        this.player = new SimpleObjectProperty<Player>();
+        this.match = new SimpleObjectProperty<Match>();
     }
-
-    public Stats(Integer kills, Integer deaths, Integer assists, Team team, Player player, Match match) {
-        this.kills = kills;
-        this.deaths = deaths;
-        this.assists = assists;
-        this.team = team;
-        this.player = player;
-        this.match = match;
+    
+    public Stats(StatsId id,String kills, String deaths, String assists, Team team, Player player, Match match) {
+        this.id = new SimpleObjectProperty<StatsId>(id);
+        this.kills = new SimpleStringProperty(kills);
+        this.deaths = new SimpleStringProperty(deaths);
+        this.assists = new SimpleStringProperty(assists);
+        this.team = new SimpleObjectProperty<Team>(team);
+        this.player = new SimpleObjectProperty<Player>(player);
+        this.match = new SimpleObjectProperty<Match>(match);
     }
 
     /**
@@ -67,7 +80,7 @@ public class Stats implements Serializable{
      * @return the id field
      */
     public StatsId getId() {
-        return id;
+        return id.get();
     }
 
     /**
@@ -76,7 +89,7 @@ public class Stats implements Serializable{
      * @param id the value to be set
      */
     public void setId(StatsId id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -84,8 +97,8 @@ public class Stats implements Serializable{
      * 
      * @return the kills field
      */
-    public Integer getKills() {
-        return kills;
+    public String getKills() {
+        return kills.get();
     }
 
     /**
@@ -93,8 +106,8 @@ public class Stats implements Serializable{
      * 
      * @param kills the value to be set
      */
-    public void setKills(Integer kills) {
-        this.kills = kills;
+    public void setKills(String kills) {
+        this.kills.set(kills);
     }
 
     /**
@@ -102,8 +115,8 @@ public class Stats implements Serializable{
      * 
      * @return the deaths field
      */
-    public Integer getDeaths() {
-        return deaths;
+    public String getDeaths() {
+        return deaths.get();
     }
 
     /**
@@ -111,8 +124,8 @@ public class Stats implements Serializable{
      * 
      * @param deaths the value to be set
      */
-    public void setDeaths(Integer deaths) {
-        this.deaths = deaths;
+    public void setDeaths(String deaths) {
+        this.deaths.set(deaths);
     }
 
     /**
@@ -120,8 +133,8 @@ public class Stats implements Serializable{
      * 
      * @return the assists field
      */
-    public Integer getAssists() {
-        return assists;
+    public String getAssists() {
+        return assists.get();
     }
 
     /**
@@ -129,8 +142,8 @@ public class Stats implements Serializable{
      * 
      * @param assists the value to be set
      */
-    public void setAssists(Integer assists) {
-        this.assists = assists;
+    public void setAssists(String assists) {
+        this.assists.set(assists);
     }
 
     /**
@@ -139,7 +152,7 @@ public class Stats implements Serializable{
      * @return the team field
      */
     public Team getTeam() {
-        return team;
+        return team.get();
     }
 
     /**
@@ -148,7 +161,7 @@ public class Stats implements Serializable{
      * @param team the value to be set
      */
     public void setTeam(Team team) {
-        this.team = team;
+        this.team.set(team);
     }
 
     /**
@@ -156,8 +169,9 @@ public class Stats implements Serializable{
      * 
      * @return the player field
      */
+    @XmlTransient
     public Player getPlayer() {
-        return player;
+        return player.get();
     }
 
     /**
@@ -166,7 +180,7 @@ public class Stats implements Serializable{
      * @param player the value to be set
      */
     public void setPlayer(Player player) {
-        this.player = player;
+        this.player.set(player);
     }
 
     /**
@@ -175,7 +189,7 @@ public class Stats implements Serializable{
      * @return the match field
      */
     public Match getMatch() {
-        return match;
+        return match.get();
     }
 
     /**
@@ -184,7 +198,7 @@ public class Stats implements Serializable{
      * @param match the value to be set
      */
     public void setMatch(Match match) {
-        this.match = match;
+        this.match.set(match);
     }
 
     /**

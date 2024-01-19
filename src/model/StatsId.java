@@ -7,37 +7,41 @@ package model;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  *
  * @author javie
  */
 public class StatsId implements Serializable{
-    private Integer playerId;
-    private Integer matchId;
 
-    public Integer getPlayerId() {
-        return playerId;
+    private SimpleStringProperty playerId;
+    private SimpleStringProperty matchId;
+
+    public String getPlayerId() {
+        return playerId.get();
     }
 
-    public void setPlayerId(Integer playerId) {
-        this.playerId = playerId;
+    public void setPlayerId(String playerId) {
+        this.playerId.set(playerId);
     }
 
-    public Integer getMatchId() {
-        return matchId;
+    public String getMatchId() {
+        return matchId.get();
     }
 
-    public void setMatchId(Integer matchId) {
-        this.matchId = matchId;
+    public void setMatchId(String matchId) {
+        this.matchId.set(matchId);
     }
 
     public StatsId() {
+        matchId = new SimpleStringProperty();
+        playerId = new SimpleStringProperty();
     }
 
-    public StatsId(Integer matchId, Integer playerId) {
-        this.playerId = playerId;
-        this.matchId = matchId;
+    public StatsId(String matchId, String playerId) {
+        this.playerId.set(playerId);
+        this.matchId.set(matchId);
     }
 
     @Override

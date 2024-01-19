@@ -5,61 +5,71 @@
  */
 package model;
 
-import java.util.List;
 import java.util.Objects;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * This class is the entity player
  *
  * @author javie
  */
+@XmlRootElement
 public class Player extends User {
 
     /**
      * Active field for the player entity
      */
-    private Boolean active;
+    private SimpleBooleanProperty active;
     /**
      * nickname field for the player entity
      */
-    private String nickname;
+    private SimpleStringProperty nickname;
     /**
      * list of Stats
      */
-    private List<Stats> stats;
+    private SimpleListProperty<Stats> stats;
 
     public Player() {
         super();
+        nickname = new SimpleStringProperty();
+        active = new SimpleBooleanProperty();
+        stats = new SimpleListProperty<>();
     }
     
-    public Player(Boolean active, String nickname, String name, String passwd, String phone, String email, String address, UserType userType) {
+    public Player(Boolean active, String nickname, String name, String passwd, String phone, String email, String address, UserType userType, ObservableList<Stats> stats) {
         super(name, passwd, phone, email, address, userType);
-        this.active = active;
-        this.nickname = nickname;
+        this.active = new SimpleBooleanProperty(active);
+        this.nickname = new SimpleStringProperty(nickname);
+        this.stats = new SimpleListProperty<Stats>(stats);
     }
 
     public Boolean getActive() {
-        return active;
+        return active.get();
     }
 
     public void setActive(Boolean active) {
-        this.active = active;
+        this.active.set(active);
     }
 
     public String getNickname() {
-        return nickname;
+        return nickname.get();
     }
 
     public void setNickname(String nickname) {
-        this.nickname = nickname;
+        this.nickname.set(nickname);
     }
 
-    public List<Stats> getStats() {
-        return stats;
+    public ObservableList<Stats> getStats() {
+        return stats.get();
     }
 
-    public void setStats(List<Stats> stats) {
-        this.stats = stats;
+    public void setStats(ObservableList<Stats> stats) {
+        this.stats.set(stats);
     }
 
     /**
@@ -84,9 +94,9 @@ public class Player extends User {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        /*if (getClass() != obj.getClass()) {
             return false;
-        }
+        }*/
         final Player other = (Player) obj;
         if (!Objects.equals(this.nickname, other.nickname)) {
             return false;

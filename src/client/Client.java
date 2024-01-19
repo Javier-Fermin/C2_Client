@@ -10,16 +10,13 @@ import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import model.User;
-import model.UserType;
-import view.LeagueWindowController;
+import view.SignInController;
 
 /**
  *
  * @author javie
  */
 public class Client extends javafx.application.Application{
-
     /**
      * A Logger for the logs
      */
@@ -35,19 +32,17 @@ public class Client extends javafx.application.Application{
     public void start(Stage stage) throws Exception {
 
         //Get the SignInFXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/leagueWindow.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SignInWindowFXML.fxml"));
         //Load the DOM
         Parent root = (Parent) loader.load();
 
         //Get the controller from SignIn
-        LeagueWindowController cont = ((LeagueWindowController) loader.getController());
+        SignInController cont = ((SignInController) loader.getController());
 
-        User user = new User("", "", "", "", "", UserType.ADMIN);
-        
         //Set the stage
-        cont.setLeagueStage(stage);
+        cont.setStage(stage);
         //Initialize the window
-        cont.initStage(root, user);
+        cont.initStage(root);
     }
 
     /**
@@ -59,5 +54,5 @@ public class Client extends javafx.application.Application{
         LOGGER.info("Starting the application.");
         launch(args);
     }
-    
+
 }
