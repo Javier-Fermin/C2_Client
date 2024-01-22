@@ -183,7 +183,7 @@ public class SignInController implements ChangeListener<String> {
                     cont.setStage(sStage);
                     cont.initStage(root, user);
                 }else{
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainWindowFXML.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
                     Parent root = (Parent) loader.load();
                     StatsWindowController cont = ((StatsWindowController) loader.getController());
                     cont.setStage(sStage);

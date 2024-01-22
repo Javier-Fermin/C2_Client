@@ -15,33 +15,31 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class StatsId implements Serializable{
 
-    private SimpleStringProperty playerId;
-    private SimpleStringProperty matchId;
+    private String playerId;
+    private String matchId;
 
     public String getPlayerId() {
-        return playerId.get();
+        return playerId;
     }
 
     public void setPlayerId(String playerId) {
-        this.playerId.set(playerId);
+        this.playerId = playerId;
     }
 
     public String getMatchId() {
-        return matchId.get();
+        return matchId;
     }
 
     public void setMatchId(String matchId) {
-        this.matchId.set(matchId);
+        this.matchId =matchId;
     }
 
     public StatsId() {
-        matchId = new SimpleStringProperty();
-        playerId = new SimpleStringProperty();
     }
 
     public StatsId(String matchId, String playerId) {
-        this.playerId.set(playerId);
-        this.matchId.set(matchId);
+        this.playerId =playerId;
+        this.matchId =matchId;
     }
 
     @Override
