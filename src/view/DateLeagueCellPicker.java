@@ -5,7 +5,6 @@ package view;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -39,12 +38,11 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-
-        setText(getDate().toString());
+        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        setText(getDate().format(dateFormat));
         setGraphic(null);
     }
 
-   
     @Override
     public void updateItem(Date item, boolean empty) {
         super.updateItem(item, empty);
@@ -62,9 +60,7 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
             } else {
                 final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 setText(getDate().format(dateFormat));
-
                 setGraphic(null);
-
             }
         }
     }

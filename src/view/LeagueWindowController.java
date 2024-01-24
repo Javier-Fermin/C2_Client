@@ -13,7 +13,10 @@ import exceptions.ReadException;
 import exceptions.UpdateException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +49,12 @@ import javafx.util.Callback;
 import model.League;
 import model.User;
 import model.UserType;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -184,7 +193,8 @@ public class LeagueWindowController {
                     } else {
                         League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
                         ObservableList<League> findLeague = FXCollections.observableArrayList(leagueManage.findLeagueByName(league.getName()));
-                        if (findLeague.isEmpty()) {
+                        if (findLeague.isEmpty() || t.getNewValue().contains("") || !t.getNewValue().matches("[A-za-z\\s]+")
+                                || t.getNewValue().length() > 20) {
                             new Alert(Alert.AlertType.ERROR, "The name value is incorrect", ButtonType.OK).showAndWait();
                             //NO FUNCIONA
                             //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
@@ -209,9 +219,15 @@ public class LeagueWindowController {
                         //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
                     } else {
                         League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                        league.setDescription(t.getNewValue());
-                        leagueManage.updateLeague(league);
-                        refreshTable();
+                        if (tcDescription.getText().length() > 281) {
+                            new Alert(Alert.AlertType.ERROR, "The description value is incorrect", ButtonType.OK).showAndWait();
+                            //NO FUNCIONA
+                            //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
+                        } else {
+                            league.setDescription(t.getNewValue());
+                            leagueManage.updateLeague(league);
+                            refreshTable();
+                        }
                     }
                 } catch (UpdateException e) {
                     new Alert(Alert.AlertType.ERROR, "Update Error", ButtonType.OK).showAndWait();
@@ -232,7 +248,7 @@ public class LeagueWindowController {
                         //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
                     } else {
                         League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                        if (league.getEndDate().before(league.getStartDate())) {
+                        if (league.getEndDate().before(t.getNewValue())) {
                             new Alert(Alert.AlertType.ERROR, "The StartDate value is incorrect", ButtonType.OK).showAndWait();
                             //NO FUNCIONA
                             //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
@@ -257,7 +273,7 @@ public class LeagueWindowController {
                         //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
                     } else {
                         League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                        if (league.getEndDate().after(league.getStartDate())) {
+                        if (t.getNewValue().before(league.getStartDate())) {
                             new Alert(Alert.AlertType.ERROR, "The EndDate value is incorrect", ButtonType.OK).showAndWait();
                             //NO FUNCIONA
                             //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
@@ -275,11 +291,15 @@ public class LeagueWindowController {
 
             miCreate.setOnAction(this::createLeagueButtonAction);
             btnCreate.setOnAction(this::createLeagueButtonAction);
+            tbCreateButton.setOnAction(this::createLeagueButtonAction);
             btnClear.setOnAction(this::ClearLeagueTableButtonAction);
             miSearch.setOnAction(this::SearchLeagueButtonAction);
-            btnSearch.setOnAction(this::SearchLeagueButtonAction);
+            btnSearch.setOnAction(this::SearchLeagueButtonAction);            
             btnDelete.setOnAction(this::DeleteLeagueButtonAction);
             miDelete.setOnAction(this::DeleteLeagueButtonAction);
+            tbDeleteButton.setOnAction(this::DeleteLeagueButtonAction);
+            tbPrintButton.setOnAction(this::printReport);
+            btnPrint.setOnAction(this::printReport);
 
             tvLeagues.setItems(leagueList);
 
@@ -300,7 +320,6 @@ public class LeagueWindowController {
             if (findLeague.isEmpty()) {
                 leagueManage.createLeague(league);
                 refreshTable();
-
             } else {
                 tvLeagues.getSelectionModel().clearSelection();
                 throw new ReadException();
@@ -344,13 +363,9 @@ public class LeagueWindowController {
                     new Alert(Alert.AlertType.ERROR, "this field is required to fill", ButtonType.OK).showAndWait();
                     throw new ReadException();
                 } else {
-                    char[] chars = tfsearch.getText().toCharArray();
-                    StringBuilder sb = new StringBuilder();
-                    for (char c : chars) {
-                        if (Character.isDigit(c)) {
-                            new Alert(Alert.AlertType.ERROR, "Values can only be characters", ButtonType.OK).showAndWait();
-                            throw new ReadException();
-                        }
+                    if (!tfsearch.getText().matches("[A-za-z\\s]+")) {
+                        new Alert(Alert.AlertType.ERROR, "Values can only be characters", ButtonType.OK).showAndWait();
+                        throw new ReadException();
                     }
                     ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findLeagueByName(tfsearch.getText()));
                     tvLeagues.setItems(finishedLeagueList);
@@ -360,13 +375,9 @@ public class LeagueWindowController {
                     new Alert(Alert.AlertType.ERROR, "this field is required to fill", ButtonType.OK).showAndWait();
                     throw new ReadException();
                 } else {
-                    char[] chars = tfsearch.getText().toCharArray();
-                    StringBuilder sb = new StringBuilder();
-                    for (char c : chars) {
-                        if (!Character.isDigit(c)) {
-                            new Alert(Alert.AlertType.ERROR, "Values can only be numbers", ButtonType.OK).showAndWait();
-                            throw new ReadException();
-                        }
+                    if (!tfsearch.getText().matches("[0-9]+")) {
+                        new Alert(Alert.AlertType.ERROR, "Values can only be numbers", ButtonType.OK).showAndWait();
+                        throw new ReadException();
                     }
                     ObservableList<League> MatchLeagueList = FXCollections.observableArrayList(leagueManage.findLeagueForMatch(Integer.parseInt(tfsearch.getText())));
                     tvLeagues.setItems(MatchLeagueList);
@@ -402,6 +413,21 @@ public class LeagueWindowController {
             new Alert(Alert.AlertType.ERROR, "Delete Error", ButtonType.OK).showAndWait();
         }
     }
+    
+    @FXML
+    private void printReport(ActionEvent event){
+         try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/LeagueReport.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<League>) this.tvLeagues.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+    
 
     private void refreshTable() {
         try {
