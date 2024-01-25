@@ -53,11 +53,11 @@
 			</textField>
 			<textField>
 				<reportElement x="340" y="0" width="100" height="20" uuid="0cbbbf93-dcef-408e-8056-a1cad4156609"/>
-				<textFieldExpression><![CDATA[$F{startDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{startDate})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="455" y="0" width="100" height="20" uuid="14765452-6065-435d-bfcb-cb2c467ab801"/>
-				<textFieldExpression><![CDATA[$F{endDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{endDate})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

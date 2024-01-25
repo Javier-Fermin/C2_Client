@@ -21,8 +21,7 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
 
     private DatePicker datePicker;
 
-    DateLeagueCellPicker() {
-
+    public DateLeagueCellPicker() {
     }
 
     @Override
@@ -46,7 +45,6 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
     @Override
     public void updateItem(Date item, boolean empty) {
         super.updateItem(item, empty);
-
         if (empty) {
             setText(null);
             setGraphic(null);
@@ -69,7 +67,6 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
         datePicker = new DatePicker(getDate());
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         datePicker.setOnAction((e) -> {
-            System.out.println("Committed: " + datePicker.getValue().toString());
             commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         });
 
