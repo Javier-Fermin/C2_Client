@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
         /**
          * winner field for the Match entity
          */
-        private String winner;
+        private Team winner;
 
         /**
          * tournament field for the Match entity
@@ -90,11 +90,11 @@ import javax.xml.bind.annotation.XmlRootElement;
             this.playedDate = playedDate;
         }
 
-        public String getWinner() {
+        public Team getWinner() {
             return winner;
         }
 
-        public void setWinner(String winner) {
+        public void setWinner(Team winner) {
             this.winner = winner;
         }
 
@@ -145,5 +145,18 @@ import javax.xml.bind.annotation.XmlRootElement;
             }
             return true;
         }
+
+    public Match() {
+    }
+
+    public Match(Integer id, Date playedDate, Team winner, Tournament tournament, League league, Set<Stats> stats, String description) {
+        this.id = id;
+        this.playedDate = playedDate;
+        this.winner = winner;
+        this.tournament = tournament;
+        this.league = league;
+        this.stats = stats;
+        this.description = description;
+    }
 
     }
