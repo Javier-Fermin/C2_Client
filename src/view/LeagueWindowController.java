@@ -70,7 +70,9 @@ public class LeagueWindowController {
     ObservableList<League> leagueList;
 
     LeagueManage leagueManage = LeagueManageFactory.getRegistrable();
-
+    
+    private User user;
+    
     @FXML
     private TableView tvLeagues;
     @FXML
@@ -106,6 +108,7 @@ public class LeagueWindowController {
 
     public void initStage(Parent root, User user) {
         try {
+            this.user = user;
             //Window inicialice
             LOGGER.info("Init League Window");
             Scene scene = new Scene(root);
@@ -446,7 +449,7 @@ public class LeagueWindowController {
                 Parent root = (Parent) loader.load();
                 MatchWindowController cont = ((MatchWindowController) loader.getController());
                 cont.setMainStage(stageM);
-                cont.initStage(root);
+                cont.initStage(root, user, null, null);
                 stage.close();
             }
         } catch (Exception ex) {

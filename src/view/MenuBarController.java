@@ -114,7 +114,7 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             TournamentWinController cont = ((TournamentWinController) loader.getController());
             cont.setMainStage(sStage);
-            cont.initStage(root/*, user*/);
+            cont.initStage(root, user);
             stage.close();
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
@@ -142,7 +142,7 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             MatchWindowController cont = ((MatchWindowController) loader.getController());
             cont.setMainStage(sStage);
-            cont.initStage(root/*, user*/);
+            cont.initStage(root, user, null, null);
             stage.close();
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
