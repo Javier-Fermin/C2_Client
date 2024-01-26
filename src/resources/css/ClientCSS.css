@@ -6,6 +6,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Created on : 16-oct-2023, 20:22:29
     Author     : javie
 */
+
+
+.boton{
+    -fx-background-radius: 5em;
+    -fx-min-width: 25px;
+    -fx-min-height: 25px;
+    -fx-max-width: 25px;
+    -fx-max-height: 25px;
+}
+
 .lblInBG{
     -fx-font-weight: bold;
     -fx-text-fill: white;
