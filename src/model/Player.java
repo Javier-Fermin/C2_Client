@@ -29,23 +29,23 @@ public class Player extends User {
      * nickname field for the player entity
      */
     private SimpleStringProperty nickname;
-    /**
-     * list of Stats
-     */
-    private SimpleListProperty<Stats> stats;
-
+    
     public Player() {
         super();
         nickname = new SimpleStringProperty();
         active = new SimpleBooleanProperty();
-        stats = new SimpleListProperty<>();
     }
     
     public Player(Boolean active, String nickname, String name, String passwd, String phone, String email, String address, UserType userType, ObservableList<Stats> stats) {
         super(name, passwd, phone, email, address, userType);
         this.active = new SimpleBooleanProperty(active);
         this.nickname = new SimpleStringProperty(nickname);
-        this.stats = new SimpleListProperty<Stats>(stats);
+    }
+    
+    public Player(Player player) {
+        super(player.getName(), player.getPasswd(), player.getPhone(), player.getEmail(), player.getAddress(), player.getUserType());
+        this.active = new SimpleBooleanProperty(player.getActive());
+        this.nickname = new SimpleStringProperty(player.getNickname());
     }
 
     public Boolean getActive() {
@@ -64,14 +64,6 @@ public class Player extends User {
         this.nickname.set(nickname);
     }
 
-    public ObservableList<Stats> getStats() {
-        return stats.get();
-    }
-
-    public void setStats(ObservableList<Stats> stats) {
-        this.stats.set(stats);
-    }
-
     /**
      * HashCode and equals for Player entity 
      */
@@ -82,7 +74,6 @@ public class Player extends User {
         int hash = 7;
         hash = 59 * hash + Objects.hashCode(this.active);
         hash = 59 * hash + Objects.hashCode(this.nickname);
-        hash = 59 * hash + Objects.hashCode(this.stats);
         return hash;
     }
 
@@ -104,9 +95,6 @@ public class Player extends User {
         if (!Objects.equals(this.active, other.active)) {
             return false;
         }
-        if (!Objects.equals(this.stats, other.stats)) {
-            return false;
-        }
         return true;
     }
 
@@ -115,7 +103,7 @@ public class Player extends User {
      */
     @Override
     public String toString() {
-        return "Player{" + ", active=" + active + ", nickname=" + nickname + ", stats=" + stats + '}';
+        return  nickname.get();
     }
 
 }

@@ -9,7 +9,6 @@ import java.io.Serializable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The entity class for the Stats data.
@@ -27,32 +26,32 @@ public class Stats implements Serializable{
     /**
      * Kills field for the Stats entity
      */
-    private final SimpleStringProperty kills;
+    private SimpleStringProperty kills;
 
     /**
      * Deaths field for the Stats entity
      */
-    private final SimpleStringProperty deaths; 
+    private SimpleStringProperty deaths; 
 
     /**
      * Assists field for the Stats entity
      */
-    private final SimpleStringProperty assists;
+    private SimpleStringProperty assists;
 
     /**
      * Team field of the Stats entity
      */
-    private final SimpleObjectProperty<Team> team;
+    private SimpleObjectProperty<Team> team;
 
     /**
      * Player of the play entity
      */
-    private final SimpleObjectProperty<Player> player;
+    private SimpleObjectProperty<Player> player;
 
     /**
      * Match of the play entity
      */
-    private final SimpleObjectProperty<Match> match;
+    private SimpleObjectProperty<Match> match;
     
     public Stats(){
         this.id = new SimpleObjectProperty<StatsId>();
@@ -169,7 +168,6 @@ public class Stats implements Serializable{
      * 
      * @return the player field
      */
-    @XmlTransient
     public Player getPlayer() {
         return player.get();
     }

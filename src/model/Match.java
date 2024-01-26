@@ -52,6 +52,20 @@ import javax.xml.bind.annotation.XmlRootElement;
          */
         private String description;
 
+        public Match() {
+        }
+
+        public Match(Match match) {
+            this.id = match.getId();
+            this.league = match.getLeague();
+            this.playedDate = match.getPlayedDate();
+            this.description = match.getDescription();
+            this.stats = match.getStats();
+            this.tournament = match.getTournament();
+            this.winner = match.getWinner();
+        }
+        
+        
         public String getDescription() {
             return description;
         }
@@ -110,8 +124,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
         @Override
         public String toString() {
-            return "Match [id=" + id + ", playedDate=" + playedDate + ", winner=" + winner + ", tournament=" + tournament
-                    + ", league=" + league + ", stats=" + stats + "]";
+            return description;
         }
 
         @Override

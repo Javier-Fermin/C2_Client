@@ -1,28 +1,30 @@
-package view;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package tableCells;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
-import model.League;
+import model.Match;
+import model.Stats;
 
 /**
  *
- * @author 2dam
+ * @author imape
  */
-public class DateLeagueCellPicker extends TableCell<League, Date> {
-
+public class DateStatsCellPicker extends TableCell<Stats, Match>{
     private DatePicker datePicker;
-
-    DateLeagueCellPicker() {
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+    public DateStatsCellPicker() {
 
     }
 
@@ -40,13 +42,13 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
     public void cancelEdit() {
         super.cancelEdit();
 
-        setText(getDate().toString());
+        setText(getDate().format(dateFormat));
         setGraphic(null);
     }
 
    
     @Override
-    public void updateItem(Date item, boolean empty) {
+    public void updateItem(Match item, boolean empty) {
         super.updateItem(item, empty);
 
         if (empty) {
@@ -60,7 +62,6 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
                 setText(null);
                 setGraphic(datePicker);
             } else {
-                final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 setText(getDate().format(dateFormat));
 
                 setGraphic(null);
@@ -73,13 +74,18 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
         datePicker = new DatePicker(getDate());
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         datePicker.setOnAction((e) -> {
-            System.out.println("Committed: " + datePicker.getValue().toString());
-            commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            Match copy = new Match(getItem());
+            if(datePicker.getValue() != null){
+                copy.setPlayedDate(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                commitEdit(copy);
+            }else{
+                cancelEdit();
+            }
         });
 
     }
 
     private LocalDate getDate() {
-        return getItem() == null ? LocalDate.now() : getItem().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return getItem() == null ? LocalDate.now() : getItem().getPlayedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

@@ -111,6 +111,18 @@ public class MatchRESTClient {
     public void delete(String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Match.class);
     }
+    
+    public <T> T findMatchByDescription_XML(Class<T> responseType, String description) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{description}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public <T> T findMatchByDescription_JSON(Class<T> responseType, String description) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{description}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
 
     public void close() {
         client.close();

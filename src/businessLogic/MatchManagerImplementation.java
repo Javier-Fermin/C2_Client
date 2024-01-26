@@ -10,6 +10,7 @@ import exceptions.DeleteException;
 import exceptions.ReadException;
 import exceptions.UpdateException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 import model.Match;
@@ -141,6 +142,21 @@ public class MatchManagerImplementation implements MatchManager {
 
         }
         return matches;
+    }
+
+    @Override
+    public Match findMatchByDescription(String description) throws ReadException {
+        Match match = null;
+        try{
+            LOGGER.log(Level.INFO, "PlayerManager: Finding match by description: {0} (XML).", description);
+            match = webClient.findMatchByDescription_XML(Match.class, description);
+        }catch(Exception ex){
+            LOGGER.log(Level.SEVERE,
+                    "StatsManager: Exception finding desired match, {0}",
+                    ex.getMessage());
+            throw new ReadException("Error finding desired stats:\n"+ex.getMessage());
+        }
+        return match;
     }
 
 }
