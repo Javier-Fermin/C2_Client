@@ -21,7 +21,7 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
 
     private DatePicker datePicker;
 
-    DateTournamentPicker() {
+    public DateTournamentPicker() {
 
     }
 
@@ -38,11 +38,10 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-
-        setText(getDate().toString());
+        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        setText(getDate().format(dateFormat));
         setGraphic(null);
     }
-
 
     @Override
     public void updateItem(Date item, boolean empty) {
@@ -82,5 +81,5 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
     private LocalDate getDate() {
         return getItem() == null ? LocalDate.now() : getItem().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
-    
+
 }

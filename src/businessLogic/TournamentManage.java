@@ -32,7 +32,7 @@ public interface TournamentManage {
     
     public List<Tournament> findTournamentByName(String name) throws ReadException;
     
-    public List<Tournament> findTournamentByBestOf(Integer bestOf) throws ReadException;
+    public List<Tournament> findTournamentByBestOf(String bestOf) throws ReadException;
      
     public List<Tournament> findTournamentByDate(String date) throws ReadException;
     
