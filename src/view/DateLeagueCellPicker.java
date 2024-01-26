@@ -28,7 +28,15 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
     public void startEdit() {
         if (!isEmpty()) {
             super.startEdit();
-            createDatePicker();
+            datePicker = new DatePicker(getDate());
+            datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            datePicker.setOnAction((e) -> {
+                if (datePicker.getValue() == null) {
+                    commitEdit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                } else {
+                    commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                }
+            });
             setText(null);
             setGraphic(datePicker);
         }
@@ -61,15 +69,6 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
                 setGraphic(null);
             }
         }
-    }
-
-    private void createDatePicker() {
-        datePicker = new DatePicker(getDate());
-        datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-        datePicker.setOnAction((e) -> {
-            commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        });
-
     }
 
     private LocalDate getDate() {
