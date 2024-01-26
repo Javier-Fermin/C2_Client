@@ -9,6 +9,7 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import model.Match;
 
 /**
  * Jersey REST client generated for REST resource:MatchREST [entities.match]<br>
@@ -26,7 +27,7 @@ public class MatchRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/C2_SERVER/webresources";
+    private static final String BASE_URI = "http://localhost:8080/C2_SERVER1/webresources";
 
     public MatchRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -108,7 +109,7 @@ public class MatchRESTClient {
     }
 
     public void delete(String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Match.class);
     }
 
     public void close() {

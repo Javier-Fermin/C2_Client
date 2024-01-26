@@ -37,7 +37,7 @@ public class MatchManagerImplementation implements MatchManager {
             matches = webClient.findAllMatches_XML(new GenericType<List<Match>>() {
             });
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         }
         return matches;
     }
@@ -55,7 +55,14 @@ public class MatchManagerImplementation implements MatchManager {
 
     @Override
     public List<Match> findAllLeagueMatches() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Match> matches = null;
+        
+        try{
+            
+        }catch(Exception ex){
+            
+        }
+        return matches;
     }
 
     @Override
@@ -96,17 +103,32 @@ public class MatchManagerImplementation implements MatchManager {
 
     @Override
     public void createMatch(Match match) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            LOGGER.info("MatchesManager: Create match in REST service (XML).");
+            webClient.createMatch_XML(match);
+        } catch (Exception e) {
+        }
     }
 
     @Override
     public void deleteMatch(Match match) throws DeleteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        try{
+            LOGGER.info("MatchesManager: Deleting selected match");
+            webClient.delete(match.getId().toString());
+        }catch(Exception ex){
+            
+        }
     }
 
     @Override
     public void updateMatch(Match match) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            LOGGER.info("Updating match...");
+            webClient.updateMatch_XML(match);
+            LOGGER.info("Match updated!");
+        } catch (Exception e) {
+        }
     }
 
     @Override

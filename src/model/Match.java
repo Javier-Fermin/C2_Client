@@ -8,9 +8,6 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -23,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
         /**
          * Id field for the Match entity
          */
-        private SimpleIntegerProperty id;
+        private Integer id;
 
         /**
          * playedDate field for the Match entity
@@ -33,17 +30,17 @@ import javax.xml.bind.annotation.XmlRootElement;
         /**
          * winner field for the Match entity
          */
-        private SimpleStringProperty winner;
+        private Team winner;
 
         /**
          * tournament field for the Match entity
          */
-        private SimpleObjectProperty<Tournament> tournament;
+        private Tournament tournament;
 
         /**
          * league field for the Match entity
          */
-        private SimpleObjectProperty<League> league;
+        private League league;
 
         /**
          * plays of the Match entity
@@ -53,21 +50,21 @@ import javax.xml.bind.annotation.XmlRootElement;
         /**
          * descrition of the match
          */
-        private SimpleStringProperty description;
+        private String description;
 
-        public SimpleStringProperty getDescription() {
+        public String getDescription() {
             return description;
         }
 
-        public void setDescription(SimpleStringProperty description) {
+        public void setDescription(String description) {
             this.description = description;
         }
 
-        public SimpleIntegerProperty getId() {
+        public Integer getId() {
             return id;
         }
 
-        public void setId(SimpleIntegerProperty id) {
+        public void setId(Integer id) {
             this.id = id;
         }
 
@@ -79,27 +76,27 @@ import javax.xml.bind.annotation.XmlRootElement;
             this.playedDate = playedDate;
         }
 
-        public SimpleStringProperty getWinner() {
+        public Team getWinner() {
             return winner;
         }
 
-        public void setWinner(SimpleStringProperty winner) {
+        public void setWinner(Team winner) {
             this.winner = winner;
         }
 
-        public SimpleObjectProperty<Tournament> getTournament() {
+        public Tournament getTournament() {
             return tournament;
         }
 
-        public void setTournament(SimpleObjectProperty<Tournament> tournament) {
+        public void setTournament(Tournament tournament) {
             this.tournament = tournament;
         }
 
-        public SimpleObjectProperty<League> getLeague() {
+        public League getLeague() {
             return league;
         }
 
-        public void setLeague(SimpleObjectProperty<League> league) {
+        public void setLeague(League league) {
             this.league = league;
         }
 
@@ -135,5 +132,18 @@ import javax.xml.bind.annotation.XmlRootElement;
             }
             return true;
         }
+
+    public Match() {
+    }
+
+    public Match(Integer id, Date playedDate, Team winner, Tournament tournament, League league, Set<Stats> stats, String description) {
+        this.id = id;
+        this.playedDate = playedDate;
+        this.winner = winner;
+        this.tournament = tournament;
+        this.league = league;
+        this.stats = stats;
+        this.description = description;
+    }
 
     }
