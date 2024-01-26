@@ -117,12 +117,12 @@ public class TournamentManageImplementation implements TournamentManage{
     }
 
     @Override
-    public List<Tournament> findTournamentByBestOf(Integer bestOf) throws ReadException {
+    public List<Tournament> findTournamentByBestOf(String bestOf) throws ReadException {
         List<Tournament> tournaments = null;
         
         try{
             LOGGER.info("TournamentManage: Finding tournaments by format.");
-            tournaments = tournamentClient.findTournamentByFormat_XML(new GenericType<List<Tournament>>() {}, bestOf.toString());
+            tournaments = tournamentClient.findTournamentByFormat_XML(new GenericType<List<Tournament>>() {}, bestOf);
             
         }catch(Exception e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());
@@ -138,7 +138,7 @@ public class TournamentManageImplementation implements TournamentManage{
         
         try{
             LOGGER.info("TournamentManage: Finding tournaments by date.");
-            tournaments = tournamentClient.findTournamentByDate_XML(new GenericType<List<Tournament>>() {}, date.toString());
+            tournaments = tournamentClient.findTournamentByDate_XML(new GenericType<List<Tournament>>() {}, date);
             
         }catch(Exception e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());

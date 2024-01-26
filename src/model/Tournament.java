@@ -6,8 +6,8 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -35,7 +35,7 @@ public class Tournament {
     /**
      * bestOf field of the tournament entity
      */
-    private Integer bestOf;
+    private String bestOf;
     /**
      * Date field for the tournament entity
      */
@@ -47,7 +47,7 @@ public class Tournament {
      * Matches of the tournament
      */
 
-    private Set<Match> matches;
+    private List<Match> matches;
     
     
 // -------------- TOURNAMENT || SETTERS & GETTERS ---------------
@@ -56,7 +56,7 @@ public class Tournament {
     }
 
 
-    public Tournament(Integer idTournament, String name, String description, Integer bestOf, Date date, Set<Match> matches) {
+    public Tournament(Integer idTournament, String name, String description, String bestOf, Date date, List<Match> matches) {
 
         this.idTournament = idTournament;
         this.name = name;
@@ -118,7 +118,7 @@ public class Tournament {
      * Method that return the bestOf of the Tournament
      * @return bestOf The bestOf of the Tournament
      */
-    public Integer getBestOf() {
+    public String getBestOf() {
         return bestOf;
     }
 
@@ -126,7 +126,7 @@ public class Tournament {
      * Method that defines a value to the Tournament bestOf attribute
      * @param bestOf the value that the bestOf obtains
      */
-    public void setBestOf(Integer bestOf) {
+    public void setBestOf(String bestOf) {
         this.bestOf = bestOf;
     }
 
@@ -151,7 +151,7 @@ public class Tournament {
      * @return a collection of {@link Match} objects
      */
 
-     public Set<Match> getMatches() {
+     public List<Match> getMatches() {
         return matches;
     }
 
@@ -160,7 +160,7 @@ public class Tournament {
      * @param matches a collection of {@link Match}
      */
 
-    public void setMatches(Set<Match> matches) {
+    public void setMatches(List<Match> matches) {
         this.matches = matches;
     }
 

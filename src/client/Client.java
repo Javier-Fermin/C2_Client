@@ -38,7 +38,7 @@ public class Client extends javafx.application.Application{
 
         //Get the controller from SignIn
         SignInController cont = ((SignInController) loader.getController());
-
+        
         //Set the stage
         cont.setStage(stage);
         //Initialize the window

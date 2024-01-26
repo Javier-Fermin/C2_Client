@@ -21,7 +21,7 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
 
     private DatePicker datePicker;
 
-    DateTournamentPicker() {
+    public DateTournamentPicker() {
 
     }
 
@@ -38,11 +38,10 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-
-        setText(getDate().toString());
+        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        setText(getDate().format(dateFormat));
         setGraphic(null);
     }
-
 
     @Override
     public void updateItem(Date item, boolean empty) {
@@ -72,9 +71,12 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
         datePicker = new DatePicker(getDate());
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         datePicker.setOnAction((e) -> {
-            System.out.println("Committed: " + datePicker.getValue().toString());
-            commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
+            if(datePicker.getValue()==null){
+                commitEdit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            } else{
+                commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            }
+            
         });
 
     }
@@ -82,5 +84,5 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
     private LocalDate getDate() {
         return getItem() == null ? LocalDate.now() : getItem().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
-    
+
 }
