@@ -176,19 +176,11 @@ public class SignInController implements ChangeListener<String> {
                 LOGGER.info("Open Main Window");
                 //If no exception has occurred, the user is prompted, the window will be closed and the MainWindow window will be displayed.
                 Stage sStage = new Stage();
-                if (user.getUserType()==UserType.PLAYER){
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
-                    Parent root = (Parent) loader.load();
-                    StatsWindowController cont = ((StatsWindowController) loader.getController());
-                    cont.setStage(sStage);
-                    cont.initStage(root, user);
-                }else{
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
-                    Parent root = (Parent) loader.load();
-                    StatsWindowController cont = ((StatsWindowController) loader.getController());
-                    cont.setStage(sStage);
-                    cont.initStage(root, user);
-                }
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
+                Parent root = (Parent) loader.load();
+                StatsWindowController cont = ((StatsWindowController) loader.getController());
+                cont.setStage(sStage);
+                cont.initStage(root, user);
                 stage.close();
                 // If the content does not follow an email address pattern, the user will be informed with an authentication error message (AuthenticationException).
             } else {
@@ -203,6 +195,7 @@ public class SignInController implements ChangeListener<String> {
             LOGGER.severe("Authentication error");
             //In the event that it takes a while to connect to the server, the user will be informed that the timeout has occurred with the TimeOutException.
         } catch (IOException ex) {
+            ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
             LOGGER.severe("App error");
         }

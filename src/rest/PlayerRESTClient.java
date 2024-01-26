@@ -5,9 +5,11 @@
  */
 package rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:PlayerREST
@@ -26,7 +28,7 @@ public class PlayerRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/CLON/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.Client").getString("BASE_URI");
 
     public PlayerRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -81,7 +83,7 @@ public class PlayerRESTClient {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
-    public <T> T findAllPlayers_XML(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAllPlayers_XML(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }

@@ -47,69 +47,152 @@ import model.StatsId;
 import model.Team;
 import model.User;
 import model.UserType;
+import tableCells.DateStatsCellPicker;
 import tableCells.EditingCellMatchDescription;
 import tableCells.EditingCellPlayer;
 
+/**
+ * This is the controller responsible of the Stats window.
+ * 
+ * @author javie
+ */
 public class StatsWindowController {
 
+    /**
+     * The stage of the window
+     */
     private Stage stage;
+    
+    /**
+     * Logger for the execution of the controller
+     */
     private Logger LOGGER = Logger.getLogger(StatsWindowController.class.getName());
+    
+    /**
+     * The manager to perform all Stats data operations
+     */
     private StatsManager statsManager = StatsManagerFactory.getStatsManager();
+    
+    /**
+     * The manager to perform all Player data operations
+     */
     private PlayerManager playerManager = PlayerManagerFactory.getPlayerManager();
+    
+    /**
+     * The manager to perform all Match data operations
+     */
     private MatchManager matchManager = MatchManagerFactory.getMatchManager();
+    
+    /**
+     * The ObserbaleList for the table view
+     */
     private ObservableList<Stats> stats;
-
+    
+    /**
+     * The Pane that contains everything in the Stats window
+     */
     @FXML
     private Pane statsViewMainPane;
 
+    /**
+     * The ImageView with the background image of the view
+     */
     @FXML
     private ImageView backgroundImage;
 
+    /**
+     * The AnchorPane containing every 
+     */
     @FXML
     private AnchorPane secondaryAnchorPane;
 
+    /**
+     * 
+     */
     @FXML
     private ImageView decorativeImage;
 
+    /**
+     * 
+     */
     @FXML
     private AnchorPane mainAnchorPane;
 
+    /**
+     * 
+     */
     @FXML
     private TableView statsTableView;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn<Stats, Player> tcPlayer;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn<Stats, Match> tcDescription;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats, Date> tcDate;
+    private TableColumn<Stats, Match> tcDate;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn tcKDA;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn<Stats, String> tcKills;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn<Stats, String> tcDeaths;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn<Stats, String> tcAssists;
 
+    /**
+     * 
+     */
     @FXML
     private TableColumn<Stats, Team> tcTeam;
 
+    /**
+     * 
+     */
     @FXML
     private ContextMenu tvContextMenu;
 
+    /**
+     * 
+     */
     @FXML
     private MenuItem cmAdd;
 
+    /**
+     * 
+     */
     @FXML
     private MenuItem cmDelete;
 
+    /**
+     * 
+     */
     @FXML
     private MenuItem cmPrint;
 
@@ -169,6 +252,8 @@ public class StatsWindowController {
     }
 
     public void initStage(Parent root, User user) {
+        MenuBarController.setUser(user);
+        MenuBarController.setStage(stage);
         LOGGER.info("Opening Stats window");
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -216,8 +301,14 @@ public class StatsWindowController {
                             statsManager.createStats(stat);
                         } else {
                             LOGGER.info("Updating stat: "+stat.toString());
-                            stat.setPlayer(t.getNewValue());
-                            statsManager.updateStats(stat);
+                            Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
                         }
                     }
                 }
@@ -245,25 +336,39 @@ public class StatsWindowController {
                 if (found != null) {
                     if (!stat.getPlayer().getNickname().isEmpty()) {
                         if (old.getDescription().isEmpty()) {
-                            //tsat.setId(new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()));
+                            LOGGER.info("Creating stat: "+stat.toString());
+                            stat.setId(new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()));
                             statsManager.createStats(stat);
                         } else {
-                            statsManager.updateStats(stat);
+                            Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
                         }
                     }
                 }
-            } catch (ReadException ex) {
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (CreateException ex) {
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UpdateException ex) {
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ReadException | CreateException | UpdateException ex) {
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
             }
         });
 
+        Callback<TableColumn<Stats, Match>, TableCell<Stats, Match>> cellMatchDateFactory
+                = (TableColumn<Stats, Match> p) -> new DateStatsCellPicker();
+        tcDate.setCellFactory(cellMatchDateFactory);
         tcDate.setCellValueFactory(
                 new PropertyValueFactory<>("Date"));
-
+        tcDate.setOnEditCommit((TableColumn.CellEditEvent<Stats, Match> t) -> {
+            
+        });
+        tcDate.setOnEditCancel((TableColumn.CellEditEvent<Stats, Match> t) -> {
+            
+        });
+        
         tcKills.setCellFactory(TextFieldTableCell.<Stats>forTableColumn());
         tcKills.setCellValueFactory(
                 new PropertyValueFactory<>("Kills"));
@@ -272,11 +377,19 @@ public class StatsWindowController {
                     t.getTablePosition().getRow()));
             try {
                 stat.setKills(t.getNewValue());
-                statsManager.updateStats(stat);
+                Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
 
             } catch (UpdateException ex) {
                 stat.setKills(t.getOldValue());
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
             }
         });
 
@@ -288,11 +401,19 @@ public class StatsWindowController {
                     t.getTablePosition().getRow()));
             try {
                 stat.setDeaths(t.getNewValue());
-                statsManager.updateStats(stat);
+                Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
 
             } catch (UpdateException ex) {
                 stat.setDeaths(t.getOldValue());
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
             }
         });
 
@@ -304,10 +425,18 @@ public class StatsWindowController {
                     t.getTablePosition().getRow()));
             try {
                 stat.setAssists(t.getNewValue());
-                statsManager.updateStats(stat);
+                Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
             } catch (UpdateException ex) {
                 stat.setAssists(t.getOldValue());
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
             }
         });
 
@@ -322,7 +451,8 @@ public class StatsWindowController {
                 statsManager.updateStats(stat);
             } catch (UpdateException ex) {
                 stat.setTeam(t.getOldValue());
-                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
             }
         });
 
@@ -417,10 +547,9 @@ public class StatsWindowController {
                     statsTableView.refresh();
                     break;
             }
-        } catch (ReadException ex) {
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (WrongFilterException ex) {
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ReadException | WrongFilterException ex) {
+            errorLbl.setText(ex.getMessage());
+            LOGGER.severe(ex.getMessage());
         }
     }
 
@@ -471,7 +600,8 @@ public class StatsWindowController {
             statsTableView.getSelectionModel().clearSelection();
             statsTableView.refresh();
         } catch (DeleteException ex) {
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            errorLbl.setText(ex.getMessage());
+            LOGGER.severe(ex.getMessage());
         }
     }
 
