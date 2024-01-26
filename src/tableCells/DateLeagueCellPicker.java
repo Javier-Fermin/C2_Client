@@ -5,7 +5,6 @@ package view;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -22,15 +21,22 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
 
     private DatePicker datePicker;
 
-    DateLeagueCellPicker() {
-
+    public DateLeagueCellPicker() {
     }
 
     @Override
     public void startEdit() {
         if (!isEmpty()) {
             super.startEdit();
-            createDatePicker();
+            datePicker = new DatePicker(getDate());
+            datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            datePicker.setOnAction((e) -> {
+                if (datePicker.getValue() == null) {
+                    commitEdit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                } else {
+                    commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                }
+            });
             setText(null);
             setGraphic(datePicker);
         }
@@ -39,16 +45,14 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-
-        setText(getDate().toString());
+        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        setText(getDate().format(dateFormat));
         setGraphic(null);
     }
 
-   
     @Override
     public void updateItem(Date item, boolean empty) {
         super.updateItem(item, empty);
-
         if (empty) {
             setText(null);
             setGraphic(null);
@@ -62,21 +66,9 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
             } else {
                 final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 setText(getDate().format(dateFormat));
-
                 setGraphic(null);
-
             }
         }
-    }
-
-    private void createDatePicker() {
-        datePicker = new DatePicker(getDate());
-        datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-        datePicker.setOnAction((e) -> {
-            System.out.println("Committed: " + datePicker.getValue().toString());
-            commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        });
-
     }
 
     private LocalDate getDate() {
