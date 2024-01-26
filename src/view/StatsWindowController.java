@@ -1,13 +1,20 @@
 package view;
 
+import businessLogic.MatchManager;
+import businessLogic.MatchManagerFactory;
+import businessLogic.PlayerManager;
+import businessLogic.PlayerManagerFactory;
 import businessLogic.StatsManager;
 import businessLogic.StatsManagerFactory;
+import exceptions.CreateException;
 import exceptions.DeleteException;
 import exceptions.ReadException;
+import exceptions.UpdateException;
 import exceptions.WrongFilterException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +27,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -30,72 +39,160 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import model.Match;
+import model.Player;
 import model.Stats;
+import model.StatsId;
 import model.Team;
 import model.User;
 import model.UserType;
+import tableCells.DateStatsCellPicker;
+import tableCells.EditingCellMatchDescription;
+import tableCells.EditingCellPlayer;
 
+/**
+ * This is the controller responsible of the Stats window.
+ * 
+ * @author javie
+ */
 public class StatsWindowController {
 
+    /**
+     * The stage of the window
+     */
     private Stage stage;
+    
+    /**
+     * Logger for the execution of the controller
+     */
     private Logger LOGGER = Logger.getLogger(StatsWindowController.class.getName());
-    private StatsManager statsManager = StatsManagerFactory.getstatsManager();
+    
+    /**
+     * The manager to perform all Stats data operations
+     */
+    private StatsManager statsManager = StatsManagerFactory.getStatsManager();
+    
+    /**
+     * The manager to perform all Player data operations
+     */
+    private PlayerManager playerManager = PlayerManagerFactory.getPlayerManager();
+    
+    /**
+     * The manager to perform all Match data operations
+     */
+    private MatchManager matchManager = MatchManagerFactory.getMatchManager();
+    
+    /**
+     * The ObserbaleList for the table view
+     */
     private ObservableList<Stats> stats;
     
+    /**
+     * The Pane that contains everything in the Stats window
+     */
     @FXML
     private Pane statsViewMainPane;
 
+    /**
+     * The ImageView with the background image of the view
+     */
     @FXML
     private ImageView backgroundImage;
 
+    /**
+     * The AnchorPane containing every 
+     */
     @FXML
     private AnchorPane secondaryAnchorPane;
 
+    /**
+     * 
+     */
     @FXML
     private ImageView decorativeImage;
 
+    /**
+     * 
+     */
     @FXML
     private AnchorPane mainAnchorPane;
 
+    /**
+     * 
+     */
     @FXML
     private TableView statsTableView;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,String> tcPlayer;
+    private TableColumn<Stats, Player> tcPlayer;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,String> tcMatch;
+    private TableColumn<Stats, Match> tcDescription;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,String> tcDescription;
+    private TableColumn<Stats, Match> tcDate;
 
-    @FXML
-    private TableColumn<Stats,Date> tcDate;
-
+    /**
+     * 
+     */
     @FXML
     private TableColumn tcKDA;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,String> tcKills;
+    private TableColumn<Stats, String> tcKills;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,String> tcDeaths;
+    private TableColumn<Stats, String> tcDeaths;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,String> tcAssists;
+    private TableColumn<Stats, String> tcAssists;
 
+    /**
+     * 
+     */
     @FXML
-    private TableColumn<Stats,Team> tcTeam;
+    private TableColumn<Stats, Team> tcTeam;
 
+    /**
+     * 
+     */
     @FXML
     private ContextMenu tvContextMenu;
 
+    /**
+     * 
+     */
     @FXML
     private MenuItem cmAdd;
 
+    /**
+     * 
+     */
     @FXML
     private MenuItem cmDelete;
 
+    /**
+     * 
+     */
     @FXML
     private MenuItem cmPrint;
 
@@ -153,99 +250,218 @@ public class StatsWindowController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-    
+
     public void initStage(Parent root, User user) {
+        MenuBarController.setUser(user);
+        MenuBarController.setStage(stage);
+        LOGGER.info("Opening Stats window");
         Scene scene = new Scene(root);
         stage.setScene(scene);
         //La ventana no sera redimensionable ni modal
         stage.setResizable(false);
         //Se establece el titulo de la ventana a "Stats"
         stage.setTitle("Stats");
-        
+
         //--------------------------------BUTTONS-------------------------------
+        LOGGER.info("Setting up the buttons");
         tbRefresh.setOnAction(this::handleRefreshOnAction);
         cmRefresh.setOnAction(this::handleRefreshOnAction);
-        
+
         addBtn.setOnAction(this::handleAddOnAction);
         cmAdd.setOnAction(this::handleAddOnAction);
         tbAdd.setOnAction(this::handleAddOnAction);
-        
+
         deleteBtn.setOnAction(this::handleDeleteOnAction);
         cmDelete.setOnAction(this::handleDeleteOnAction);
         tbDelete.setOnAction(this::handleDeleteOnAction);
-        
+
         PrintBtn.setOnAction(this::handlePrintOnAction);
         tbPrint.setOnAction(this::handlePrintOnAction);
         cmPrint.setOnAction(this::handlePrintOnAction);
-        
+
         //---------------------------------TABLE--------------------------------
-        tcPlayer.setCellFactory(TextFieldTableCell.<Stats>forTableColumn());
+        LOGGER.info("Prepairing the table");
+        Callback<TableColumn<Stats, Player>, TableCell<Stats, Player>> cellPlayerFactory
+                = (TableColumn<Stats, Player> p) -> new EditingCellPlayer();
+        tcPlayer.setCellFactory(cellPlayerFactory);
         tcPlayer.setCellValueFactory(
-            new PropertyValueFactory<>("Player"));
-        tcPlayer.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
-            //COMPROBAR QUE EL PLAYER EXISTE
-            
-            //COMPROBAR QUE EL OTRO CAMPO ESTA INFORMADO
-            ((Stats) t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                    ).getPlayer().setNickname(t.getNewValue());
+                new PropertyValueFactory<>("Player"));
+        tcPlayer.setOnEditCommit((TableColumn.CellEditEvent<Stats, Player> t) -> {
+            try {
+                Stats stat = ((Stats) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow()));
+                Player found = playerManager.findPlayerByNickname(t.getNewValue().getNickname());
+                Player old = new Player(t.getOldValue());
+                stat.setPlayer(found);
+                if (found != null) {
+                    if (!stat.getMatch().getDescription().isEmpty()) {
+                        if (old.getNickname().isEmpty()) {
+                            LOGGER.info("Creating stat: "+stat.toString());
+                            stat.setId(new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()));
+                            statsManager.createStats(stat);
+                        } else {
+                            LOGGER.info("Updating stat: "+stat.toString());
+                            Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
+                        }
+                    }
+                }
+            } catch (ReadException ex) {
+                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (CreateException ex) {
+                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UpdateException ex) {
+                Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
-        
-        tcDescription.setCellFactory(TextFieldTableCell.<Stats>forTableColumn());
+
+        Callback<TableColumn<Stats, Match>, TableCell<Stats, Match>> cellMatchDescriptionFactory
+                = (TableColumn<Stats, Match> p) -> new EditingCellMatchDescription();
+        tcDescription.setCellFactory(cellMatchDescriptionFactory);
         tcDescription.setCellValueFactory(
-                new PropertyValueFactory<>("Description"));
-        tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
-                ((Stats) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).getMatch().setDescription(t.getNewValue());
+                new PropertyValueFactory<>("Match"));
+        tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Stats, Match> t) -> {
+            try {
+                Stats stat = ((Stats) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow()));
+                Match found = matchManager.findMatchByDescription(t.getNewValue().getDescription());
+                Match old = new Match(t.getOldValue());
+                stat.setMatch(found);
+                if (found != null) {
+                    if (!stat.getPlayer().getNickname().isEmpty()) {
+                        if (old.getDescription().isEmpty()) {
+                            LOGGER.info("Creating stat: "+stat.toString());
+                            stat.setId(new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()));
+                            statsManager.createStats(stat);
+                        } else {
+                            Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
+                        }
+                    }
+                }
+            } catch (ReadException | CreateException | UpdateException ex) {
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
+            }
         });
-        
+
+        Callback<TableColumn<Stats, Match>, TableCell<Stats, Match>> cellMatchDateFactory
+                = (TableColumn<Stats, Match> p) -> new DateStatsCellPicker();
+        tcDate.setCellFactory(cellMatchDateFactory);
         tcDate.setCellValueFactory(
                 new PropertyValueFactory<>("Date"));
+        tcDate.setOnEditCommit((TableColumn.CellEditEvent<Stats, Match> t) -> {
+            
+        });
+        tcDate.setOnEditCancel((TableColumn.CellEditEvent<Stats, Match> t) -> {
+            
+        });
         
         tcKills.setCellFactory(TextFieldTableCell.<Stats>forTableColumn());
         tcKills.setCellValueFactory(
                 new PropertyValueFactory<>("Kills"));
         tcKills.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
-                ((Stats) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setKills(t.getNewValue());
+            Stats stat = ((Stats) t.getTableView().getItems().get(
+                    t.getTablePosition().getRow()));
+            try {
+                stat.setKills(t.getNewValue());
+                Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
+
+            } catch (UpdateException ex) {
+                stat.setKills(t.getOldValue());
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
+            }
         });
-        
+
         tcDeaths.setCellFactory(TextFieldTableCell.<Stats>forTableColumn());
         tcDeaths.setCellValueFactory(
                 new PropertyValueFactory<>("Deaths"));
         tcDeaths.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
-                ((Stats) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setDeaths(t.getNewValue());
+            Stats stat = ((Stats) t.getTableView().getItems().get(
+                    t.getTablePosition().getRow()));
+            try {
+                stat.setDeaths(t.getNewValue());
+                Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
+
+            } catch (UpdateException ex) {
+                stat.setDeaths(t.getOldValue());
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
+            }
         });
-        
+
         tcAssists.setCellFactory(TextFieldTableCell.<Stats>forTableColumn());
         tcAssists.setCellValueFactory(
                 new PropertyValueFactory<>("Assists"));
         tcAssists.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
-                ((Stats) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setAssists(t.getNewValue());
+            Stats stat = ((Stats) t.getTableView().getItems().get(
+                    t.getTablePosition().getRow()));
+            try {
+                stat.setAssists(t.getNewValue());
+                Stats update = new Stats(
+                                    new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                    stat.getKills(),
+                                    stat.getDeaths(),
+                                    stat.getAssists(),
+                                    stat.getTeam(),
+                                    null, null);
+                            statsManager.updateStats(update);
+            } catch (UpdateException ex) {
+                stat.setAssists(t.getOldValue());
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
+            }
         });
-        
-        tcTeam.setCellFactory(ChoiceBoxTableCell.forTableColumn(Team.BLUE_TEAM,Team.ORANGE_TEAM));
+
+        tcTeam.setCellFactory(ChoiceBoxTableCell.forTableColumn(Team.BLUE_TEAM, Team.ORANGE_TEAM));
         tcTeam.setCellValueFactory(
-                        new PropertyValueFactory<>("Team"));
+                new PropertyValueFactory<>("Team"));
         tcTeam.setOnEditCommit((TableColumn.CellEditEvent<Stats, Team> t) -> {
-                ((Stats) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setTeam(t.getNewValue());
+            Stats stat = ((Stats) t.getTableView().getItems().get(
+                    t.getTablePosition().getRow()));
+            try {
+                stat.setTeam(t.getNewValue());
+                statsManager.updateStats(stat);
+            } catch (UpdateException ex) {
+                stat.setTeam(t.getOldValue());
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
+            }
         });
-        
+
         statsTableView.getSelectionModel().selectedItemProperty().addListener(this::handleSelectTableChange);
-        
+
         statsTableView.setItems(stats);
-        
-        
+
         //-------------------------USER PROFILE---------------------------------
-        if (user.getUserType()==UserType.PLAYER){
+        if (user.getUserType() == UserType.PLAYER) {
             statsTableView.setEditable(false);
             addBtn.setVisible(false);
             cmAdd.setVisible(false);
@@ -253,7 +469,7 @@ public class StatsWindowController {
             deleteBtn.setVisible(false);
             cmDelete.setVisible(false);
             tbDelete.setVisible(false);
-        }else{
+        } else {
             statsTableView.setEditable(true);
             addBtn.setVisible(true);
             cmAdd.setVisible(true);
@@ -262,7 +478,7 @@ public class StatsWindowController {
             cmDelete.setVisible(true);
             tbDelete.setVisible(true);
         }
-        
+
         //----------------------------FILTERS-----------------------------------
         cbFilter.getItems().addAll(
                 "ALL",
@@ -271,7 +487,7 @@ public class StatsWindowController {
                 "Match Desc.",
                 "Player Nickname",
                 "Tournament Name"
-        ); 
+        );
         cbFilter.getSelectionModel().selectedItemProperty().addListener(this::handleSelectItemPropertyChange);
         cbFilter.getSelectionModel().select("ALL");
         tfFilter.textProperty().addListener(this::handleTextPropertyChange);
@@ -279,90 +495,104 @@ public class StatsWindowController {
         searchBtn.fire();
         stage.show();
     }
-    
-    public void handleSearchBtnOnAction(ActionEvent event){
-        try{
-            switch (cbFilter.getSelectionModel().getSelectedItem().toString()){
-                    case "ALL":
-                        stats = FXCollections.observableArrayList(statsManager.findAllStats());
-                        statsTableView.setItems(stats);
-                        statsTableView.refresh();
-                        break;
-                    case "ID":
-                        String filter = tfFilter.getText();
-                        if(!filter.matches("[0-9]+\\s{1}[0-9]+")){
-                            throw new WrongFilterException("To search by ID you must provide 2 numbers");
-                        }
-                        String[] ids = filter.split(" ");
-                        stats = FXCollections.observableArrayList(statsManager.findStatById(ids[0], ids[1]));
-                        statsTableView.setItems(stats);
-                        statsTableView.refresh();
-                        break;
-                    case "League Name":
-                        
-                        stats = FXCollections.observableArrayList(statsManager.findStatsByLeagueName(tfFilter.getText()));
-                        statsTableView.setItems(stats);
-                        statsTableView.refresh();
-                        break;
-                    case "Match Desc.":
-                        stats = FXCollections.observableArrayList(statsManager.findStatsByMatchDescription(tfFilter.getText()));
-                        statsTableView.setItems(stats);
-                        statsTableView.refresh();
-                        break;
-                    case "Player Nickname":
-                        stats = FXCollections.observableArrayList(statsManager.findStatsByPlayerNickname(tfFilter.getText()));
-                        statsTableView.setItems(stats);
-                        statsTableView.refresh();
-                        break;
-                    case "Tournament Name":
-                        stats = FXCollections.observableArrayList(statsManager.findStatsByTournamentName(tfFilter.getText()));
-                        statsTableView.setItems(stats);
-                        statsTableView.refresh();
-                        break;
+
+    public void handleSearchBtnOnAction(ActionEvent event) {
+        try {
+            switch (cbFilter.getSelectionModel().getSelectedItem().toString()) {
+                case "ALL":
+                    stats = FXCollections.observableArrayList(statsManager.findAllStats());
+                    statsTableView.setItems(stats);
+                    statsTableView.refresh();
+                    break;
+                case "ID":
+                    String filter = tfFilter.getText();
+                    if (!filter.matches("[0-9]+\\s{1}[0-9]+")) {
+                        throw new WrongFilterException("To search by ID you must provide 2 numbers");
+                    }
+                    String[] ids = filter.split(" ");
+                    stats = FXCollections.observableArrayList(statsManager.findStatById(ids[0], ids[1]));
+                    statsTableView.setItems(stats);
+                    statsTableView.refresh();
+                    break;
+                case "League Name":
+                    if (!tfFilter.getText().matches("[a-zA-Z]+")) {
+                        throw new WrongFilterException("A league name must contain only letters");
+                    }
+                    stats = FXCollections.observableArrayList(statsManager.findStatsByLeagueName(tfFilter.getText()));
+                    statsTableView.setItems(stats);
+                    statsTableView.refresh();
+                    break;
+                case "Match Desc.":
+                    if (!tfFilter.getText().matches("[a-zA-Z0-9]+")) {
+                        throw new WrongFilterException("A match description must contain only letters or numbers");
+                    }
+                    stats = FXCollections.observableArrayList(statsManager.findStatsByMatchDescription(tfFilter.getText()));
+                    statsTableView.setItems(stats);
+                    statsTableView.refresh();
+                    break;
+                case "Player Nickname":
+                    if (!tfFilter.getText().matches("[a-zA-Z0-9]+")) {
+                        throw new WrongFilterException("A player nickname must contain only letters or numbers");
+                    }
+                    stats = FXCollections.observableArrayList(statsManager.findStatsByPlayerNickname(tfFilter.getText()));
+                    statsTableView.setItems(stats);
+                    statsTableView.refresh();
+                    break;
+                case "Tournament Name":
+                    if (!tfFilter.getText().matches("[a-zA-Z]+")) {
+                        throw new WrongFilterException("A tournament name must contain only letters");
+                    }
+                    stats = FXCollections.observableArrayList(statsManager.findStatsByTournamentName(tfFilter.getText()));
+                    statsTableView.setItems(stats);
+                    statsTableView.refresh();
+                    break;
             }
-        }catch(ReadException ex){
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (WrongFilterException ex) {
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ReadException | WrongFilterException ex) {
+            errorLbl.setText(ex.getMessage());
+            LOGGER.severe(ex.getMessage());
         }
     }
-    
-    public void handleSelectTableChange(ObservableValue observable, Object oldValue, Object newValue){
-        if(newValue!=null){
+
+    public void handleSelectTableChange(ObservableValue observable, Object oldValue, Object newValue) {
+        if (newValue != null) {
             deleteBtn.setDisable(false);
             cmDelete.setDisable(false);
             tbDelete.setDisable(false);
-        }else{
+        } else {
             deleteBtn.setDisable(true);
             cmDelete.setDisable(true);
             tbDelete.setDisable(true);
         }
     }
-    
-    public void handleSelectItemPropertyChange(ObservableValue observable, Object oldValue, Object newValue){
-        if(newValue.toString().equals("ALL")){
+
+    public void handleSelectItemPropertyChange(ObservableValue observable, Object oldValue, Object newValue) {
+        if (newValue.toString().equals("ALL")) {
             tfFilter.setDisable(true);
             searchBtn.setDisable(false);
-        }else{
+        } else {
             tfFilter.setDisable(false);
             searchBtn.setDisable(true);
         }
     }
-    
-    public void handleTextPropertyChange(ObservableValue observable, String oldValue, String newValue){
-        if(!newValue.isEmpty()){
+
+    public void handleTextPropertyChange(ObservableValue observable, String oldValue, String newValue) {
+        if (!newValue.isEmpty()) {
             searchBtn.setDisable(false);
-        }else{
+        } else {
             searchBtn.setDisable(true);
         }
     }
-    
-    public void handleAddOnAction(ActionEvent event){
-        stats.add(new Stats(null,"0", "0", "0", Team.BLUE_TEAM, null, null));
+
+    public void handleAddOnAction(ActionEvent event) {
+        Player player =new Player();
+        player.setNickname("");
+        Match match = new Match();
+        match.setDescription("");
+        stats.add(new Stats(null, "0", "0", "0", Team.BLUE_TEAM, player, match));
         statsTableView.refresh();
     }
-    
-    public void handleDeleteOnAction(ActionEvent event){
+
+    public void handleDeleteOnAction(ActionEvent event) {
         try {
             Stats toDelete = (Stats) statsTableView.getSelectionModel().getSelectedItem();
             statsManager.deleteStats(toDelete);
@@ -370,25 +600,26 @@ public class StatsWindowController {
             statsTableView.getSelectionModel().clearSelection();
             statsTableView.refresh();
         } catch (DeleteException ex) {
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            errorLbl.setText(ex.getMessage());
+            LOGGER.severe(ex.getMessage());
         }
     }
-    
-    public void handleRefreshOnAction(ActionEvent event){
+
+    public void handleRefreshOnAction(ActionEvent event) {
         statsTableView.refresh();
     }
-    
-    public void handlePrintOnAction(ActionEvent event){
+
+    public void handlePrintOnAction(ActionEvent event) {
         //PRINT
     }
-    
-    public void handleClearOnAction(ActionEvent event){
+
+    public void handleClearOnAction(ActionEvent event) {
         tfFilter.setText("");
         cbFilter.getSelectionModel().select("ALL");
         searchBtn.fire();
     }
-    
-    public void handleHelpOnAction(ActionEvent event){
+
+    public void handleHelpOnAction(ActionEvent event) {
         //MANUAL
     }
 }
