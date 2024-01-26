@@ -48,10 +48,13 @@ import java.util.Locale;
 import java.util.logging.Level;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import model.User;
 import model.UserType;
@@ -98,6 +101,12 @@ public class TournamentWinController {
     @FXML
     private Button bTournamentSearch, bTournamentMatches, bTournamentClean, bTournamentHelp, bTournamentPrint, bTournamentDelete, bTournamentAdd;
 
+    @FXML
+    private ContextMenu tournamentContextMenu;
+    
+    @FXML
+    private MenuItem cmCreate, cmDelete, cmMatch, cmPrint;
+    
     private Stage stage;
 
     public void setMainStage(Stage stage) {
@@ -124,18 +133,15 @@ public class TournamentWinController {
 
             tfTournamentSearch.setDisable(true);
             // Creates a context menu 
-            ContextMenu tournamentContextMenu = new ContextMenu();
-
-            // Creates menuitems 
-            MenuItem cmSearch = new MenuItem("Search");
-            MenuItem cmCreate = new MenuItem("Create");
-            MenuItem cmDelete = new MenuItem("Delete");
-
+            tournamentContextMenu = new ContextMenu();
+            
             // Add the menuitems into the context menu 
-            tournamentContextMenu.getItems().add(cmSearch);
+            
             tournamentContextMenu.getItems().add(cmCreate);
             tournamentContextMenu.getItems().add(cmDelete);
-            LOGGER.info(user.getUserType().toString());
+            tournamentContextMenu.getItems().add(cmMatch);
+            tournamentContextMenu.getItems().add(cmPrint);
+            
 
             LOGGER.info("If the window want to exit, alert to verify");
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -242,10 +248,10 @@ public class TournamentWinController {
 
             tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
             tcDate.setCellFactory(dateCellFactory);
-            if (user.getUserType().equals(UserType.ADMIN)) {
+            if (user.getUserType().equals(UserType.ADMIN)) {                
                 tcDate.setOnEditCommit((TableColumn.CellEditEvent<Tournament, Date> t) -> {
                     try {
-                        if ((tcDate.getText() != null) || (!tcDate.getText().isEmpty())) {
+                        if (!t.getNewValue().toString().isEmpty()) {
                             Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
                             updatedTournament.setDate(t.getNewValue());
@@ -285,15 +291,31 @@ public class TournamentWinController {
                 }
 
             });
+            
+            tvTournaments.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                if(e.getButton() == MouseButton.SECONDARY){
+                    tournamentContextMenu.show(tvTournaments, e.getSceneX(), e.getSceneY());
+                }
+            });
 
             //Asignar componenetes sus metodos
             bTournamentSearch.setOnAction(this::searchTournament);
+            
             //bTournamentMatches.setOnAction(this::seeTournamentsMatches);
+            cmMatch.setOnAction(this::seeTournamentsMatches);
+            
             bTournamentClean.setOnAction(this::cleanTournamentSearch);
+            
             // bTournamentHelp.setOnAction(this::seeTournamentWindowManual);
-            //  bTournamentPrint.setOnAction(this::printTournament);
+
+            // bTournamentPrint.setOnAction(this::printTournament);
+            cmPrint.setOnAction(this::printTournament);
+            
             bTournamentDelete.setOnAction(this::deleteTournament);
+            cmDelete.setOnAction(this::deleteTournament);
+            
             bTournamentAdd.setOnAction(this::addTournament);
+            cmCreate.setOnAction(this::addTournament);
 
             stage.show();
 

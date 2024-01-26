@@ -2,7 +2,9 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -49,6 +51,16 @@
                   <TableColumn fx:id="tcBestOf" prefWidth="60.7999267578125" resizable="false" styleClass="tableText" text="Best of" />
                   <TableColumn fx:id="tcDate" prefWidth="140.0" resizable="false" styleClass="tableText" text="Date" />
               </columns>
+               <contextMenu>
+                  <ContextMenu fx:id="tournamentContextMenu">
+                    <items>
+                      <MenuItem fx:id="cmCreate" mnemonicParsing="false" text="Add" />
+                        <MenuItem fx:id="cmDelete" mnemonicParsing="false" text="Delete" />
+                        <MenuItem fx:id="cmMatch" mnemonicParsing="false" text="See matches" />
+                        <MenuItem fx:id="cmPrint" mnemonicParsing="false" text="Print" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
             </TableView>
             <Button fx:id="bTournamentMatches" layoutX="1248.0" layoutY="689.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Matches">
                <font>
