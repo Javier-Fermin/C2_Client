@@ -9,8 +9,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * This is the class for League data
@@ -31,36 +32,35 @@ public class League implements Serializable {
     /**
      * startDate and endDate fields for the league entity
      */
-    private Date startDate, endDate;
+    private SimpleObjectProperty<Date> startDate, endDate;
 
     /**
      * name of the league entity
      */
-    private String name;
+    private SimpleStringProperty name;
 
     /**
      * description of the league entity
      */
-    private String description;
-
-    /**
-     * Set of matches for league entity
-     */
-    private List<Match> matches;
+    private SimpleStringProperty description;
 
     /**
      * constructor
      */
     public League() {
+        this.id = id;
+        this.startDate = new SimpleObjectProperty<>();
+        this.endDate = new SimpleObjectProperty<>();
+        this.name = new SimpleStringProperty();
+        this.description =  new SimpleStringProperty();
     }
 
-    public League(Integer id, Date startDate, Date endDate, String name, String description, List<Match> matches) {
+    public League(Integer id, Date startDate, Date endDate, String name, String description) {
         this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.name = name;
-        this.description = description;
-        this.matches = matches;
+        this.startDate = new SimpleObjectProperty<>(startDate);
+        this.endDate = new SimpleObjectProperty<>(endDate);
+        this.name = new SimpleStringProperty(name);
+        this.description =  new SimpleStringProperty(description);
     }
 
     /**
@@ -78,46 +78,37 @@ public class League implements Serializable {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return this.startDate.get();
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+        this.startDate.set(startDate);
     }
 
     public Date getEndDate() {
-        return endDate;
+        return this.endDate.get();
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+        this.endDate.set(endDate);
     }
 
     public String getName() {
-        return name;
+        return this.name.get();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     public String getDescription() {
-        return description;
+        return this.description.get();
     }
 
     public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    @XmlTransient
-    public List<Match> getMatches() {
-        return matches;
+        this.description.set(description);
     }
 
-    public void setMatches(List<Match> matches) {
-        this.matches = matches;
-    }
-    
     /**
      * hashCode and equals for the league entity
      */
@@ -130,7 +121,6 @@ public class League implements Serializable {
         hash = 37 * hash + Objects.hashCode(this.endDate);
         hash = 37 * hash + Objects.hashCode(this.name);
         hash = 37 * hash + Objects.hashCode(this.description);
-        hash = 37 * hash + Objects.hashCode(this.matches);
         return hash;
     }
 
@@ -161,17 +151,7 @@ public class League implements Serializable {
         if (!Objects.equals(this.endDate, other.endDate)) {
             return false;
         }
-        if (!Objects.equals(this.matches, other.matches)) {
-            return false;
-        }
         return true;
     }
-
-    /**
-     * toString for the League entity 
-     */
-    @Override
-    public String toString() {
-        return "League{" + "id=" + id + ", startDate=" + startDate + ", endDate=" + endDate + ", name=" + name + ", description=" + description + ", matches=" + matches + '}';
-    }
+    
 }

@@ -9,14 +9,14 @@ package businessLogic;
  *
  * @author javie
  */
-public class StatsManagerFactory {
-    private static StatsManager statsManager;
+public class PlayerManagerFactory {
+    private static PlayerManager playerManager;
     
-    public static StatsManager getStatsManager(){
+    public static PlayerManager getPlayerManager(){
         //If there is no poolable created it is created
-        if(statsManager == null){
-            statsManager = new StatsManagerImplementation();
+        if(playerManager == null){
+            playerManager = new PlayerManagerImplementation();
         }
-        return statsManager; 
+        return playerManager; 
     }
 }

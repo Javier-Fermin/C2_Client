@@ -3,9 +3,13 @@ package view;
 import businessLogic.MatchManager;
 import businessLogic.MatchManagerFactory;
 import businessLogic.MatchManagerImplementation;
+import exceptions.CreateException;
+import exceptions.DeleteException;
+import exceptions.UpdateException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,12 +30,16 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.naming.ldap.ManageReferralControl;
+import model.League;
 import model.Match;
 import model.Team;
+import model.Tournament;
+import model.User;
 
 public class MatchWindowController {
 
     protected static final Logger LOGGER = Logger.getLogger(MatchWindowController.class.getName());
+    private MatchManager manager = MatchManagerFactory.getMatchManager();
 
     @FXML
     private Pane rootPane;
@@ -127,21 +135,21 @@ public class MatchWindowController {
     private HBox mbMenuBar;
 
     private Stage stage;
-    
+
     private ObservableList<Match> matches;
 
     @FXML
     private void initialize() {
-        // Puedes agregar código de inicialización aquí si es necesario.
+        // Puedes agregar cÃƒÂ³digo de inicializaciÃƒÂ³n aquÃƒÂ­ si es necesario.
     }
 
     public void setMainStage(Stage stage) {
         this.stage = stage;
     }
 
-    public void initStage(Parent root) {
+    public void initStage(Parent root, User user, Tournament tournament, League league) {
         MatchManager manager;
-        
+
         try {
             //Receives a User object from the SignInWindow window.
             //LOGGER.info("Init Main Window");
@@ -149,11 +157,11 @@ public class MatchWindowController {
             stage.setScene(scene);
             stage.setResizable(false);
             stage.setTitle("Matches");
-            
+
             tvMatches.setEditable(true);
-            
+
             tcLeagueTournament.setEditable(false);
-            
+
             tfSearchBar.setDisable(true);
 
             ObservableList<String> parameters = FXCollections.observableArrayList("All", "Tournament",
@@ -161,8 +169,14 @@ public class MatchWindowController {
             cbParameters.setItems(parameters);
             cbParameters.getSelectionModel().selectFirst();
             manager = MatchManagerFactory.getMatchManager();
-
-            matches = FXCollections.observableArrayList(manager.findAllMatches());
+            if(tournament == null && league != null){
+            
+            }else if(tournament != null && league == null){
+                
+            }else{
+                matches = FXCollections.observableArrayList(manager.findAllMatches());
+            }
+            
 
             tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             tcDescription.setCellFactory(TextFieldTableCell.<Match>forTableColumn());
@@ -199,7 +213,50 @@ public class MatchWindowController {
             btnFilterRemoval.setOnAction(this::handleButtonFilterRemovalOnAction);
             btnSearch.setOnAction(this::handleButtonSearchOnAction);
             btnPrint.setOnAction(this::handleButtonPrintOnAction);
+
+            tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Match, String> t) -> {
+                try {
+                    ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow())).setDescription(t.getNewValue());
+
+                    t.getTableView().edit(t.getTablePosition().getRow(), null);
+
+                    manager.updateMatch(((Match) t.getTableView().getItems().get(t.getTablePosition().getRow())));
+                   
+                } catch (UpdateException ex) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
             
+            
+            tcWinnerTeam.setOnEditCommit((TableColumn.CellEditEvent<Match, Team> t) -> {
+                try {
+                    Match match =((Match) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                    match.setWinner(t.getNewValue());
+
+                    //t.getTableView().edit(t.getTablePosition().getRow(), null);
+
+                    manager.updateMatch(match);
+                } catch (UpdateException ex) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            
+            tcPlayedDate.setOnEditCommit((TableColumn.CellEditEvent<Match, Date> t) -> {
+                try {
+                    ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow())).setPlayedDate(t.getNewValue());
+
+                    t.getTableView().edit(t.getTablePosition().getRow(), null);
+
+                    manager.updateMatch(((Match) t.getTableView().getItems().get(t.getTablePosition().getRow())));
+                } catch (UpdateException ex) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                    
+                }catch (Exception ex){
+                    new Alert(Alert.AlertType.ERROR, "Bad format", ButtonType.OK).show();
+                }
+            });
+            
+
             cbParameters.valueProperty().addListener(this::handleComboBoxParametersOnAction);
 
             stage.show();
@@ -211,13 +268,30 @@ public class MatchWindowController {
 
     public void handleButtonAddMatchOnAction(ActionEvent event) {
         btnAddMatch.requestFocus();
-        LOGGER.info("Adding new row to the table");
+        Match match = new Match(null, null, null, null, null, null, null);
+        matches.add(match);
+        try {
+            manager.createMatch(match);
+        } catch (CreateException ex) {
+            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        tvMatches.refresh();
 
     }
 
     public void handleButtonDeleteMatchOnAction(ActionEvent event) {
         btnDeleteMatch.requestFocus();
         LOGGER.info("Deleting row to the table");
+        try {
+            Match toDelete = (Match) tvMatches.getSelectionModel().getSelectedItem();
+            manager = MatchManagerFactory.getMatchManager();
+            manager.deleteMatch(toDelete);
+            matches.remove(toDelete);
+            tvMatches.getSelectionModel().clearSelection();
+            tvMatches.refresh();
+        } catch (DeleteException ex) {
+            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void handleButtonFilterRemovalOnAction(ActionEvent event) {
@@ -227,12 +301,10 @@ public class MatchWindowController {
 
     public void handleButtonSearchOnAction(ActionEvent event) {
         btnSearch.requestFocus();
-        MatchManager manager;
         try {
             switch (cbParameters.getValue()) {
                 case "All":
                     LOGGER.info("Searching all matches...");
-                    manager = new MatchManagerImplementation();
                     tvMatches.setItems(FXCollections.observableArrayList(manager.findAllMatches()));
                     break;
 
@@ -240,14 +312,16 @@ public class MatchWindowController {
                     LOGGER.info("Searching tournament matches...");
                     if (!tfSearchBar.getText().equalsIgnoreCase("") || !tfSearchBar.getText().isEmpty()) {
                         manager = new MatchManagerImplementation();
-                        
+
                     }
-                    
+
                     break;
 
                 case "League":
                     LOGGER.info("Searching league matches...");
-                    
+                    manager = new MatchManagerImplementation();
+                    tvMatches.setItems((ObservableList<Match>) FXCollections.observableArrayList(manager.findAllMatches()).stream().filter(match -> match.getTournament().getIdTournament().toString() == ""));
+                    tvMatches.refresh();
                     break;
 
                 case "Nickname":
@@ -255,16 +329,16 @@ public class MatchWindowController {
                     if (!tfSearchBar.getText().equals("") || !tfSearchBar.getText().isEmpty()) {
                         manager = new MatchManagerImplementation();
                         tvMatches.setItems(FXCollections.observableArrayList(manager.findMatchesByUserNickname(tfSearchBar.getText())));
-                        if(tvMatches.getItems().isEmpty()){
-                            new Alert(Alert.AlertType.ERROR,"No players found",ButtonType.OK).show();
+                        if (tvMatches.getItems().isEmpty()) {
+                            new Alert(Alert.AlertType.ERROR, "No players found", ButtonType.OK).show();
                         }
-                    }else{
-                        new Alert(Alert.AlertType.ERROR,"Please input a nickname",ButtonType.OK).show();
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Please input a nickname", ButtonType.OK).show();
                     }
                     break;
                 case "Description":
                     LOGGER.info("Searching tournament matches by description...");
-                    
+
                     break;
 
             }
@@ -277,29 +351,30 @@ public class MatchWindowController {
         btnPrint.requestFocus();
         LOGGER.info("Printing document");
     }
-    
+
     public void handleComboBoxParametersOnAction(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         switch (newValue) {
-                case "All":
-                    tfSearchBar.setDisable(true);
-                    break;
+            case "All":
+                tfSearchBar.setDisable(true);
+                tfSearchBar.clear();
+                break;
 
-                case "Tournament":
-                    tfSearchBar.setDisable(false);
+            case "Tournament":
+                tfSearchBar.setDisable(false);
 
-                    break;
-                case "League":
-                    tfSearchBar.setDisable(false);
-                    
-                    break;
-                case "Nickname":
-                    tfSearchBar.setDisable(false);
-                    break;
-                case "Description":
-                    tfSearchBar.setDisable(false);
-                    break;
+                break;
+            case "League":
+                tfSearchBar.setDisable(false);
 
-            }
+                break;
+            case "Nickname":
+                tfSearchBar.setDisable(false);
+                break;
+            case "Description":
+                tfSearchBar.setDisable(false);
+                break;
+
+        }
     }
 
 }
