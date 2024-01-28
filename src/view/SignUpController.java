@@ -7,6 +7,7 @@ package view;
 
 import businessLogic.Registrable;
 import businessLogic.RegistrableFactory;
+import cyrptography.AsymetricClient;
 import exceptions.BadAddressException;
 import exceptions.BadEmailException;
 import exceptions.BadPasswordException;
@@ -118,7 +119,7 @@ public class SignUpController {
      */
     @FXML
     private Label mailErrorLabel;
-    
+
     @FXML
     private ChoiceBox<UserType> userTypeCB;
 
@@ -222,9 +223,9 @@ public class SignUpController {
         addressErrorLabel.setVisible(false);
         passwordErrorLabel.setVisible(false);
         confirmPasswordErrorLabel.setVisible(false);
-        
-        userTypeCB.getItems().addAll(UserType.ADMIN,UserType.PLAYER);
-        
+
+        userTypeCB.getItems().addAll(UserType.ADMIN, UserType.PLAYER);
+
         LOGGER.info("SignUp button disable.");
         //The signUpButton is disabled
         signUpButton.disableProperty().set(true);
@@ -235,10 +236,10 @@ public class SignUpController {
 
         //The default escape action
         stage.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
-                if (KeyCode.ESCAPE == event.getCode()) {
-                    signInHyperlink.fire();
-                }
-            });
+            if (KeyCode.ESCAPE == event.getCode()) {
+                signInHyperlink.fire();
+            }
+        });
 
         LOGGER.info("SignUp textFields add listeners.");
         //We set the textProperty listeners to all the fields
@@ -302,11 +303,15 @@ public class SignUpController {
             event.consume();
         } else {
             LOGGER.info("Execute signUp method.");
+            //Encrypting password
+            byte[] bytePassword = AsymetricClient.encryptedData(passwordTextField.getText());
+
+            String passwdEncrypted = AsymetricClient.hexadecimal(bytePassword);
             try {
                 //Using the interface method SignUp we create a user tu later be added tod¡the DB
                 registrable.signUp(new User(
                         userTextField.getText(),
-                        passwordTextField.getText(),
+                        passwdEncrypted,
                         phoneTextField.getText(),
                         mailTextField.getText(),
                         addressTextField.getText(),
@@ -325,11 +330,11 @@ public class SignUpController {
                 cont.setStage(sStage);
                 cont.initStage(rootSignIn);
                 stage.close();
-                
+
             } catch (UserAlreadyExistsException ex) {
-                LOGGER.severe(mailTextField.getText()+"\n"+ex.getMessage());
-                new Alert(Alert.AlertType.ERROR, mailTextField.getText()+"\n"+ex.getMessage()).showAndWait();
-            }  catch (IOException ex) {
+                LOGGER.severe(mailTextField.getText() + "\n" + ex.getMessage());
+                new Alert(Alert.AlertType.ERROR, mailTextField.getText() + "\n" + ex.getMessage()).showAndWait();
+            } catch (IOException ex) {
                 LOGGER.severe(ex.getMessage());
             }
         }
@@ -638,12 +643,12 @@ public class SignUpController {
                 && !mailTextField.getText().isEmpty()
                 && !passwordTextField.getText().isEmpty()
                 && !confirmPasswordTextField.getText().isEmpty()) {
-            if(signUpButton.isDisabled()){
+            if (signUpButton.isDisabled()) {
                 LOGGER.info("signUpButton enabled.");
             }
             signUpButton.disableProperty().set(false);
         } else {
-            if(!signUpButton.isDisabled()){
+            if (!signUpButton.isDisabled()) {
                 LOGGER.info("signUpButton disabled.");
             }
             signUpButton.disableProperty().set(true);

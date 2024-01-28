@@ -23,7 +23,7 @@ public class AsymetricClient {
         byte[] encryptedData = null;
         try {
             // Load Private Key
-            FileInputStream fis = new FileInputStream(".\\Client\\PublicKey.der");
+            FileInputStream fis = new FileInputStream("C:\\Users\\imape\\Documents\\Clase\\C2_Client\\src\\cyrptography\\PublicKey.der");
             byte[] publicKeyBytes = new byte[fis.available()];
             fis.read(publicKeyBytes);
             fis.close();

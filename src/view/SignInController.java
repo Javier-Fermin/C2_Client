@@ -39,6 +39,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import businessLogic.RegistrableFactory;
+import cyrptography.AsymetricClient;
+import static cyrptography.AsymetricClient.encryptedData;
 import model.User;
 import model.UserType;
 
@@ -169,8 +171,14 @@ public class SignInController implements ChangeListener<String> {
             if (isValid(usernameText.getText())) {
                 registro = new RegistrableFactory().getRegistrable();
                 LOGGER.info("Execute signIn method to take user data");
+                //ENcrypt the password
+                byte[] bytePassword = AsymetricClient.encryptedData(passwordText.getText());
+                
+                String passwdEncrypted = AsymetricClient.hexadecimal(bytePassword);
+                
                 //The SignIn logic layer method will be used, defining the parameters with the content of usernameText and passwordText: 
-                user = registro.signIn(new User("", passwordText.getText(), "", usernameText.getText(), "", null));
+                user = registro.signIn(new User("", passwdEncrypted, "", usernameText.getText(), "", null));
+                
 
                 //If the user is null, the user will be informed with an authentication error message (AuthenticationException).
                 LOGGER.info("Open Main Window");

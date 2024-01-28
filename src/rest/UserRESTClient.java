@@ -26,7 +26,7 @@ public class UserRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/CLON/webresources";
+    private static final String BASE_URI = "http://localhost:8080/C2_SERVER1/webresources";
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

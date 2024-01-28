@@ -28,6 +28,7 @@ public class RegistrableImplementation implements Registrable {
 
     @Override
     public User signUp(User user) throws UserAlreadyExistsException {
+        userClient.createUser_XML(user);
         if(user.getUserType()==UserType.PLAYER){
             if("JSON".equals(ResourceBundle.getBundle("resources.Client").getString("MEDIA_TYPE"))){
                 playerClient.createPlayer_JSON(new Player(true,
@@ -53,7 +54,8 @@ public class RegistrableImplementation implements Registrable {
                 adminClient.createAdmin_JSON(new Admin(Date.valueOf(LocalDate.now()),
                         user.getName(), user.getPasswd(), user.getPhone(), user.getEmail(), user.getAddress(), UserType.ADMIN));
             }else{
-                adminClient.createAdmin_XML(user);
+                adminClient.createAdmin_XML(new Admin(Date.valueOf(LocalDate.now()),
+                        user.getName(), user.getPasswd(), user.getPhone(), user.getEmail(), user.getAddress(), UserType.ADMIN));
             }
         }
         return user;
