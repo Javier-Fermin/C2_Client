@@ -22,7 +22,7 @@ import model.Stats;
  */
 public class DateStatsCellPicker extends TableCell<Stats, Match>{
     private DatePicker datePicker;
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy",Locale.getDefault());
     
     public DateStatsCellPicker() {
 

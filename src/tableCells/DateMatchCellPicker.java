@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view;
+package tableCells;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -20,7 +20,7 @@ import model.Match;
 public class DateMatchCellPicker extends TableCell<Match, Date>{
     private DatePicker datePicker;
 
-    DateMatchCellPicker() {
+    public DateMatchCellPicker() {
 
     }
 
@@ -73,7 +73,6 @@ public class DateMatchCellPicker extends TableCell<Match, Date>{
         datePicker.setOnAction((e) -> {
             System.out.println("Committed: " + datePicker.getValue().toString());
             commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
         });
 
     }

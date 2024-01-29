@@ -1,29 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD JasperReport//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-
-<jasperReport name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-    <background>
-        <band/>
-    </background>
-    <title>
-        <band height="79"/>
-    </title>
-    <pageHeader>
-        <band height="35"/>
-    </pageHeader>
-    <columnHeader>
-        <band height="61"/>
-    </columnHeader>
-    <detail>
-        <band height="125"/>
-    </detail>
-    <columnFooter>
-        <band height="45"/>
-    </columnFooter>
-    <pageFooter>
-        <band height="54"/>
-    </pageFooter>
-    <summary>
-        <band height="42"/>
-    </summary>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1a8010fd-9f3c-4539-8f5e-309986b2e4e1">
+	<property name="ireport.zoom" value="1.610510000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="player.nickname" class="java.lang.String"/>
+	<field name="match.description" class="java.lang.String"/>
+	<field name="match.playedDate" class="java.util.Date"/>
+	<field name="kills" class="java.lang.String"/>
+	<field name="assists" class="java.lang.String"/>
+	<field name="deaths" class="java.lang.String"/>
+	<!--<field name="team" class="java.lang.String"/>-->
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="30" y="0" width="90" height="20" uuid="17a49f2e-4883-49c1-b202-ad5c53efe2ea"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph spacingAfter="10"/>
+				</textElement>
+				<text><![CDATA[Stats]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="455" y="0" width="100" height="20" uuid="70158d7f-fc97-4faf-8009-984e1a9a70d5"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="20" height="20" uuid="06a974a7-4619-4081-88c0-1cd35f384e70"/>
+				<imageExpression><![CDATA["C:\\Users\\javie\\Documents\\NetBeansProjects\\ClientC2\\C2_Client\\src\\resources\\images\\Icon.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="106" height="20" uuid="146b197a-6528-4cb6-8866-f38b95380e9e"/>
+				<text><![CDATA[Player Nickname]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="10" width="107" height="20" uuid="90fb55b7-7aeb-47ff-a28f-ffdeef8dc7d1"/>
+				<text><![CDATA[Match Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="243" y="10" width="105" height="20" uuid="0de5af18-52f6-45e8-8e58-57080baf059c"/>
+				<text><![CDATA[Match Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="368" y="10" width="22" height="20" uuid="a6856fb0-060b-4776-9d73-b7880232dbf5"/>
+				<text><![CDATA[Kills]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="402" y="10" width="33" height="20" uuid="0b0cdbb9-4b8c-4578-b19d-6a98ef3f978d"/>
+				<text><![CDATA[Deaths]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="447" y="10" width="33" height="20" uuid="91cc5550-486d-49e1-9901-db83706b0b18"/>
+				<text><![CDATA[Assists]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="500" y="10" width="55" height="20" uuid="d584121f-ae35-42b3-8a85-c65cbe200229"/>
+				<text><![CDATA[Team]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="106" height="20" uuid="ae6cbfb5-ddd3-47f9-beea-2b70dfb7d0d3"/>
+				<textFieldExpression><![CDATA[$F{player.nickname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="107" height="20" uuid="b148ccea-b030-432f-a4ba-4de92478f9b7"/>
+				<textFieldExpression><![CDATA[$F{match.description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="243" y="0" width="105" height="20" uuid="6ae7e49a-3cba-4a3c-91e2-ca896dc66c92"/>
+				<textFieldExpression><![CDATA[$F{match.playedDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="368" y="0" width="22" height="20" uuid="55a93f7c-0b08-427f-891b-e4c7e6489d3d"/>
+				<textFieldExpression><![CDATA[$F{kills}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="402" y="0" width="33" height="20" uuid="077946a1-f20a-4d07-8876-0d95928ada66"/>
+				<textFieldExpression><![CDATA[$F{deaths}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="447" y="0" width="33" height="20" uuid="2033095f-7c65-4d61-8411-1cef39945740"/>
+				<textFieldExpression><![CDATA[$F{assists}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
 </jasperReport>
