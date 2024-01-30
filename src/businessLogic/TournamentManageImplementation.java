@@ -101,19 +101,19 @@ public class TournamentManageImplementation implements TournamentManage{
     }
 
     @Override
-    public List<Tournament> findTournamentByName(String name) throws ReadException {
-        List<Tournament> tournaments = null;
+    public Tournament findTournamentByName(String name) throws ReadException {
+        Tournament tournament = null;
         
         try{
             LOGGER.info("TournamentManage: Finding tournaments by name.");
-            tournaments = tournamentClient.findTournamentByName_XML(new GenericType<List<Tournament>>() {}, name);
+            tournament = tournamentClient.findTournamentByName_XML(Tournament.class, name);
             
         }catch(Exception e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());
             throw new ReadException("Error finding Tournaments by name: " + e.getMessage());
         }
         
-        return tournaments;
+        return tournament;
     }
 
     @Override
@@ -149,12 +149,12 @@ public class TournamentManageImplementation implements TournamentManage{
     }
 
     @Override
-    public Tournament findTournamentByMatch() throws ReadException { //parameter match needed
+    public Tournament findTournamentByMatch(String matchId) throws ReadException { //parameter match needed
         Tournament tournament = null;
         
         try{
             LOGGER.info("TournamentManage: Finding tournament.");
-            tournament = tournamentClient.findTournamentById_XML(Tournament.class, tournament.toString()); //change tournament to match
+            tournament = tournamentClient.findTournamentByMatch_XML(Tournament.class, matchId); //change tournament to match
             
             if(tournament!=null){
                 LOGGER.log(Level.INFO, "TournamentManage: tournament id=", tournament.getIdTournament());

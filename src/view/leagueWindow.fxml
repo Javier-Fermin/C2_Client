@@ -149,7 +149,7 @@
                   </Button>
                </children>
           </AnchorPane>
-          <fx:include fx:id="tournamentsMenuBar" source="menuBar.fxml" />
+          <fx:include fx:id="tournamentsMenuBar" source="MenuBar.fxml" />
          </children>
       </Pane>
   </children>

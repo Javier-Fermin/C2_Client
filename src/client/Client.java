@@ -10,7 +10,10 @@ import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import model.User;
+import model.UserType;
 import view.SignInController;
+import view.TournamentWinController;
 
 /**
  *
@@ -32,17 +35,20 @@ public class Client extends javafx.application.Application{
     public void start(Stage stage) throws Exception {
 
         //Get the SignInFXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SignInWindowFXML.fxml"));
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SignInWindowFXML.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/tournamentsWindow.fxml"));
         //Load the DOM
         Parent root = (Parent) loader.load();
 
         //Get the controller from SignIn
-        SignInController cont = ((SignInController) loader.getController());
+        TournamentWinController cont = ((TournamentWinController) loader.getController());
+        
+        User user = new User(null,null,null,null,null,UserType.PLAYER);
         
         //Set the stage
-        cont.setStage(stage);
+        cont.setMainStage(stage);
         //Initialize the window
-        cont.initStage(root);
+        cont.initStage(root,user);
     }
 
     /**

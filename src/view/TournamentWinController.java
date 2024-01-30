@@ -36,6 +36,7 @@ import exceptions.CreateException;
 import exceptions.DeleteException;
 import exceptions.ReadException;
 import exceptions.UpdateException;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,13 +44,17 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.Collection;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
@@ -59,6 +64,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import model.User;
 import model.UserType;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -72,6 +83,8 @@ public class TournamentWinController {
     protected static final Logger LOGGER = Logger.getLogger(TournamentWinController.class.getName());
 
     private ObservableList<Tournament> tournaments;
+    
+    private User user;
 
     private TournamentManage tournamentable = TournamentManageFactory.getTournamentManageImplementation();
 
@@ -114,9 +127,10 @@ public class TournamentWinController {
         this.stage = stage;
     }
 
-    public void initStage(Parent root, User user) { //parametro User
+    public void initStage(Parent root, User user) {
         try {
             LOGGER.info("Init Main Window");
+            this.user=user;
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Esports Six - Tournaments");
@@ -133,8 +147,6 @@ public class TournamentWinController {
             }
 
             tfTournamentSearch.setDisable(true);
-            // Creates a context menu 
-            tournamentContextMenu = new ContextMenu();
             
             // Add the menuitems into the context menu 
             
@@ -167,6 +179,7 @@ public class TournamentWinController {
             });
 
 //--------------------------------------------------- CHOICE BOX -----------------------------------------------------------------------------------------------
+
             chbTournamentSearch.setValue("ALL");
             chbTournamentSearch.setItems(FXCollections.observableArrayList("ALL", "ID", "NAME", "DATE", "FORMAT", "MATCH"));
             chbTournamentSearch.getSelectionModel().selectedItemProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
@@ -188,11 +201,13 @@ public class TournamentWinController {
             });
 
 //--------------------------------------------------------- TABLE --------------------------------------------------------------------------------------
+
             tournaments = FXCollections.observableArrayList(tournamentable.findAllTournaments());
 
-            tcName.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
+            
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             if (user.getUserType().equals(UserType.ADMIN)) {
+                tcName.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcName.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
                         Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
@@ -208,9 +223,9 @@ public class TournamentWinController {
                 });
             }
 
-            tcDescription.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
             tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             if (user.getUserType().equals(UserType.ADMIN)) {
+                tcDescription.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
                         Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
@@ -226,9 +241,9 @@ public class TournamentWinController {
                 });
             }
 
-            tcBestOf.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
             tcBestOf.setCellValueFactory(new PropertyValueFactory<>("bestOf"));
             if (user.getUserType().equals(UserType.ADMIN)) {
+                tcBestOf.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcBestOf.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
                         Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
@@ -246,13 +261,17 @@ public class TournamentWinController {
 
             final Callback<TableColumn<Tournament, Date>, TableCell<Tournament, Date>> dateCellFactory
                     = (TableColumn<Tournament, Date> param) -> new DateTournamentPicker();
-
+            
             tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
             tcDate.setCellFactory(dateCellFactory);
-            if (user.getUserType().equals(UserType.ADMIN)) {                
+            if(user.getUserType().equals(UserType.PLAYER))
+                tcDate.setEditable(false);
+            
+            if (user.getUserType().equals(UserType.ADMIN)) {  
+                
                 tcDate.setOnEditCommit((TableColumn.CellEditEvent<Tournament, Date> t) -> {
                     try {
-                        if (!t.getNewValue().toString().isEmpty()) {
+                        if ((t.getNewValue()!=null)&&(!t.getNewValue().toString().isEmpty())) {
                             Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
                             updatedTournament.setDate(t.getNewValue());
@@ -302,14 +321,14 @@ public class TournamentWinController {
             //Asignar componenetes sus metodos
             bTournamentSearch.setOnAction(this::searchTournament);
             
-            //bTournamentMatches.setOnAction(this::seeTournamentsMatches);
+            bTournamentMatches.setOnAction(this::seeTournamentsMatches);
             cmMatch.setOnAction(this::seeTournamentsMatches);
             
             bTournamentClean.setOnAction(this::cleanTournamentSearch);
             
-            // bTournamentHelp.setOnAction(this::seeTournamentWindowManual);
+            bTournamentHelp.setOnAction(this::seeTournamentHelpWindow);
 
-            // bTournamentPrint.setOnAction(this::printTournament);
+            bTournamentPrint.setOnAction(this::printTournament);
             cmPrint.setOnAction(this::printTournament);
             
             bTournamentDelete.setOnAction(this::deleteTournament);
@@ -318,10 +337,13 @@ public class TournamentWinController {
             bTournamentAdd.setOnAction(this::addTournament);
             cmCreate.setOnAction(this::addTournament);
 
+            MenuBarController.setStage(stage);
+            
             stage.show();
 
         } catch (ReadException ex) {
             new Alert(Alert.AlertType.ERROR, "An error occurred loading the Tournament window.", ButtonType.OK).showAndWait();
+            Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     // metodos de componentes
@@ -373,21 +395,47 @@ public class TournamentWinController {
                         }
                         break;
                     case "MATCH":
-                        //TODO Buscar por match: no tengo javabean de match
-                        tournaments = FXCollections.observableArrayList(tournamentable.findAllTournaments());
-                        refreshTable(tournaments);
+                        String matchId = tfTournamentSearch.getText();
+                        if (isNumeric(matchId)) {
+                            tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByMatch(matchId));
+                            refreshTable(tournaments);
+                        }else {
+                            new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
+                        }
                         break;
                 }
             }
         } catch (ReadException ex) {
             new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
-
         }
     }
 
     @FXML
     private void seeTournamentsMatches(ActionEvent event) {
-        //xd
+        try {
+            Tournament selectedTournament = (Tournament) tvTournaments.getSelectionModel().getSelectedItem();
+            
+            Stage sStage = new Stage();
+            
+            //Get the SignInFXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Matches.fxml"));
+            //Load the DOM
+            Parent root = (Parent) loader.load();
+
+            //Get the controller from SignIn
+            MatchWindowController cont = ((MatchWindowController) loader.getController());
+
+            //Set the stage
+            cont.setMainStage(sStage);
+            //Initialize the window
+            cont.initStage(root,user,selectedTournament,null);
+            
+            //close this window
+            stage.close();
+            
+        } catch (Exception ex) {
+            Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML
@@ -402,13 +450,40 @@ public class TournamentWinController {
     }
 
     @FXML
-    private void seeTournamentWindowManual(ActionEvent event) {
-        //yes
+    private void seeTournamentHelpWindow(ActionEvent event) {
+        try{
+            LOGGER.info("Loading help view...");
+            //Load node graph from fxml file
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/view/Help.fxml"));
+            
+            Parent root = (Parent)loader.load();
+            
+            HelpWindowController helpController=((HelpWindowController)loader.getController());
+            
+            //Initializes and shows help stage
+            helpController.initAndShowStage(root);
+        }catch(Exception ex){
+                //If there is an error show message and
+                //log it.
+                new Alert(Alert.AlertType.ERROR,"Error al mostrar ventana de ayuda:\n", ButtonType.OK).showAndWait();
+                LOGGER.log(Level.SEVERE,
+                            "UI GestionUsuariosController: Error loading help window: {0}",
+                            ex.getMessage());
+        }
     }
 
     @FXML
     private void printTournament(ActionEvent event) {
-        //yes
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/reportTournament.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Tournament>) this.tvTournaments.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }
     }
 
     @FXML

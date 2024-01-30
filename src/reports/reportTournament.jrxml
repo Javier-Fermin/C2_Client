@@ -3,6 +3,10 @@
 	<property name="ireport.zoom" value="1.4641000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+        <field name="name" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="bestOf" class="java.lang.String"/>
+	<field name="date" class="java.util.Date"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -68,7 +72,7 @@
 			</textField>
 			<textField>
 				<reportElement x="434" y="13" width="85" height="20" uuid="fc21ac88-b9a2-41ab-89fb-ded6923256e7"/>
-				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{date})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

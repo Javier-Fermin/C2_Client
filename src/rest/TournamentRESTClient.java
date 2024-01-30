@@ -5,6 +5,7 @@
  */
 package rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -27,7 +28,7 @@ public class TournamentRESTClient{
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/reto2Serv/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.client").getString("BASE_URI");
 
     public TournamentRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -46,13 +47,13 @@ public class TournamentRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findTournamentByName_XML(GenericType<T> responseType, String name) throws ClientErrorException {
+    public <T> T findTournamentByName_XML(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findTournamentByName_JSON(GenericType<T> responseType, String name) throws ClientErrorException {
+    public <T> T findTournamentByName_JSON(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
