@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package businessLogic;
 
 import exceptions.CreateException;
@@ -12,17 +7,14 @@ import exceptions.UpdateException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import model.Match;
 import rest.MatchRESTClient;
 
-/**
- *
- * @author imape
- */
 public class MatchManagerImplementation implements MatchManager {
 
-    //REST users web client
     private MatchRESTClient webClient;
     private static final Logger LOGGER = Logger.getLogger("javafxapplicationud3example");
 
@@ -32,74 +24,38 @@ public class MatchManagerImplementation implements MatchManager {
 
     @Override
     public List<Match> findAllMatches() throws ReadException {
-        List<Match> matches = null;
         try {
             LOGGER.info("MatchesManager: Finding all matches from REST service (XML).");
-            matches = webClient.findAllMatches_XML(new GenericType<List<Match>>() {
+            return webClient.findAllMatches_XML(new GenericType<List<Match>>() {
             });
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "Error finding all matches", e);
+            throw new ReadException();
         }
-        return matches;
-    }
-
-    @Override
-    public List<Match> findAllTournamentMatches() throws ReadException {
-        List<Match> matches = null;
-        try {
-            
-        } catch (Exception ex) {
-
-        }
-        return matches;
-    }
-
-    @Override
-    public List<Match> findAllLeagueMatches() throws ReadException {
-        List<Match> matches = null;
-        
-        try{
-            
-        }catch(Exception ex){
-            
-        }
-        return matches;
-    }
-
-    @Override
-    public Match findAMatch(Integer id) throws ReadException {
-        Match match = null;
-        try {
-            LOGGER.info("MatchesManager: Finding all matches from REST service (XML).");
-            
-        } catch (Exception ex) {
-
-        }
-        return match;
     }
 
     @Override
     public List<Match> findMatchesByTournamentId(Integer id) throws ReadException {
-        List<Match> matches = null;
         try {
-            LOGGER.info("MatchesManager: Finding all matches from REST service (XML).");
-            matches = webClient.findMatchesByTournamentId_XML(new GenericType<List<Match>>(){}, id);
-        } catch (Exception ex) {
-
+            LOGGER.info("MatchesManager: Finding matches by tournament ID from REST service (XML).");
+            return webClient.findMatchesByTournamentId_XML(new GenericType<List<Match>>() {
+            }, id);
+        } catch (ClientErrorException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding matches by tournament ID", ex);
+            throw new ReadException();
         }
-        return matches;
     }
 
     @Override
     public List<Match> findMatchesByLeagueId(Integer id) throws ReadException {
-        List<Match> matches = null;
         try {
-            LOGGER.info("MatchesManager: Finding all matches from REST service (XML).");
-            matches = webClient.findMatchesByLeagueId_XML(new GenericType<List<Match>>(){}, id);
-        } catch (Exception ex) {
-
+            LOGGER.info("MatchesManager: Finding matches by league ID from REST service (XML).");
+            return webClient.findMatchesByLeagueId_XML(new GenericType<List<Match>>() {
+            }, id);
+        } catch (ClientErrorException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding matches by league ID", ex);
+            throw new ReadException();
         }
-        return matches;
     }
 
     @Override
@@ -107,18 +63,20 @@ public class MatchManagerImplementation implements MatchManager {
         try {
             LOGGER.info("MatchesManager: Create match in REST service (XML).");
             webClient.createMatch_XML(match);
-        } catch (Exception e) {
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "Error creating match", e);
+            throw new CreateException();
         }
     }
 
     @Override
     public void deleteMatch(Match match) throws DeleteException {
-        
-        try{
+        try {
             LOGGER.info("MatchesManager: Deleting selected match");
             webClient.delete(match.getId().toString());
-        }catch(Exception ex){
-            
+        } catch (WebApplicationException ex) {
+            LOGGER.log(Level.SEVERE, "Error deleting match", ex);
+            throw new DeleteException();
         }
     }
 
@@ -128,18 +86,34 @@ public class MatchManagerImplementation implements MatchManager {
             LOGGER.info("Updating match...");
             webClient.updateMatch_XML(match);
             LOGGER.info("Match updated!");
-        } catch (Exception e) {
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "Error updating match", e);
+            throw new UpdateException();
         }
     }
 
     @Override
     public List<Match> findMatchesByUserNickname(String nickname) throws ReadException {
+        try {
+            LOGGER.info("MatchesManager: Finding matches by user nickname from REST service (XML).");
+            return webClient.findMatchesByUserNickname_XML(new GenericType<List<Match>>() {
+            }, nickname);
+        } catch (ClientErrorException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding matches by user nickname", ex);
+            throw new ReadException();
+        }
+    }
+
+    @Override
+    public List<Match> findAMatch(Integer id) throws ReadException {
         List<Match> matches = null;
         try {
-            LOGGER.info("MatchesManager: Finding all matches from REST service (XML).");
-            matches = webClient.findMatchesByUserNickname_XML(new GenericType<List<Match>>(){}, nickname);
-        } catch (Exception ex) {
-
+            LOGGER.info("MatchesManager: Finding a match by ID from REST service (XML).");
+            matches = webClient.findAMatch_XML(new GenericType<List<Match>>() {
+            }, id.toString());
+        } catch (ClientErrorException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding a match by ID", ex);
+            throw new ReadException();
         }
         return matches;
     }
@@ -147,16 +121,13 @@ public class MatchManagerImplementation implements MatchManager {
     @Override
     public Match findMatchByDescription(String description) throws ReadException {
         Match match = null;
-        try{
-            LOGGER.log(Level.INFO, "PlayerManager: Finding match by description: {0} (XML).", description);
+        try {
+            LOGGER.info("MatchesManager: Finding a match by description from REST service (XML).");
             match = webClient.findMatchByDescription_XML(Match.class, description);
-        }catch(Exception ex){
-            LOGGER.log(Level.SEVERE,
-                    "StatsManager: Exception finding desired match, {0}",
-                    ex.getMessage());
-            throw new ReadException("Error finding desired stats:\n"+ex.getMessage());
+        } catch (ClientErrorException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding a match by description", ex);
+            throw new ReadException();
         }
         return match;
     }
-
 }

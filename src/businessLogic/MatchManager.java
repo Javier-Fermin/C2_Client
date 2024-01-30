@@ -24,31 +24,8 @@ public interface MatchManager {
      * @throws ReadException If there is any Exception during processing.
      */
     public List<Match> findAllMatches() throws ReadException;
-
-    /**
-     * Finds a set of all {@link Match} .
-     * 
-     * @return A set of {@link Match} that are played in Tournaments.
-     * @throws ReadException If there is any Exception during processing.
-     */
-    public List<Match> findAllTournamentMatches() throws ReadException;
-
-    /**
-     * Finds a set of {@link Match} played in a League.
-     * 
-     * @return A set of {@link Match} that are played in a League.
-     * @throws ReadException If there is any Exception during processing.
-     */
-    public List<Match> findAllLeagueMatches() throws ReadException;
-
-    /**
-     * Finds a {@link Match} by its id.
-     * 
-     * @param id The id for the match to be found.
-     * @return The {@link Match} object with all the information.
-     * @throws ReadException If there is any Exception during processing.
-     */
-    public Match findAMatch(Integer id) throws ReadException;
+    
+    public List<Match> findAMatch(Integer id) throws ReadException;
 
     /**
      * Finds a {@link Match} by its id that is played in a specific Tournament.

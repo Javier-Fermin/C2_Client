@@ -12,6 +12,7 @@ import exceptions.UpdateException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.ClientErrorException;
 import model.Player;
 import rest.PlayerRESTClient;
 
@@ -50,7 +51,15 @@ public class PlayerManagerImplementation implements PlayerManager{
 
     @Override
     public Player findPlayerById(Integer id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Player player = null;
+        try{
+        LOGGER.info("PlayerManager: Finding player by id: {0} (XML).");
+        player = client.findPlayerById_XML(Player.class, id.toString());
+        }catch(ClientErrorException e){
+            LOGGER.severe(e.getMessage());
+            throw new ReadException();
+        }
+        return player;
     }
 
     @Override
