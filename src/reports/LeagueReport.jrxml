@@ -19,7 +19,16 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="35" splitType="Stretch"/>
+		<band height="45" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="455" y="0" width="100" height="20" uuid="ff2b49ef-0a97-451d-a568-974b85a3fad4"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="392" y="0" width="63" height="20" uuid="018a8e35-c6cf-48a6-8b06-7ccc59480469"/>
+				<text><![CDATA[Current date:]]></text>
+			</staticText>
+		</band>
 	</pageHeader>
 	<columnHeader>
 		<band height="61" splitType="Stretch">
@@ -42,7 +51,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="70" splitType="Stretch">
+		<band height="56" splitType="Stretch">
 			<textField>
 				<reportElement x="10" y="0" width="100" height="20" uuid="61864aab-beab-4eac-9360-a72f6fa52edf"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
@@ -65,7 +74,12 @@
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="268" y="20" width="102" height="20" uuid="4e94c991-d47c-4f45-930c-f65817fddb9e"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageFooter>
 	<summary>
 		<band height="42" splitType="Stretch"/>

@@ -7,12 +7,10 @@ package view;
 
 import businessLogic.LeagueManage;
 import businessLogic.LeagueManageFactory;
-import com.lowagie.text.pdf.PdfName;
 import exceptions.CreateException;
 import exceptions.DeleteException;
 import exceptions.ReadException;
 import exceptions.UpdateException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -39,7 +37,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
@@ -58,6 +55,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
+import tableCells.DateLeagueCellPicker;
 
 /**
  *
@@ -69,10 +67,10 @@ public class LeagueWindowController {
 
     ObservableList<League> leagueList;
 
-    LeagueManage leagueManage = LeagueManageFactory.getRegistrable();
-    
+    LeagueManage leagueManage = LeagueManageFactory.getLeagueManage();
+
     private User user;
-    
+
     @FXML
     private TableView tvLeagues;
     @FXML
@@ -109,6 +107,8 @@ public class LeagueWindowController {
     public void initStage(Parent root, User user) {
         try {
             this.user = user;
+            MenuBarController.setUser(user);
+            MenuBarController.setStage(stage);
             //Window inicialice
             LOGGER.info("Init League Window");
             Scene scene = new Scene(root);
@@ -125,6 +125,7 @@ public class LeagueWindowController {
             //Delete and Matches button diable by default
             btnDelete.setDisable(true);
             miDelete.setDisable(true);
+            tbDeleteButton.setDisable(true);
             btnMatches.setDisable(true);
             tfsearch.setDisable(true);
 
@@ -132,6 +133,7 @@ public class LeagueWindowController {
             if (user.getUserType().equals(UserType.PLAYER)) {
                 btnCreate.setDisable(true);
                 miCreate.setDisable(true);
+                tbCreateButton.setDisable(true);
             } else {
                 tvLeagues.setEditable(true);
             }
@@ -164,10 +166,12 @@ public class LeagueWindowController {
                     if (!user.getUserType().equals(UserType.PLAYER)) {
                         btnDelete.setDisable(false);
                         miDelete.setDisable(false);
+                        tbDeleteButton.setDisable(false);
                     }
                 } else {
                     btnMatches.setDisable(true);
                     btnDelete.setDisable(true);
+                    tbDeleteButton.setDisable(true);
                     miDelete.setDisable(true);
                 }
             });
@@ -254,19 +258,14 @@ public class LeagueWindowController {
             tcStartDate.setCellFactory(dateCellFactory);
             tcStartDate.setOnEditCommit((TableColumn.CellEditEvent<League, Date> t) -> {
                 try {
-                    if (t.getNewValue().toString().isEmpty()) {
-                        new Alert(Alert.AlertType.ERROR, "all fields are required to fill", ButtonType.OK).showAndWait();
+                    League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                    if (league.getEndDate().before(t.getNewValue())) {
+                        new Alert(Alert.AlertType.ERROR, "The StartDate value is incorrect", ButtonType.OK).showAndWait();
                         throw new UpdateException();
                     } else {
-                        League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                        if (league.getEndDate().before(t.getNewValue())) {
-                            new Alert(Alert.AlertType.ERROR, "The StartDate value is incorrect", ButtonType.OK).showAndWait();
-                            throw new UpdateException();
-                        } else {
-                            league.setStartDate(t.getNewValue());
-                            leagueManage.updateLeague(league);
-                            refreshTable();
-                        }
+                        league.setStartDate(t.getNewValue());
+                        leagueManage.updateLeague(league);
+                        refreshTable();
                     }
                 } catch (UpdateException e) {
                     refreshTable();
@@ -278,22 +277,13 @@ public class LeagueWindowController {
             tcEndDate.setOnEditCommit((TableColumn.CellEditEvent<League, Date> t) -> {
                 try {
                     League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                    if (t.getNewValue().toString().isEmpty()) {
-                        new Alert(Alert.AlertType.ERROR, "all fields are required to fill", ButtonType.OK).showAndWait();
-                        //NO FUNCIONA
-                        //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
+                    if (t.getNewValue().before(league.getStartDate())) {
+                        new Alert(Alert.AlertType.ERROR, "The EndDate value is incorrect", ButtonType.OK).showAndWait();
                         throw new UpdateException();
                     } else {
-                        if (t.getNewValue().before(league.getStartDate())) {
-                            new Alert(Alert.AlertType.ERROR, "The EndDate value is incorrect", ButtonType.OK).showAndWait();
-                            //NO FUNCIONA
-                            //tvLeagues.edit(t.getTablePosition().getRow(), tcName);
-                            throw new UpdateException();
-                        } else {
-                            league.setEndDate(t.getNewValue());
-                            leagueManage.updateLeague(league);
-                            refreshTable();
-                        }
+                        league.setEndDate(t.getNewValue());
+                        leagueManage.updateLeague(league);
+                        refreshTable();
                     }
                 } catch (UpdateException e) {
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
@@ -301,6 +291,8 @@ public class LeagueWindowController {
                 }
             });
 
+            tbInfoButton.setOnAction(this::help);
+            btnInfo.setOnAction(this::help);
             miCreate.setOnAction(this::createLeagueButtonAction);
             btnCreate.setOnAction(this::createLeagueButtonAction);
             tbCreateButton.setOnAction(this::createLeagueButtonAction);
@@ -331,24 +323,16 @@ public class LeagueWindowController {
             if (findLeague.isEmpty()) {
                 leagueManage.createLeague(league);
                 refreshTable();
-//                tvLeagues.getSelectionModel().selectLast();
-//                tvLeagues.edit(tvLeagues.getSelectionModel().getSelectedIndex()+1, tcName);
             } else {
                 tvLeagues.getSelectionModel().clearSelection();
                 throw new ReadException();
             }
-        } catch (CreateException e) {
-            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Create error" + e.getMessage());
-        } catch (ReadException ex) {
+        } catch (CreateException | ReadException e) {
             new Alert(Alert.AlertType.ERROR, "The name already exist", ButtonType.OK).showAndWait();
             Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The name already exist");
         }
     }
 
-//    @FXML
-//    private void updateLeagueButtonAction(ActionEvent event) {
-//
-//    }
     @FXML
     private void ClearLeagueTableButtonAction(ActionEvent event) {
         cbSeachType.getSelectionModel().selectFirst();
@@ -395,7 +379,6 @@ public class LeagueWindowController {
                 }
             }
             tvLeagues.getSelectionModel().clearSelection();
-
         } catch (ReadException e) {
             Logger.getLogger(LeagueWindowController.class
                     .getName()).log(Level.SEVERE, null, "Search Error" + e.getMessage());
@@ -440,8 +423,8 @@ public class LeagueWindowController {
 
     @FXML
     private void matchesByLeague(ActionEvent event) {
-        //Get the SignInFXML
         try {
+            League league = (League) tvLeagues.getSelectionModel().getSelectedItem();
             Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to go to this league matches?").showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 Stage stageM = new Stage();
@@ -449,11 +432,28 @@ public class LeagueWindowController {
                 Parent root = (Parent) loader.load();
                 MatchWindowController cont = ((MatchWindowController) loader.getController());
                 cont.setMainStage(stageM);
-                cont.initStage(root, user, null, null);
+                cont.initStage(root, user, null, league);
                 stage.close();
             }
         } catch (Exception ex) {
             Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void help(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Help.fxml"));
+            Parent root = (Parent) loader.load();
+            LeagueHelpController helpController
+                    = ((LeagueHelpController) loader.getController());
+            //Initializes and shows help stage
+            helpController.initAndShowStage(root);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error loading help window: {0}",
+                    ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

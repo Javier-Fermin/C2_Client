@@ -1,4 +1,4 @@
-package view;
+package tableCells;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import model.League;
@@ -32,7 +33,7 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
             datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
             datePicker.setOnAction((e) -> {
                 if (datePicker.getValue() == null) {
-                    commitEdit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                    cancelEdit();
                 } else {
                     commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
@@ -45,7 +46,7 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
         setText(getDate().format(dateFormat));
         setGraphic(null);
     }
@@ -64,7 +65,7 @@ public class DateLeagueCellPicker extends TableCell<League, Date> {
                 setText(null);
                 setGraphic(datePicker);
             } else {
-                final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
                 setText(getDate().format(dateFormat));
                 setGraphic(null);
             }

@@ -19,7 +19,7 @@ public class LeagueManageFactory {
      *
      * @return a leagueManage object that can be used for registration purposes.
      */
-    public static LeagueManage getRegistrable(){
+    public static LeagueManage getLeagueManage(){
         return leagueManage;
     }
 }
