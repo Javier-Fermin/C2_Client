@@ -75,55 +75,97 @@ import net.sf.jasperreports.view.JasperViewer;
 import tableCells.DateTournamentPicker;
 
 /**
- *
+ * Controller class responsable of the Tournament Window
+ * 
  * @author Fran
  */
 public class TournamentWinController {
 
     /**
-     * The Logger for the logs
+     * The Logger for the logs.
      */
     protected static final Logger LOGGER = Logger.getLogger(TournamentWinController.class.getName());
 
+    /**
+     * The ObservableList for the TableView model.
+     */
     private ObservableList<Tournament> tournaments;
     
+    /**
+     * The User tha logs in the application.
+     */
     private User user;
 
+    /**
+     * The manager class that makes all the Tournament CRUD operations.
+     */
     private TournamentManage tournamentable = TournamentManageFactory.getTournamentManageImplementation();
 
+    /**
+     * All the ImageViews of the window, used as background decoration or as button icons.
+     */
     @FXML
     private ImageView tournamentBackground, tournamentSmoke, bSearchImage, bCleanImage, bHelpImage, bPrintImage, bDeleteImage, bAddImage, tournamentAgentImage;
 
+    /**
+     * The Label that works like a title in the window's pane.
+     */
     @FXML
     private Label lTournamenTitle;
+
 
     @FXML
     private Separator tournamentSeparator;
 
+    /**
+     * The ChoiceBox that shows all the possible filtered research options.
+     */
     @FXML
     private ChoiceBox chbTournamentSearch;
 
+    /**
+     * The TextField where the user writes the value of the parameter used in the Read operations.
+     */
     @FXML
     private TextField tfTournamentSearch;
 
+    /**
+     * The TableView that obtains, store in and shows the ObservableList data.
+     */
     @FXML
     private TableView tvTournaments;
 
+    /**
+     * The columns of the TableView that handle String values.
+     */
     @FXML
     private TableColumn<Tournament, String> tcName, tcDescription, tcBestOf;
 
+    /**
+     * The column of the TableView that handle Date values
+     */
     @FXML
     private TableColumn<Tournament, Date> tcDate;
 
+    /**
+     * All the buttons in the window that call some of the controllers methods when triggered. 
+     */
     @FXML
     private Button bTournamentSearch, bTournamentMatches, bTournamentClean, bTournamentHelp, bTournamentPrint, bTournamentDelete, bTournamentAdd;
 
+    /**
+     * The TableView ContextMenu
+     */
     @FXML
     private ContextMenu tournamentContextMenu;
     
+    /**
+     * The ContextMenu options that allows the User call some of the controllers methods when triggered.
+     */
     @FXML
     private MenuItem cmCreate, cmDelete, cmMatch, cmPrint;
     
+
     private Stage stage;
 
     public void setMainStage(Stage stage) {
@@ -136,9 +178,9 @@ public class TournamentWinController {
             this.user=user;
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("Esports Six - Tournaments");
+            stage.setTitle("Tournaments");
             stage.setResizable(false);
-            //TODO componenetes de la ventana que estan deshabilitados o son editables
+            
             bTournamentDelete.setDisable(true);
             bTournamentMatches.setDisable(true);
             if (user.getUserType().equals(UserType.PLAYER)) {
@@ -181,13 +223,7 @@ public class TournamentWinController {
                 }
             });
             
-            tfTournamentSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-                if(newValue==null && !chbTournamentSearch.getSelectionModel().getSelectedItem().equals("ALL")){
-                    bTournamentSearch.setDisable(true);
-                }else{
-                    bTournamentSearch.setDisable(false);
-                }
-            });
+            
 
 //--------------------------------------------------- CHOICE BOX -------------------------------------------------------------------------------------
 
@@ -201,7 +237,6 @@ public class TournamentWinController {
                         tfTournamentSearch.setDisable(false);
                     } else {
                         tfTournamentSearch.setDisable(true);
-                        bTournamentSearch.setDisable(false);
                     }
 
                     //change tfTournamentSearch promptext
@@ -224,7 +259,9 @@ public class TournamentWinController {
                     try {
                         if(isNumeric(t.getNewValue())){
                             new Alert(Alert.AlertType.ERROR, "Value can only be characters", ButtonType.OK).showAndWait();
-                        } else{
+                        }else if(t.getNewValue().equals("") || t.getNewValue()==null){ 
+                            new Alert(Alert.AlertType.ERROR, "This field can not be empty", ButtonType.OK).showAndWait();
+                        }else{
                             Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
                             updatedTournament.setName(t.getNewValue());
@@ -243,8 +280,8 @@ public class TournamentWinController {
                 tcDescription.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
-                        if(t.getNewValue().length()>281){
-                            new Alert(Alert.AlertType.ERROR, "Description length surpased, please insert a description of 281 characters or less.", ButtonType.OK).showAndWait();
+                        if(t.getNewValue().length()>120){
+                            new Alert(Alert.AlertType.ERROR, "Description length surpased, please insert a description of 120 characters or less.", ButtonType.OK).showAndWait();
                         } else if(t.getNewValue()==null){
                             new Alert(Alert.AlertType.ERROR, "Description must be informed to be updated.", ButtonType.OK).showAndWait();
                         }else{
@@ -273,8 +310,10 @@ public class TournamentWinController {
                             updatedTournament.setBestOf(t.getNewValue());
 
                             tournamentable.updateTournament(updatedTournament);
+                        }else if(t.getNewValue().equals("")){ 
+                            new Alert(Alert.AlertType.ERROR, "This field can not be empty.", ButtonType.OK).showAndWait();
                         } else{
-                            new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
+                            new Alert(Alert.AlertType.ERROR, "Value can only be numbers.", ButtonType.OK).showAndWait();
                         }
                         refreshTable();
                     } catch (UpdateException ex) {
@@ -314,7 +353,7 @@ public class TournamentWinController {
                 });
                 
                 tcDate.setOnEditCancel((TableColumn.CellEditEvent<Tournament, Date> t) -> {
-                    new Alert(Alert.AlertType.ERROR, "Please check a date please", ButtonType.OK).showAndWait();
+                    new Alert(Alert.AlertType.ERROR, "Please check a date please.", ButtonType.OK).showAndWait();
                     refreshTable();
                 });
                 
@@ -346,7 +385,7 @@ public class TournamentWinController {
                 }
             });
 
-            //Asignar componenetes sus metodos
+        //  ------------------------------- BUTTON ONACTIONS ---------------------------------------
             bTournamentSearch.setOnAction(this::searchTournament);
             
             bTournamentMatches.setOnAction(this::seeTournamentsMatches);
@@ -374,8 +413,16 @@ public class TournamentWinController {
             LOGGER.severe(ex.getMessage());
         }
     }
-    // metodos de componentes
-
+    
+    /**
+     * This is the filtered research method. First it checks that the ChoiceBox selected item isn't 'ALL' and
+     * that the TextField tfTournamentSearch is informed. Then it checks if the content of the TextField follows 
+     * the ChoiceBox selected option requirements. If it is so, the method calls a specific tournament manager 
+     * method and stores all the data in the TableView. If an Exception happens during this proccess, the window
+     * shows an Alert informing the User of the problem.
+     * 
+     * @param event 
+     */
     @FXML
     private void searchTournament(ActionEvent event) {
         try {
@@ -406,12 +453,21 @@ public class TournamentWinController {
                         }
                         break;
                     case "DATE":
-                        DateTimeFormatter dTf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                        LocalDate localDate = LocalDate.parse(tfTournamentSearch.getText(), dTf);
-                        String date = localDate.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime().toString();
-                        
-                        tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByDate(date));
-                        refreshTable(tournaments);
+                        try {
+                            String insertedDate = tfTournamentSearch.getText();
+                            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                            format.parse(insertedDate);
+                            
+                            DateTimeFormatter dTf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                            LocalDate localDate = LocalDate.parse(insertedDate, dTf);
+                            String date = localDate.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime().toString();
+
+                            tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByDate(date));
+                            refreshTable(tournaments);
+                    
+                        } catch (ParseException ex) {
+                            new Alert(Alert.AlertType.ERROR, "Incorrect date format", ButtonType.OK).showAndWait();
+                        }
                         break;
                     case "FORMAT":
                         tfSearchText = tfTournamentSearch.getText();
@@ -439,6 +495,11 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * This is the method that allows to see all the matches of a previously selected Tournament.
+     * 
+     * @param event 
+     */
     @FXML
     private void seeTournamentsMatches(ActionEvent event) {
         try {
@@ -468,6 +529,10 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * This method clears the filtered research.
+     * @param event 
+     */
     @FXML
     private void cleanTournamentSearch(ActionEvent event) {
         try {
@@ -480,6 +545,10 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * This method shows an emerging window with an explanation of this window's functions
+     * @param event 
+     */
     @FXML
     private void seeTournamentHelpWindow(ActionEvent event) {
         try{
@@ -501,6 +570,10 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * This method prints a report of all the data that is shown in the TableView
+     * @param event 
+     */
     @FXML
     private void printTournament(ActionEvent event) {
         try {
@@ -515,6 +588,11 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * This is the method that allows to delete from the server database the selected tournament
+     * and then it updates the table content.
+     * @param event 
+     */
     @FXML
     private void deleteTournament(ActionEvent event) {
         try {
@@ -534,24 +612,63 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * This method creates a Tournament object, calls the tournament manager so it can be saved in the server and
+     * then refresh the content of the table.
+     * @param event 
+     */
     @FXML
     private void addTournament(ActionEvent event) {
+        
+        Tournament newTournament = new Tournament(null, "T name", "T description", "1", null, null);
         try {
-            Tournament newTournament = new Tournament(null, "0", "0", "0", null, null);
-            tournamentable.createTournament(newTournament);
-            refreshTable();
+            Tournament findTournament = null;
+            Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            newTournament.setDate(today);
+            
+            findTournament = tournamentable.findTournamentByName(newTournament.getName());
+            if(findTournament==null){
+                tournamentable.createTournament(newTournament);
+                refreshTable();
+            }else{
+                throw new ReadException();
+            }
+            
+            
         } catch (CreateException ex) {
             LOGGER.severe(ex.getMessage());
             new Alert(Alert.AlertType.ERROR, "An error has occurred while adding the new Tournament" + ex.getMessage(), ButtonType.OK).showAndWait();
+        } catch (ReadException ex) {
+            Boolean found = false;
+            for (Object t : tvTournaments.getItems()) {
+                if (((Tournament) t).equals(newTournament)) {
+                    found = true;
+                    break;
+                }
+            }
+            //if name exist, shows alert
+            if (found) {
+                new Alert(Alert.AlertType.ERROR, "The tournament already exists.", ButtonType.OK).showAndWait();
+                Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The tournament already exists.");
+            } else {
+                Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
 
+    /**
+     * This method refreshes the content of the table, showing a filtered list of tournaments.
+     * @param tournaments 
+     */
     private void refreshTable(ObservableList<Tournament> tournaments) {
         tvTournaments.getItems().clear();
         tvTournaments.setItems(tournaments);
     }
 
+    /**
+     * This method refreshes the content of the table, showing all the registered tournaments.
+     */
     private void refreshTable() {
         try {
             ObservableList<Tournament> refreshedTableItems = FXCollections.observableArrayList(tournamentable.findAllTournaments());
@@ -564,6 +681,11 @@ public class TournamentWinController {
         }
     }
 
+    /**
+     * Method that checks if the written value of the TextField is composed by a number
+     * @param tfSearchText the content inside the TextField
+     * @return true if the TextField contains only numbers and false if it doesn't
+     */
     private boolean isNumeric(String tfSearchText) {
         if (tfSearchText == null) {
             return false;
@@ -576,6 +698,11 @@ public class TournamentWinController {
         return true;
     }
 
+    /**
+     * Method used to change the PrompText of the TextField to show an example of a valid
+     * value for the chosen filtered research.
+     * @param selectedItem 
+     */
     private void changePrompText(Object selectedItem) {
         switch (selectedItem.toString()) {
             case "ALL":

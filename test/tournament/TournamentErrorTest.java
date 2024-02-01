@@ -6,9 +6,6 @@
 package tournament;
 
 import client.Client;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.concurrent.TimeoutException;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
@@ -16,7 +13,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import model.Tournament;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.junit.BeforeClass;
@@ -34,8 +30,7 @@ import static org.testfx.matcher.control.TextFlowMatchers.hasText;
  *
  * @author Fran
  */
-public class TournamentWindowTest extends ApplicationTest {
-
+public class TournamentErrorTest extends ApplicationTest {
     //Images in the window
     private final ImageView tournamentBackground = new ImageView("resources/images/tournamentsBackground.jpg");
     private final ImageView tournamentSmoke = new ImageView("resources/images/smokeBackground.png");
@@ -47,7 +42,11 @@ public class TournamentWindowTest extends ApplicationTest {
     private final ImageView bAddImage = new ImageView("resources/images/add.png");
     private final ImageView tournamentAgentImage = new ImageView("resources/images/smokeAgent.png");
 
-    private TableView tournamentTable = lookup("#tvTournamnet").queryTableView();
+    private final String tooMuchText = "This String is over 120 characters, exactly"
+                                    + " the maximum amount of characters that the "
+                                    + "description's length is limited to.";
+    
+    private final TableView tournamentTable = lookup("#tvTournamnet").queryTableView();
 
     //setUpClass method with a BeforeClass tag
     @Override
@@ -73,7 +72,7 @@ public class TournamentWindowTest extends ApplicationTest {
         clickOn("#allTournamentsMenuItem");
         verifyThat("#tournamentPane", isVisible());
     }
-
+    
     //Test 1: Comprobar la inicialización del Stage y sus componentes
     @Ignore
     @Test
@@ -109,140 +108,103 @@ public class TournamentWindowTest extends ApplicationTest {
         verifyThat("#bTournamentAdd", isDisabled());
         verifyThat(bAddImage, (ImageView iv9) -> iv9.isVisible());
     }
-
-    //Test 2: Comprobar que los botones se habilitan o no cuando deben
+    
+    //Test 2 Comprobar que salta un alert al buscar un campo vacio 
     @Ignore
     @Test
-    public void test02_buttonsAreEnabled() {
+    public void test02_searchEmptyTextField_Error(){
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
-        verifyThat("#tfTournamentSearch", isEnabled());
+        clickOn("#bTournamentSearch");
+        verifyThat("This field is required to fill", isVisible());
+        type(KeyCode.ENTER);
         clickOn("#chbTournamentSearch");
         type(KeyCode.UP);
         type(KeyCode.ENTER);
-        verifyThat("#tfTournamentSearch", isDisabled());
-        clickOn("Uno");
-        verifyThat("#bTournamentMatches", isEnabled());
-        verifyThat("#bTournamentDelete", isEnabled());
-        clickOn("#lTournaments");
-        verifyThat("#bTournamentMatches", isDisabled());
-        verifyThat("#bTournamentDelete", isDisabled());
     }
-
-    //Test 3: Comprobar que el cleanButton funcione
+    
+    //Test 3: Error en la busqueda por id de tournament
     @Ignore
     @Test
-    public void test03_checkCleanButton() {
+    public void test03_searchById_Error(){
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
         verifyThat("#tfTournamentSearch", isEnabled());
         clickOn("#tfTournamentSearch");
-        write("1");
+        write("not a numeric value");
+        clickOn("#bTournamentSearch");
+        verifyThat("Value can only be numbers", isVisible());
+        type(KeyCode.ENTER);
+    }
+    
+    //Test 4: Error en la busqueda por name
+    @Ignore
+    @Test
+    public void test04_searchByName_Error(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("45");
+        clickOn("#bTournamentSearch");
+        verifyThat("Value can only be characters", isVisible());
+        type(KeyCode.ENTER);
+    }
+    
+    //Test 5: Error en la busqueda por bestOf
+    @Ignore
+    @Test
+    public void test05_searchByBestOf_Error(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        verifyThat("#tfTournamentSearch", isEnabled());
+        clickOn("#tfTournamentSearch");
+        write("not a numeric value");
+        clickOn("#bTournamentSearch");
+        verifyThat("Value can only be numbers", isVisible());
+        type(KeyCode.ENTER);
+    }
+    
+    //Test 6: Error en la busqueda por date
+    @Ignore
+    @Test
+    public void test06_searchByDate_Error(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        verifyThat("#tfTournamentSearch", isEnabled());
+        clickOn("#tfTournamentSearch");
+        write("not a good date format");
+        clickOn("#bTournamentSearch");
+        verifyThat("Incorrect date format", isVisible());
+        type(KeyCode.ENTER);
+    }
+    
+    //Test 7: Error en la busqueda por id de match
+    @Ignore
+    @Test
+    public void test07_searchByMatchId_Error(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        verifyThat("#tfTournamentSearch", isEnabled());
+        clickOn("#tfTournamentSearch");
+        write("not a numeric value");
+        clickOn("#bTournamentSearch");
+        verifyThat("Value can only be numbers", isVisible());
+        type(KeyCode.ENTER);
         clickOn("#bTournamentClean");
-        verifyThat("#tfTournamentSearch", hasText(""));
-        verifyThat("#chbTournamentSearch", (ChoiceBox ch03) -> ch03.getSelectionModel().isSelected(0));
     }
-
-    //Test 4: Comprobar que se realiza la busqueda filtrada por id del Tournament
+    
+    //Test 8: Error en el update de name
     @Ignore
     @Test
-    public void test04_checkSearchId() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#tfTournamentSearch");
-        write("1");
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 5: Comprobar que se realiza la busqueda filtrada por nombre
-    @Ignore
-    @Test
-    public void test05_checkSearchName() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#tfTournamentSearch");
-        write("Dos");
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 6: Comprobar que se realiza la busqueda filtrada por bestOf
-    @Ignore
-    @Test
-    public void test06_checkSearchBestOf() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#tfTournamentSearch");
-        write("3");
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 7: Comprobar que se realiza la busqueda filtrada por date
-    @Ignore
-    @Test
-    public void test07_checkSearchDate() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#tfTournamentSearch");
-        write("28/01/2024");
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 8: Comprobar que se realiza la busqueda filtrada por id de un match
-    @Ignore
-    @Test
-    public void test08_checkSearchMatchId() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#tfTournamentSearch");
-        write("1");
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 9: Comprobar que se realiza la busqueda de todos los torneos
-    @Ignore
-    @Test
-    public void test09_checkSearchAll() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.UP);
-        type(KeyCode.UP);
-        type(KeyCode.UP);
-        type(KeyCode.UP);
-        type(KeyCode.UP);
-        type(KeyCode.ENTER);
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 10: Comprobar que el createButton funcione
-    @Ignore
-    @Test
-    public void test10_checkAdd() {
-        //Get tvTournament row count before adding the new Tournament
-        Integer rowCount = tournamentTable.getItems().size();
-        Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Tournament newTournament = new Tournament(null, "T name", "T description", "1", today, null);
-
-        //Click on bTournament to create a new Tournament and add it inside tvTournament
-        verifyThat("bTournamentAdd", isEnabled());
+    public void test08_nameUpdate_Error(){
         clickOn("#bTournamentAdd");
-
-        //Check if there is one more row inside the table
-        assertEquals("The row hasn't been added.", rowCount + 1, tournamentTable.getItems().size());
         
-        //Check if the tournament was added
-        assertEquals("Tournament add error", newTournament, tournamentTable.getItems().get(rowCount-1));
-    }
-
-    //Test 11: Comprobar que se puede editar una celda de la columna tcName
-    @Ignore
-    @Test
-    public void test11_updateName() {
         //Get the table size
         Integer rowCount = tournamentTable.getItems().size();
 
@@ -251,28 +213,38 @@ public class TournamentWindowTest extends ApplicationTest {
 
         //Select the cell
         clickOn(newRow);
-
+        
         //Get the Tournament object to compare it after the name update
         Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
 
         //Get tcName cell in edit mode and modify its value(by default is 0)
         doubleClickOn(newRow);
         eraseText(1);
-        write("Name Test");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
-
-        //Check that the new value is stored in the table
-        verifyThat("Name Test", isVisible());
-
-        //Check the update was done correctly
+        //Check if the alert is shown
+        verifyThat("This field can not be empty", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
         clickOn(newRow);
-        assertNotEquals("Name update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        assertEquals("Name update error bad catched", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        
+        doubleClickOn(newRow);
+        eraseText(1);
+        write("7");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
+        //Check if the alert is shown
+        verifyThat("Value can only be characters", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
+        clickOn(newRow);
+        assertEquals("Name update error bad catched", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
     }
-
-    //Test 12: Comprobar que se puede editar una celda de la columna tcDescription
+    
+    //Test 9: Error en el update de description
     @Ignore
     @Test
-    public void test12_updateDescription() {
+    public void test09_descriptionUpdate_Error(){
         //Get the table size
         Integer rowCount = tournamentTable.getItems().size();
 
@@ -285,54 +257,82 @@ public class TournamentWindowTest extends ApplicationTest {
         //Get the Tournament object to compare it after the description update
         Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
 
-        //Get tcDescription cell in edit mode and modify its value(by default is 0)
+        //Set tcDescription value to null
         doubleClickOn(newRow);
         eraseText(1);
-        write("Description Test");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
+        //Check if the alert is shown
+        verifyThat("Description must be informed to be updated.", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
+        //Check the update wasn't done
+        clickOn(newRow);
+        assertEquals("Description update error bad catched", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        
+        //Set tcDescription to a value that surpass the description max length
+        doubleClickOn(newRow);
+        eraseText(1);
+        write(tooMuchText);
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
-        //Check that the new value is stored in the table
-        verifyThat("Description Test", isVisible());
+        //Check if the alert is shown
+        verifyThat("Description length surpased, please insert a description of 281 characters or less.", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
 
-        //Check the update was done correctly
+        //Check the update wasn't done
         clickOn(newRow);
-        assertNotEquals("Description update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        assertEquals("Description update error bad catched", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
     }
-
-    //Test 13: Comprobar que se puede editar una celda de la columna tcBestOf
+    
+    //Test 10: Error en el update de bestOf
     @Ignore
     @Test
-    public void test13_updateBestOf() {
+    public void test10_bestOfUpdate_Error(){
         //Get the table size
         Integer rowCount = tournamentTable.getItems().size();
 
         //Get the last added Tournament tcBestOF cell
         Node newRow = lookup("#tcBestOf").nth(rowCount).query();
-
+        
         //Select the cell
         clickOn(newRow);
 
-        //Get the Tournament object to compare it after the bestOf update
+        //Get the Tournament object to compare it after the description update
         Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
-
-        //Get tcBestOf cell in edit mode and modify its value(by default is 0)
+        
+        //Set tcBestOf value to null
         doubleClickOn(newRow);
         eraseText(1);
-        write("9");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
+        //Check if the alert is shown
+        verifyThat("This field can not be empty.", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        
+        //Check the update wasn't done
+        clickOn(newRow);
+        assertEquals("BestOf update error bad catched", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        
+        //Set tcBestOf to a non-numeric value
+        doubleClickOn(newRow);
+        eraseText(1);
+        write("Not a number");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
-        //Check that the new value is stored in the table
-        verifyThat("9", isVisible());
+        //Check if the alert is shown
+        verifyThat("Value can only be numbers.", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
 
-        //Check the update was done correctly
+        //Check the update wasn't done
         clickOn(newRow);
-        assertNotEquals("BestOf update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        assertEquals("BestOf update error bad catched", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
     }
-
-    //Test 14: Comprobar que se puede editar una celda de la columna tcDate
+    
+    //Test 11: Error en el update de date
     @Ignore
     @Test
-    public void test14_updateDate() {
+    public void test11_dateUpdate_Error(){
         //Get the table size
         Integer rowCount = tournamentTable.getItems().size();
 
@@ -344,100 +344,48 @@ public class TournamentWindowTest extends ApplicationTest {
 
         //Get the Tournament object to compare it after the date update
         Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
-
-        //Get tcDate cell in edit mode and modify its value
+        
+        //Set tcDate value to null
         doubleClickOn(newRow);
         eraseText(1);
-        write("31/10/2023");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
-
-        //Check that the new value is stored in the table
-        verifyThat("31/10/2023", isVisible());
-
-        //Check the update was done correctly
-        clickOn(newRow);
-        assertNotEquals("BestOf update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
-    }
-
-    //Test 15: Comprobar que el deleteButton funcione
-    @Ignore
-    @Test
-    public void test15_deleteTournament() {
-        //Check that the bTournamentDelete button is disabled
-        verifyThat("#bTournamentDelete", isDisabled());
-
-        //Get the table size
-        Integer rowCount = tournamentTable.getItems().size();
-
-        //Get the last added Tournament tcName cell
-        Node newRow = lookup("#tcName").nth(rowCount).query();
-
-        //Select the cell
-        clickOn(newRow);
-
-        //Check that the bTournamentDelete button is now enabled
-        verifyThat("#bTournamentDelete", isEnabled());
-
-        //Get the Tournament object to compare it after the name update
-        Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
-
-        //Click the delete button
-        clickOn("#bTournamentDelete");
-
-        //Check if the confirmation pane is visible
-        verifyThat("Are you sure you want to delete this Tournament?", isVisible());
-
-        //Finish the delete
+        
+        //Check if the alert is shown
+        verifyThat("Please check a date please.", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
-
-        //Check if the row was deleted
-        assertEquals("Tournament not deleted", rowCount - 1, tournamentTable.getItems().size());
-    }
-
-    //Test 16: Comprobar que el helpButton funcione
-    @Ignore
-    @Test
-    public void test16_checkHelpButton() {
-        //Check that the help button is enabled
-        verifyThat("#bTournamentHelp", isVisible());
-
-        //Click the button and check if the help window is visible
-        clickOn("#bTournamentHelp");
-        verifyThat("webView", isVisible());
-
-        //Close the help window and go back to the Tournament window
-        press(KeyCode.ESCAPE).release(KeyCode.ESCAPE);
-        verifyThat("Are you sure you want to exit?", isVisible());
-        clickOn("Aceptar");
-        verifyThat("#tournamentPane", isVisible());
-    }
-
-    //Test 17: Comprobar que el matchesButton funcione
-    @Ignore
-    @Test
-    public void test17_checkMatchesButton() {
-        //Check the matches button is disabled
-        verifyThat("#bTournamentMatches", isDisabled());
-
-        //Select the first row and check if the matches button is now enabled
-        Node firstRow = lookup("#tcDate").nth(0).query();
-        clickOn(firstRow);
-        verifyThat("#bTournamentMatches", isVisible());
-
-        //Click the button and check if the matches window is visible
-        clickOn("#bTournamentMatches");
-        verifyThat("#rootPane", isVisible());
-
-        //Get back to the tournament window
-        clickOn("#windowOptionMenu");
-        clickOn("#allTournamentsMenuItem");
-        verifyThat("#tournamentPane", isVisible());
+        
+        //Check the update wasn't done
+        clickOn(newRow);
+        assertEquals("Date update error bad catched.", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
     }
     
-    //Test 18: Comprobar que se muestra un Alert de confirmacion al intentar cerrar la ventana
+    //Test 12: Error en el create de Tournament
     @Ignore
     @Test
-    public void test18_closeWindow(){
+    public void test12_tournamentAdd_Error(){
+        //Get tvTournament row count before adding the new Tournament
+        Integer rowCount = tournamentTable.getItems().size();
+        
+        //Click on bTournament to create a new Tournament and add it inside tvTournament
+        verifyThat("bTournamentAdd", isEnabled());
+        clickOn("#bTournamentAdd");
+        
+        //Click on bTournament to create a the same Tournament as before
+        verifyThat("bTournamentAdd", isEnabled());
+        clickOn("#bTournamentAdd");
+        
+        //Check if the alert is shown
+        verifyThat("The tournament already exists.", isVisible());
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        //Check if there is one more row inside the table
+        assertNotEquals("Add tournament error bad catches.", rowCount+1, tournamentTable.getItems().size());
+    }
+    
+    //Test 13: Comprobar que se muestra un Alert de confirmacion al intentar cerrar la ventana
+    @Ignore
+    @Test
+    public void test13_closeWindow(){
         press(KeyCode.ESCAPE).release(KeyCode.ESCAPE);
         verifyThat("Are you sure you want to exit?", isVisible());
         clickOn("Aceptar");
