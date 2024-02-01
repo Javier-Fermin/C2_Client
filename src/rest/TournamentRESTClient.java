@@ -10,6 +10,7 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import model.Match;
 
 /**
  * Jersey REST client generated for REST resource:TournamentREST
@@ -113,9 +114,9 @@ public class TournamentRESTClient{
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
-    public <T> T findTournamentByMatch_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findTournamentByMatch_XML(Class<T> responseType, Match match) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{id}));
+        resource = resource.path(java.text.MessageFormat.format("match/{0}", match));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 

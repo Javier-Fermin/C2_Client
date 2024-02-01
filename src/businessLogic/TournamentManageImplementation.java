@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
+import model.Match;
 import model.Tournament;
 import rest.TournamentRESTClient;
 
@@ -151,16 +153,18 @@ public class TournamentManageImplementation implements TournamentManage{
     @Override
     public Tournament findTournamentByMatch(String matchId) throws ReadException { //parameter match needed
         Tournament tournament = null;
+        MatchManager matchManager = MatchManagerFactory.getMatchManager();
+        Match match = matchManager.findAMatch(new Integer(matchId));
         
         try{
             LOGGER.info("TournamentManage: Finding tournament.");
-            tournament = tournamentClient.findTournamentByMatch_XML(Tournament.class, matchId); //change tournament to match
+            tournament = tournamentClient.findTournamentByMatch_XML(Tournament.class, match); //change tournament to match
             
             if(tournament!=null){
                 LOGGER.log(Level.INFO, "TournamentManage: tournament id=", tournament.getIdTournament());
             }
             
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournament:", e.getMessage());
             throw new ReadException("Error finding the Tournament: " + e.getMessage());
         }

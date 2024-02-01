@@ -69,7 +69,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.tabulator.TablePosition;
 import net.sf.jasperreports.view.JasperViewer;
+import tableCells.DateTournamentPicker;
 
 /**
  *
@@ -129,7 +131,7 @@ public class TournamentWinController {
 
     public void initStage(Parent root, User user) {
         try {
-            LOGGER.info("Init Main Window");
+            LOGGER.info("Init Tournament Window");
             this.user=user;
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -177,8 +179,16 @@ public class TournamentWinController {
                     event.consume();
                 }
             });
+            
+            tfTournamentSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+                if(newValue==null && !chbTournamentSearch.getSelectionModel().getSelectedItem().equals("ALL")){
+                    bTournamentSearch.setDisable(true);
+                }else{
+                    bTournamentSearch.setDisable(false);
+                }
+            });
 
-//--------------------------------------------------- CHOICE BOX -----------------------------------------------------------------------------------------------
+//--------------------------------------------------- CHOICE BOX -------------------------------------------------------------------------------------
 
             chbTournamentSearch.setValue("ALL");
             chbTournamentSearch.setItems(FXCollections.observableArrayList("ALL", "ID", "NAME", "DATE", "FORMAT", "MATCH"));
@@ -186,10 +196,11 @@ public class TournamentWinController {
                 try {
                     //Check whether item is selected and set value of selected item to Label
                     if (!chbTournamentSearch.getSelectionModel().getSelectedItem().equals("ALL")) {
-                        tfTournamentSearch.clear();
                         tfTournamentSearch.setDisable(false);
                     } else {
+                        tfTournamentSearch.clear();
                         tfTournamentSearch.setDisable(true);
+                        bTournamentSearch.setDisable(false);
                     }
 
                     //change tfTournamentSearch promptext
@@ -210,12 +221,15 @@ public class TournamentWinController {
                 tcName.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcName.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
-                        Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                        if(isNumeric(t.getNewValue())){
+                            new Alert(Alert.AlertType.ERROR, "Value can only be characters", ButtonType.OK).showAndWait();
+                        } else{
+                            Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
-                        updatedTournament.setName(t.getNewValue());
+                            updatedTournament.setName(t.getNewValue());
 
-                        tournamentable.updateTournament(updatedTournament);
-
+                            tournamentable.updateTournament(updatedTournament);
+                        }
                         refreshTable();
                     } catch (UpdateException ex) {
                         new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
@@ -246,12 +260,15 @@ public class TournamentWinController {
                 tcBestOf.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcBestOf.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
-                        Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                        if(isNumeric(t.getNewValue())){
+                            Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
-                        updatedTournament.setBestOf(t.getNewValue());
+                            updatedTournament.setBestOf(t.getNewValue());
 
-                        tournamentable.updateTournament(updatedTournament);
-
+                            tournamentable.updateTournament(updatedTournament);
+                        } else{
+                            new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
+                        }
                         refreshTable();
                     } catch (UpdateException ex) {
                         Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
@@ -271,25 +288,28 @@ public class TournamentWinController {
                 
                 tcDate.setOnEditCommit((TableColumn.CellEditEvent<Tournament, Date> t) -> {
                     try {
-                        if ((t.getNewValue()!=null)&&(!t.getNewValue().toString().isEmpty())) {
-                            Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                        LOGGER.info("Date old value: "+t.getOldValue()+"\nDate new value: "+t.getNewValue());
+                        
+                        Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
-                            updatedTournament.setDate(t.getNewValue());
-                            
-                            LOGGER.info(updatedTournament.getDate().toString());
-                            
-                            tournamentable.updateTournament(updatedTournament);
+                        updatedTournament.setDate(t.getNewValue());
 
-                            refreshTable();
-                        } else {
-                            new Alert(Alert.AlertType.ERROR, "Please check a date plese", ButtonType.OK).showAndWait();
-                            refreshTable();
-                        }
+                        LOGGER.info(updatedTournament.getDate().toString());
 
+                        tournamentable.updateTournament(updatedTournament);
+
+                        refreshTable();
                     } catch (UpdateException ex) {
                         new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+                        tvTournaments.getFocusModel().focus(t.getTablePosition());
                     }
                 });
+                
+                tcDate.setOnEditCancel((TableColumn.CellEditEvent<Tournament, Date> t) -> {
+                    new Alert(Alert.AlertType.ERROR, "Please check a date please", ButtonType.OK).showAndWait();
+                    refreshTable();
+                });
+                
             }
 
             tvTournaments.setItems(tournaments);
@@ -351,7 +371,7 @@ public class TournamentWinController {
     @FXML
     private void searchTournament(ActionEvent event) {
         try {
-            if (tfTournamentSearch.getText().equals("") || tfTournamentSearch.getText().isEmpty()) {
+            if ((tfTournamentSearch.getText().equals("") || tfTournamentSearch.getText().isEmpty()) && (!chbTournamentSearch.getSelectionModel().getSelectedItem().toString().equals("ALL"))) {
                 new Alert(Alert.AlertType.ERROR, "This field is required to fill", ButtonType.OK).showAndWait();
             } else {
                 switch (chbTournamentSearch.getSelectionModel().getSelectedItem().toString()) {

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view;
+package tableCells;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -71,13 +71,12 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
         datePicker = new DatePicker(getDate());
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         datePicker.setOnAction((e) -> {
-            if(datePicker.getValue()==null){
-                commitEdit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-            } else{
-                commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-            }
-            
-        });
+                if (datePicker.getValue() == null) {
+                    cancelEdit();
+                } else {
+                    commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                }
+            });
 
     }
 
