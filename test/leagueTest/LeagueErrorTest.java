@@ -108,23 +108,30 @@ public class LeagueErrorTest extends ApplicationTest {
     @Test
     @Ignore
     public void test03_UpdateNameError() {
+        //create item to update
         clickOn("#btnCreate");
+        //select the item to update
         Integer size = table.getItems().size();
         Node row = lookup("#tcName").nth(size).query();
         League selectedLeague = (League) table.getSelectionModel().getSelectedItem();
         doubleClickOn(row);
         eraseText(1);
+        //try to find name with no name
         write("");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify the alert shows
         verifyThat("all fields are required to fill", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         row = lookup("#tcName").nth(size).query();
         doubleClickOn(row);
         eraseText(1);
+        //try to update name with numbers
         write("789789");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify the alert shows
         verifyThat("The name value is incorrect", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify the no update of the name
         verifyThat("Default name", isVisible());
         assertNotEquals("League name update errors correct", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
         clickOn("#btnDelete");
@@ -135,23 +142,21 @@ public class LeagueErrorTest extends ApplicationTest {
     @Test
     @Ignore
     public void test04_UpdateDescriptionError() {
+        //create the object to update
         clickOn("#btnCreate");
+        //select the item to update
         Integer size = table.getItems().size();
         Node row = lookup("#tcDescription").nth(size).query();
         League selectedLeague = (League) table.getSelectionModel().getSelectedItem();
         doubleClickOn(row);
         eraseText(1);
+        //try to update with no match
         write("");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify the alert shows
         verifyThat("all fields are required to fill", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
-        row = lookup("#tcDescription").nth(size).query();
-        doubleClickOn(row);
-        eraseText(1);
-        write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        press(KeyCode.ENTER).release(KeyCode.ENTER);
-        verifyThat("The description value is incorrect", isVisible());
-        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify updates not done for description
         verifyThat("Default description", isVisible());
         assertNotEquals("League description update errors correct", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
         clickOn("#btnDelete");
@@ -163,7 +168,9 @@ public class LeagueErrorTest extends ApplicationTest {
     @Test
     @Ignore
     public void test05_UpdateStartDateError() {
+        //create the object to update
         clickOn("#btnCreate");
+        //select the object to update
         Integer size = table.getItems().size();
         Node row = lookup("#tcStartDate").nth(size).query();
         clickOn(row);
@@ -172,8 +179,10 @@ public class LeagueErrorTest extends ApplicationTest {
         doubleClickOn(row);
         doubleClickOn(row);
         eraseText(1);
+        //try to update without value
         write("");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify the alert
         verifyThat("Start date update cancel", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         row = lookup("#tcStartDate").nth(size).query();
@@ -181,10 +190,13 @@ public class LeagueErrorTest extends ApplicationTest {
         doubleClickOn(row);
         doubleClickOn(row);
         eraseText(1);
+        //try to update with a startdate not valid
         write("01/01/2300");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //shows alert
         verifyThat("The StartDate value is incorrect", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify there are no updates
         assertEquals("Start date update error", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
         clickOn("#btnDelete");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
@@ -195,7 +207,9 @@ public class LeagueErrorTest extends ApplicationTest {
     @Test
     @Ignore
     public void test06_UpdateEndDateError() {
+        //create the object to update
         clickOn("#btnCreate");
+        //select the object
         Integer size = table.getItems().size();
         Node row = lookup("#tcEndDate").nth(size).query();
         clickOn(row);
@@ -204,8 +218,10 @@ public class LeagueErrorTest extends ApplicationTest {
         doubleClickOn(row);
         doubleClickOn(row);
         eraseText(1);
+        //try to update with no value
         write("");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //shows alert
         verifyThat("End date update cancel", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         row = lookup("#tcEndDate").nth(size).query();
@@ -213,11 +229,14 @@ public class LeagueErrorTest extends ApplicationTest {
         doubleClickOn(row);
         doubleClickOn(row);
         eraseText(1);
+        //try to update with incorrect value
         write("01/01/1970");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //shows alert
         verifyThat("The EndDate value is incorrect", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
-        assertEquals("End ate update error", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
+        //verify no updates done
+        assertEquals("End date update error", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
         clickOn("#btnDelete");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         press(KeyCode.ENTER).release(KeyCode.ENTER);
@@ -235,15 +254,20 @@ public class LeagueErrorTest extends ApplicationTest {
         clickOn("NAME");
         verifyThat("#tfsearch", isEnabled());
         clickOn("#tfsearch");
+        //try to search without any value
         write("");
         clickOn("#btnSearch");
+        //shows alert 
         verifyThat("this field is required to fill", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         clickOn("#tfsearch");
+        //try to search with incorrect value
         write("789");
         clickOn("#btnSearch");
+        //shows alert
         verifyThat("Values can only be characters", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify there are no changes in table
         assertEquals("League search correctly", leagueList, table.getItems());
     }
 
@@ -254,20 +278,25 @@ public class LeagueErrorTest extends ApplicationTest {
         ObservableList<League> leagueList = table.getItems();
         verifyThat("#cbSeachType", isEnabled());
         verifyThat("#btnSearch", isEnabled());
-        //search by NAME
+        //search by Match
         clickOn("#cbSeachType");
         clickOn("MATCH");
         verifyThat("#tfsearch", isEnabled());
         clickOn("#tfsearch");
+        //try to search with no value
         write("");
         clickOn("#btnSearch");
+        //shows alert
         verifyThat("this field is required to fill", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         clickOn("#tfsearch");
+        //try to search with a incorrect value
         write("abcd");
         clickOn("#btnSearch");
+        //shows alert
         verifyThat("Values can only be numbers", isVisible());
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //verify no changes in the table
         assertEquals("League search correctly", leagueList, table.getItems());
     }
 

@@ -39,6 +39,11 @@ import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LeagueTest extends ApplicationTest {
 
+    League league = new League(null,
+            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+            "Default name",
+            "Default description");
     private TableView table = lookup("#tvLeagues").queryTableView();
 
     @BeforeClass
@@ -81,11 +86,7 @@ public class LeagueTest extends ApplicationTest {
     @Ignore
     public void test02_CreateLeagueTest() {
         //create default league
-        League league = new League(null,
-                Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-                Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-                "Default name",
-                "Default description");
+
         //get row count before create
         Integer rowCount = table.getItems().size();
         //create
@@ -160,8 +161,6 @@ public class LeagueTest extends ApplicationTest {
         press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
-    
-    ///PROBLEMAS
     @Test
     @Ignore
     public void test05_UpdateStartDate() {
@@ -170,9 +169,6 @@ public class LeagueTest extends ApplicationTest {
         //Select the object in the table
         Integer size = table.getItems().size();
         Node row = lookup("#tcStartDate").nth(size).query();
-        clickOn(row);
-        //get the selected item
-        League selectedLeague = (League) table.getSelectionModel().getSelectedItem();
         doubleClickOn(row);
         doubleClickOn(row);
         doubleClickOn(row);
@@ -184,14 +180,12 @@ public class LeagueTest extends ApplicationTest {
         //verify the new date is visible
         verifyThat("18/01/1970", isVisible());
         //verify the league is updated
-        clickOn(row);
-        assertEquals("start date update error", selectedLeague.getStartDate(), (League) table.getSelectionModel().getSelectedItem());
+        assertNotEquals("start date update error", league.getStartDate(), ((League) table.getSelectionModel().getSelectedItem()).getStartDate());
         clickOn("#btnDelete");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
-    //PROBLEMAS
     @Test
     @Ignore
     public void test06_UpdateEndDate() {
@@ -200,19 +194,16 @@ public class LeagueTest extends ApplicationTest {
         //Select the object in the table
         Integer size = table.getItems().size();
         Node row = lookup("#tcEndDate").nth(size).query();
-        clickOn(row);
-        //get the selected item
-        League selectedLeague = (League) table.getSelectionModel().getSelectedItem();
         doubleClickOn(row);
         doubleClickOn(row);
         doubleClickOn(row);
         //erase the EndDte a update the new EndDate
         eraseText(1);
+        //write new date
         write("18/01/2300");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         verifyThat("18/01/2300", isVisible());
-        clickOn(row);
-        assertEquals("end date update error", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
+        assertNotEquals("end date update error", league.getEndDate(), ((League) table.getSelectionModel().getSelectedItem()).getEndDate());
         clickOn("#btnDelete");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         press(KeyCode.ENTER).release(KeyCode.ENTER);
@@ -307,12 +298,14 @@ public class LeagueTest extends ApplicationTest {
     @Test
     @Ignore
     public void test11_SearchLeagueByEndDate() {
-        //get items from the table
-        ObservableList<League> leagueList = table.getItems();
+        //clear the table
         verifyThat("#cbSeachType", isEnabled());
         verifyThat("#btnSearch", isEnabled());
         clickOn("#btnClear");
+        //get items and the siza from the table
+        ObservableList<League> leagueList = table.getItems();
         Integer rows = table.getItems().size();
+        //search finished leagues
         clickOn("#cbSeachType");
         clickOn("FINISHED");
         clickOn("#btnSearch");
