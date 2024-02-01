@@ -5,12 +5,17 @@
  */
 package tournament;
 
-
 import client.Client;
 import java.util.concurrent.TimeoutException;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import model.Tournament;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.BeforeClass;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxToolkit;
@@ -19,12 +24,13 @@ import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextFlowMatchers.hasText;
+
 /**
  *
  * @author Fran
  */
-public class TournamentWindowTest  extends ApplicationTest{
-    
+public class TournamentWindowTest extends ApplicationTest {
+
     //Images in the window
     private final ImageView tournamentBackground = new ImageView("resources/images/tournamentsBackground.jpg");
     private final ImageView tournamentSmoke = new ImageView("resources/images/smokeBackground.png");
@@ -35,64 +41,68 @@ public class TournamentWindowTest  extends ApplicationTest{
     private final ImageView bDeleteImage = new ImageView("resources/images/delete.png");
     private final ImageView bAddImage = new ImageView("resources/images/add.png");
     private final ImageView tournamentAgentImage = new ImageView("resources/images/smokeAgent.png");
-    
+
+    private TableView tournamentTable = lookup("#tvTournamnet").queryTableView();
+
     //setUpClass method with a BeforeClass tag
     @Override
-    public void stop(){}
-    
+    public void stop() {
+    }
+
     @BeforeClass
     public static void setUpClass() throws TimeoutException {
         FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(Client.class);
     }
-    
+
     //Test 0: Acceso a la ventana
-    public void test00_openTournamentWindow(){
+    public void test00_openTournamentWindow() {
         clickOn("#usernameText");
         write("manolo@gmail.com");
         clickOn("#passwordText");
         write("abcd*1234");
         clickOn("#signInButton");
-        //verifyThat pane de la ventana de stats es visible y luego clickar en el menu item de See all turnaments
+        clickOn("#windowOptionMenu");
+        clickOn("#allTournamentsMenuItem");
         verifyThat("#tournamentPane", isVisible());
     }
+
     //Test 1: Comprobar la inicialización del Stage y sus componentes
-    public void test01_initializeTournamentWindow(){
-       verifyThat("#lTournaments", isVisible());
-       verifyThat(tournamentBackground, (ImageView iv1) -> iv1.isVisible());
-       verifyThat(tournamentSmoke, (ImageView iv2) -> iv2.isVisible());
-       verifyThat(tournamentAgentImage, (ImageView iv3) -> iv3.isVisible());
-       verifyThat("#chbTournamentSearch", isVisible());
-       verifyThat("#chbTournamentSearch", (ChoiceBox c) -> c.getSelectionModel().getSelectedItem().toString().equals("ALL"));
-       verifyThat("#tfTournamentSearch", isVisible());
-       verifyThat("#tfTournamentSearch", hasText(""));
-       verifyThat("#tfTournamentSearch", isDisabled());
-//       verifyThat("#tvTournament", isVisible());
-//       verify las tableColumns
-       verifyThat("#bTournamentSearch", isVisible());
-       verifyThat("#bTournamentSearch", isEnabled());
-       verifyThat(bSearchImage, (ImageView iv4) -> iv4.isVisible());
-       verifyThat("#bTournamentMatches", isVisible());
-       verifyThat("#bTournamentMatches", isDisabled());
-       verifyThat("#bTournamentClean", isVisible());
-       verifyThat("#bTournamentClean", isEnabled());
-       verifyThat(bCleanImage, (ImageView iv5) -> iv5.isVisible());
-       verifyThat("#bTournamentHelp", isVisible());
-       verifyThat("#bTournamentHelp", isEnabled());
-       verifyThat(bHelpImage, (ImageView iv6) -> iv6.isVisible());
-       verifyThat("#bTournamentPrint", isVisible());
-       verifyThat("#bTournamentPrint", isEnabled());
-       verifyThat(bPrintImage, (ImageView iv7) -> iv7.isVisible());
-       verifyThat("#bTournamentDelete", isVisible());
-       verifyThat("#bTournamentDelete", isDisabled());
-       verifyThat(bDeleteImage, (ImageView iv8) -> iv8.isVisible());
-       verifyThat("#bTournamentAdd", isVisible());
-       verifyThat("#bTournamentAdd", isDisabled());
-       verifyThat(bAddImage, (ImageView iv9) -> iv9.isVisible());
+    public void test01_initializeTournamentWindow() {
+        verifyThat("#lTournaments", isVisible());
+        verifyThat(tournamentBackground, (ImageView iv1) -> iv1.isVisible());
+        verifyThat(tournamentSmoke, (ImageView iv2) -> iv2.isVisible());
+        verifyThat(tournamentAgentImage, (ImageView iv3) -> iv3.isVisible());
+        verifyThat("#chbTournamentSearch", isVisible());
+        verifyThat("#chbTournamentSearch", (ChoiceBox c) -> c.getSelectionModel().getSelectedItem().toString().equals("ALL"));
+        verifyThat("#tfTournamentSearch", isVisible());
+        verifyThat("#tfTournamentSearch", hasText(""));
+        verifyThat("#tfTournamentSearch", isDisabled());
+        verifyThat(tournamentTable, isVisible());
+        verifyThat("#bTournamentSearch", isVisible());
+        verifyThat("#bTournamentSearch", isEnabled());
+        verifyThat(bSearchImage, (ImageView iv4) -> iv4.isVisible());
+        verifyThat("#bTournamentMatches", isVisible());
+        verifyThat("#bTournamentMatches", isDisabled());
+        verifyThat("#bTournamentClean", isVisible());
+        verifyThat("#bTournamentClean", isEnabled());
+        verifyThat(bCleanImage, (ImageView iv5) -> iv5.isVisible());
+        verifyThat("#bTournamentHelp", isVisible());
+        verifyThat("#bTournamentHelp", isEnabled());
+        verifyThat(bHelpImage, (ImageView iv6) -> iv6.isVisible());
+        verifyThat("#bTournamentPrint", isVisible());
+        verifyThat("#bTournamentPrint", isEnabled());
+        verifyThat(bPrintImage, (ImageView iv7) -> iv7.isVisible());
+        verifyThat("#bTournamentDelete", isVisible());
+        verifyThat("#bTournamentDelete", isDisabled());
+        verifyThat(bDeleteImage, (ImageView iv8) -> iv8.isVisible());
+        verifyThat("#bTournamentAdd", isVisible());
+        verifyThat("#bTournamentAdd", isDisabled());
+        verifyThat(bAddImage, (ImageView iv9) -> iv9.isVisible());
     }
-    
+
     //Test 2: Comprobar que los botones se habilitan o no cuando deben
-    public void test02_buttonsAreEnabled(){
+    public void test02_buttonsAreEnabled() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -116,9 +126,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         verifyThat("#bTournamentMatches", isDisabled());
         verifyThat("#bTournamentDelete", isDisabled());
     }
-    
+
     //Test 3: Comprobar que el cleanButton funcione
-    public void test03_checkCleanButton(){
+    public void test03_checkCleanButton() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -128,8 +138,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         verifyThat("#tfTournamentSearch", hasText(""));
         verifyThat("#chbTournamentSearch", (ChoiceBox ch03) -> ch03.getSelectionModel().isSelected(0));
     }
+
     //Test 4: Comprobar que se realiza la busqueda filtrada por id del Tournament
-    public void test04_checkSearchId(){
+    public void test04_checkSearchId() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -137,8 +148,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         write("1");
         clickOn("#bTournamentSearch");
     }
+
     //Test 5: Comprobar que se realiza la busqueda filtrada por nombre
-    public void test05_checkSearchName(){
+    public void test05_checkSearchName() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -146,8 +158,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         write("Dos");
         clickOn("#bTournamentSearch");
     }
+
     //Test 6: Comprobar que se realiza la busqueda filtrada por bestOf
-    public void test06_checkSearchBestOf(){
+    public void test06_checkSearchBestOf() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -155,8 +168,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         write("3");
         clickOn("#bTournamentSearch");
     }
+
     //Test 7: Comprobar que se realiza la busqueda filtrada por date
-    public void test07_checkSearchDate(){
+    public void test07_checkSearchDate() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -164,8 +178,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         write("28/01/2024");
         clickOn("#bTournamentSearch");
     }
+
     //Test 8: Comprobar que se realiza la busqueda filtrada por id de un match
-    public void test08_checkSearchMatchId(){
+    public void test08_checkSearchMatchId() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
@@ -173,8 +188,9 @@ public class TournamentWindowTest  extends ApplicationTest{
         write("1");
         clickOn("#bTournamentSearch");
     }
+
     //Test 9: Comprobar que se realiza la busqueda de todos los torneos
-    public void test09_checkSearchAll(){
+    public void test09_checkSearchAll() {
         clickOn("#chbTournamentSearch");
         type(KeyCode.UP);
         type(KeyCode.UP);
@@ -184,26 +200,205 @@ public class TournamentWindowTest  extends ApplicationTest{
         type(KeyCode.ENTER);
         clickOn("#bTournamentSearch");
     }
+
     //Test 10: Comprobar que el createButton funcione
-    public void test10_checkAdd(){
-        clickOn("#chbTournamentAdd");
-        
+    public void test10_checkAdd() {
+        //Get tvTournament row count before adding the new Tournament
+        Integer rowCount = tournamentTable.getItems().size();
+
+        //Click on bTournament to create a new Tournament and add it inside tvTournament
+        verifyThat("bTournamentAdd", isEnabled());
+        clickOn("#bTournamentAdd");
+
+        //Check if there is one more row inside the table
+        assertEquals("The row hasn't been added.", rowCount + 1, tournamentTable.getItems().size());
     }
+
     //Test 11: Comprobar que se puede editar una celda de la columna tcName
-    
+    public void test11_updateName() {
+        //Get the table size
+        Integer rowCount = tournamentTable.getItems().size();
+
+        //Get the last added Tournament tcName cell
+        Node newRow = lookup("#tcName").nth(rowCount).query();
+
+        //Select the cell
+        clickOn(newRow);
+
+        //Get the Tournament object to compare it after the name update
+        Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+
+        //Get tcName cell in edit mode and modify its value(by default is 0)
+        doubleClickOn(newRow);
+        eraseText(1);
+        write("Name Test");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        //Check that the new value is stored in the table
+        verifyThat("Name Test", isVisible());
+
+        //Check the update was done correctly
+        clickOn(newRow);
+        assertNotEquals("Name update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+    }
+
     //Test 12: Comprobar que se puede editar una celda de la columna tcDescription
-    
-    //Test 13: Comprobar que se puede editar una celda de la columna tcFormat
-    
+    public void test12_updateDescription() {
+        //Get the table size
+        Integer rowCount = tournamentTable.getItems().size();
+
+        //Get the last added Tournament tcDescription cell
+        Node newRow = lookup("#tcDescription").nth(rowCount).query();
+
+        //Select the cell
+        clickOn(newRow);
+
+        //Get the Tournament object to compare it after the description update
+        Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+
+        //Get tcDescription cell in edit mode and modify its value(by default is 0)
+        doubleClickOn(newRow);
+        eraseText(1);
+        write("Description Test");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        //Check that the new value is stored in the table
+        verifyThat("Description Test", isVisible());
+
+        //Check the update was done correctly
+        clickOn(newRow);
+        assertNotEquals("Description update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+    }
+
+    //Test 13: Comprobar que se puede editar una celda de la columna tcBestOf
+    public void test13_updateBestOf() {
+        //Get the table size
+        Integer rowCount = tournamentTable.getItems().size();
+
+        //Get the last added Tournament tcBestOF cell
+        Node newRow = lookup("#tcBestOf").nth(rowCount).query();
+
+        //Select the cell
+        clickOn(newRow);
+
+        //Get the Tournament object to compare it after the bestOf update
+        Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+
+        //Get tcBestOf cell in edit mode and modify its value(by default is 0)
+        doubleClickOn(newRow);
+        eraseText(1);
+        write("9");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        //Check that the new value is stored in the table
+        verifyThat("9", isVisible());
+
+        //Check the update was done correctly
+        clickOn(newRow);
+        assertNotEquals("BestOf update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+    }
+
     //Test 14: Comprobar que se puede editar una celda de la columna tcDate
-    
+    public void test14_updateDate() {
+        //Get the table size
+        Integer rowCount = tournamentTable.getItems().size();
+
+        //Get the last added Tournament tcDate cell
+        Node newRow = lookup("#tcDate").nth(rowCount).query();
+
+        //Select the cell
+        clickOn(newRow);
+
+        //Get the Tournament object to compare it after the date update
+        Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+
+        //Get tcDate cell in edit mode and modify its value
+        doubleClickOn(newRow);
+        eraseText(1);
+        write("31/10/2023");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        //Check that the new value is stored in the table
+        verifyThat("31/10/2023", isVisible());
+
+        //Check the update was done correctly
+        clickOn(newRow);
+        assertNotEquals("BestOf update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+    }
+
     //Test 15: Comprobar que el deleteButton funcione
-    
-    //Test 16: Comprobar que el printButton funcione
-    
+    public void test15_deleteTournament() {
+        //Check that the bTournamentDelete button is disabled
+        verifyThat("#bTournamentDelete", isDisabled());
+
+        //Get the table size
+        Integer rowCount = tournamentTable.getItems().size();
+
+        //Get the last added Tournament tcName cell
+        Node newRow = lookup("#tcName").nth(rowCount).query();
+
+        //Select the cell
+        clickOn(newRow);
+
+        //Check that the bTournamentDelete button is now enabled
+        verifyThat("#bTournamentDelete", isEnabled());
+
+        //Get the Tournament object to compare it after the name update
+        Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+
+        //Click the delete button
+        clickOn("#bTournamentDelete");
+
+        //Check if the confirmation pane is visible
+        verifyThat("Are you sure you want to delete this Tournament?", isVisible());
+
+        //Finish the delete
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        //Check if the row was deleted
+        assertEquals("Tournament not deleted", rowCount - 1, tournamentTable.getItems().size());
+    }
+
+    //Test 16: Comprobar que el helpButton funcione
+    public void test16_checkHelpButton() {
+        //Check that the help button is enabled
+        verifyThat("#bTournamentHelp", isVisible());
+
+        //Click the button and check if the help window is visible
+        clickOn("#bTournamentHelp");
+        verifyThat("webView", isVisible());
+
+        //Close the help window and go back to the Tournament window
+        press(KeyCode.ESCAPE).release(KeyCode.ESCAPE);
+        verifyThat("Are you sure you want to exit?", isVisible());
+        clickOn("Aceptar");
+        verifyThat("#tournamentPane", isVisible());
+    }
+
     //Test 17: Comprobar que el matchesButton funcione
+    public void test17_checkMatchesButton() {
+        //Check the matches button is disabled
+        verifyThat("#bTournamentMatches", isDisabled());
+
+        //Select the first row and check if the matches button is now enabled
+        Node firstRow = lookup("#tcDate").nth(0).query();
+        clickOn(firstRow);
+        verifyThat("#bTournamentMatches", isVisible());
+
+        //Click the button and check if the matches window is visible
+        clickOn("#bTournamentMatches");
+        verifyThat("#rootPane", isVisible());
+
+        //Get back to the tournament window
+        clickOn("#windowOptionMenu");
+        clickOn("#allTournamentsMenuItem");
+        verifyThat("#tournamentPane", isVisible());
+    }
     
-    //Test 18: Comprobar que el helpButton funcione
-    
-    
+    //Test 18: Comprobar que se muestra un Alert de confirmacion al intentar cerrar la ventana
+    public void test18_closeWindow(){
+        press(KeyCode.ESCAPE).release(KeyCode.ESCAPE);
+        verifyThat("Are you sure you want to exit?", isVisible());
+        clickOn("Aceptar");
+    }
 }

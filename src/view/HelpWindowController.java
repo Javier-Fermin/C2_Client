@@ -5,10 +5,14 @@
  */
 package view;
 
+import java.util.Optional;
 import java.util.logging.Logger;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -39,6 +43,16 @@ public class HelpWindowController{
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setOnShowing(this::handleWindowShowing);
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit?").showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        return;
+                    }
+                    event.consume();
+                }
+            });
         stage.show();
     }
     /**

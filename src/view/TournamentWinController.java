@@ -243,12 +243,18 @@ public class TournamentWinController {
                 tcDescription.setCellFactory(TextFieldTableCell.<Tournament>forTableColumn());
                 tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Tournament, String> t) -> {
                     try {
-                        Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                        if(t.getNewValue().length()>281){
+                            new Alert(Alert.AlertType.ERROR, "Description length surpased, please insert a description of 281 characters or less.", ButtonType.OK).showAndWait();
+                        } else if(t.getNewValue()==null){
+                            new Alert(Alert.AlertType.ERROR, "Description must be informed to be updated.", ButtonType.OK).showAndWait();
+                        }else{
+                            Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
 
-                        updatedTournament.setDescription(t.getNewValue());
+                            updatedTournament.setDescription(t.getNewValue());
 
-                        tournamentable.updateTournament(updatedTournament);
-
+                            tournamentable.updateTournament(updatedTournament);
+                        }
+                        
                         refreshTable();
                     } catch (UpdateException ex) {
                         new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
