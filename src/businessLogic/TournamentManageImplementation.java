@@ -150,17 +150,17 @@ public class TournamentManageImplementation implements TournamentManage{
     }
 
     @Override
-    public Tournament findTournamentByMatch(String matchId) throws ReadException { //parameter match needed
+    public Tournament findTournamentByMatch(String matchId) throws ReadException {
         Tournament tournament = null;
         MatchManager matchManager = MatchManagerFactory.getMatchManager();
         Match match = matchManager.findAMatch(new Integer(matchId));
         
         try{
             LOGGER.info("TournamentManage: Finding tournament.");
-            tournament = tournamentClient.findTournamentByMatch_XML(Tournament.class, match); //change tournament to match
+            tournament = tournamentClient.findTournamentByMatch_XML(Tournament.class, match);
             
             if(tournament!=null){
-                LOGGER.log(Level.INFO, "TournamentManage: tournament id=", tournament.getIdTournament());
+                LOGGER.log(Level.INFO, "TournamentManage: tournament id=", match);
             }
             
         }catch(ClientErrorException e){

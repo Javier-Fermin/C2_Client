@@ -185,7 +185,10 @@ public class TournamentWindowTest  extends ApplicationTest{
         clickOn("#bTournamentSearch");
     }
     //Test 10: Comprobar que el createButton funcione
-    
+    public void test10_checkAdd(){
+        clickOn("#chbTournamentAdd");
+        
+    }
     //Test 11: Comprobar que se puede editar una celda de la columna tcName
     
     //Test 12: Comprobar que se puede editar una celda de la columna tcDescription

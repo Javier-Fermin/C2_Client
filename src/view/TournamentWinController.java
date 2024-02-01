@@ -64,6 +64,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import model.User;
 import model.UserType;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -271,7 +272,8 @@ public class TournamentWinController {
                         }
                         refreshTable();
                     } catch (UpdateException ex) {
-                        Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
+                        
+                        new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
                     }
                 });
             }
@@ -320,7 +322,7 @@ public class TournamentWinController {
                 //Check whether item is selected and set value of selected item to Label
                 if (tvTournaments.getSelectionModel().getSelectedItem() != null) {
                     bTournamentMatches.setDisable(false);
-                    if (!user.getUserType().equals(UserType.PLAYER)) {
+                    if (user.getUserType().equals(UserType.ADMIN)) {
                         bTournamentDelete.setDisable(false);
                         cmDelete.setDisable(false);
                     }
@@ -363,7 +365,7 @@ public class TournamentWinController {
 
         } catch (ReadException ex) {
             new Alert(Alert.AlertType.ERROR, "An error occurred loading the Tournament window.", ButtonType.OK).showAndWait();
-            Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
     // metodos de componentes
@@ -426,6 +428,7 @@ public class TournamentWinController {
                 }
             }
         } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
             new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
@@ -453,8 +456,9 @@ public class TournamentWinController {
             //close this window
             stage.close();
             
-        } catch (Exception ex) {
-            Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            LOGGER.severe(ex.getMessage());
         }
     }
 
@@ -465,6 +469,7 @@ public class TournamentWinController {
             tfTournamentSearch.setText("");
             refreshTable();
         } catch (Exception ex) {
+            LOGGER.severe(ex.getMessage());
             new Alert(Alert.AlertType.ERROR, "Something went wrong, impossible to refresh the table.", ButtonType.OK).showAndWait();
         }
     }
@@ -482,13 +487,11 @@ public class TournamentWinController {
             
             //Initializes and shows help stage
             helpController.initAndShowStage(root);
-        }catch(Exception ex){
+        }catch(IOException ex){
                 //If there is an error show message and
                 //log it.
-                new Alert(Alert.AlertType.ERROR,"Error al mostrar ventana de ayuda:\n", ButtonType.OK).showAndWait();
-                LOGGER.log(Level.SEVERE,
-                            "UI GestionUsuariosController: Error loading help window: {0}",
-                            ex.getMessage());
+                new Alert(Alert.AlertType.ERROR,"Error al mostrar ventana de ayuda:\n"+ex.getMessage(), ButtonType.OK).showAndWait();
+                LOGGER.severe(ex.getMessage());
         }
     }
 
@@ -501,7 +504,7 @@ public class TournamentWinController {
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-        } catch (Exception e) {
+        } catch (JRException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
         }
     }
@@ -520,8 +523,8 @@ public class TournamentWinController {
             }
             tvTournaments.getSelectionModel().clearSelection();
         } catch (DeleteException ex) {
-            Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, "Delete error" + ex.getMessage());
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            LOGGER.severe(ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Delete error:" + ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
@@ -532,18 +535,15 @@ public class TournamentWinController {
             tournamentable.createTournament(newTournament);
             refreshTable();
         } catch (CreateException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            LOGGER.severe(ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "An error has occurred while adding the new Tournament" + ex.getMessage(), ButtonType.OK).showAndWait();
         }
 
     }
 
     private void refreshTable(ObservableList<Tournament> tournaments) {
-        try {
-            tvTournaments.getItems().clear();
-            tvTournaments.setItems(tournaments);
-        } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR, "Something went wrong, impossible to refresh the table.", ButtonType.OK).showAndWait();
-        }
+        tvTournaments.getItems().clear();
+        tvTournaments.setItems(tournaments);
     }
 
     private void refreshTable() {
@@ -553,12 +553,13 @@ public class TournamentWinController {
             tvTournaments.setItems(refreshedTableItems);
 
         } catch (ReadException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            LOGGER.severe(ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
     private boolean isNumeric(String tfSearchText) {
-        if (tfSearchText.equals(null)) {
+        if (tfSearchText == null) {
             return false;
         }
         try {
