@@ -36,6 +36,7 @@ public class LeagueServerErrorTest extends ApplicationTest {
         FxToolkit.setupApplication(Client.class);
     }
 
+    //method for test of create
     @Test
     public void test02_CreateLeagueServerErrorTest() {
         verifyThat("#btnCreate", isEnabled());
@@ -43,6 +44,7 @@ public class LeagueServerErrorTest extends ApplicationTest {
         verifyThat("Create find server error", isVisible());
     }
 
+    //method for test of update
     @Test
     public void test03_UpdateServerError() {
         Integer size = table.getItems().size();
@@ -54,6 +56,7 @@ public class LeagueServerErrorTest extends ApplicationTest {
         verifyThat("Server update error", isVisible());
     }
     
+    //method for test of search
     @Test
     public void test07_SearchServerError() {
         verifyThat("#cbSeachType", isEnabled());
@@ -62,7 +65,7 @@ public class LeagueServerErrorTest extends ApplicationTest {
         verifyThat("Server search error", isVisible());
     }
 
-
+    //method for test of delete
     @Test
     public void test12_DeleteLeagueServerError() {
         verifyThat("#btnDelete", isDisabled());
