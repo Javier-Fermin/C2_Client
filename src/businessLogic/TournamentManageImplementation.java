@@ -9,7 +9,6 @@ import exceptions.CreateException;
 import exceptions.DeleteException;
 import exceptions.ReadException;
 import exceptions.UpdateException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +37,7 @@ public class TournamentManageImplementation implements TournamentManage{
         try{
             tournamentClient.create_XML(tournament);
             LOGGER.info("TournamentManage: tournament created.");
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception creating tournament:", e.getMessage());
             throw new CreateException("Error creating a Tournament: " + e.getMessage());
         }
@@ -49,7 +48,7 @@ public class TournamentManageImplementation implements TournamentManage{
         try{
             tournamentClient.update_XML(tournament);
             LOGGER.info("TournamentManage: tournament updated.");
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception updating tournament:", e.getMessage());
             throw new UpdateException("Error updating a Tournament: " + e.getMessage());
         }
@@ -60,7 +59,7 @@ public class TournamentManageImplementation implements TournamentManage{
         try{
             tournamentClient.delete(tournament.getIdTournament().toString());
             LOGGER.info("TournamentManage: tournament deleted.");
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception deleting tournament:", e.getMessage());
             throw new DeleteException("Error deleting a Tournament: " + e.getMessage());
         }
@@ -78,7 +77,7 @@ public class TournamentManageImplementation implements TournamentManage{
                 LOGGER.log(Level.INFO, "TournamentManage: tournament id=", tournament.getIdTournament());
             }
             
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournament:", e.getMessage());
             throw new ReadException("Error finding the Tournament: " + e.getMessage());
         }
@@ -94,7 +93,7 @@ public class TournamentManageImplementation implements TournamentManage{
             LOGGER.info("TournamentManage: Finding all tournaments.");
             tournaments = tournamentClient.findAllTournaments_XML(new GenericType<List<Tournament>>() {});
             
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());
             throw new ReadException("Error finding all Tournaments: " + e.getMessage());
         }
@@ -110,7 +109,7 @@ public class TournamentManageImplementation implements TournamentManage{
             LOGGER.info("TournamentManage: Finding tournaments by name.");
             tournament = tournamentClient.findTournamentByName_XML(Tournament.class, name);
             
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());
             throw new ReadException("Error finding Tournaments by name: " + e.getMessage());
         }
@@ -126,7 +125,7 @@ public class TournamentManageImplementation implements TournamentManage{
             LOGGER.info("TournamentManage: Finding tournaments by format.");
             tournaments = tournamentClient.findTournamentByFormat_XML(new GenericType<List<Tournament>>() {}, bestOf);
             
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());
             throw new ReadException("Error finding Tournaments by format: " + e.getMessage());
         }
@@ -142,7 +141,7 @@ public class TournamentManageImplementation implements TournamentManage{
             LOGGER.info("TournamentManage: Finding tournaments by date.");
             tournaments = tournamentClient.findTournamentByDate_XML(new GenericType<List<Tournament>>() {}, date);
             
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "TournamentManage: Exception finding tournaments:", e.getMessage());
             throw new ReadException("Error finding Tournaments by date: " + e.getMessage());
         }

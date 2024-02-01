@@ -194,11 +194,11 @@ public class TournamentWinController {
             chbTournamentSearch.setItems(FXCollections.observableArrayList("ALL", "ID", "NAME", "DATE", "FORMAT", "MATCH"));
             chbTournamentSearch.getSelectionModel().selectedItemProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
                 try {
+                    tfTournamentSearch.clear();
                     //Check whether item is selected and set value of selected item to Label
                     if (!chbTournamentSearch.getSelectionModel().getSelectedItem().equals("ALL")) {
                         tfTournamentSearch.setDisable(false);
                     } else {
-                        tfTournamentSearch.clear();
                         tfTournamentSearch.setDisable(true);
                         bTournamentSearch.setDisable(false);
                     }

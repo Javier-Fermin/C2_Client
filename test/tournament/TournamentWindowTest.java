@@ -129,32 +129,78 @@ public class TournamentWindowTest  extends ApplicationTest{
         verifyThat("#chbTournamentSearch", (ChoiceBox ch03) -> ch03.getSelectionModel().isSelected(0));
     }
     //Test 4: Comprobar que se realiza la busqueda filtrada por id del Tournament
-    
+    public void test04_checkSearchId(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("1");
+        clickOn("#bTournamentSearch");
+    }
     //Test 5: Comprobar que se realiza la busqueda filtrada por nombre
-    
+    public void test05_checkSearchName(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("Dos");
+        clickOn("#bTournamentSearch");
+    }
     //Test 6: Comprobar que se realiza la busqueda filtrada por bestOf
-    
+    public void test06_checkSearchBestOf(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("3");
+        clickOn("#bTournamentSearch");
+    }
     //Test 7: Comprobar que se realiza la busqueda filtrada por date
-    
+    public void test07_checkSearchDate(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("28/01/2024");
+        clickOn("#bTournamentSearch");
+    }
     //Test 8: Comprobar que se realiza la busqueda filtrada por id de un match
+    public void test08_checkSearchMatchId(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("1");
+        clickOn("#bTournamentSearch");
+    }
+    //Test 9: Comprobar que se realiza la busqueda de todos los torneos
+    public void test09_checkSearchAll(){
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.UP);
+        type(KeyCode.UP);
+        type(KeyCode.UP);
+        type(KeyCode.UP);
+        type(KeyCode.UP);
+        type(KeyCode.ENTER);
+        clickOn("#bTournamentSearch");
+    }
+    //Test 10: Comprobar que el createButton funcione
     
-    //Test 9: Comprobar que el createButton funcione
+    //Test 11: Comprobar que se puede editar una celda de la columna tcName
     
-    //Test 10: Comprobar que se puede editar una celda de la columna tcName
+    //Test 12: Comprobar que se puede editar una celda de la columna tcDescription
     
-    //Test 11: Comprobar que se puede editar una celda de la columna tcDescription
+    //Test 13: Comprobar que se puede editar una celda de la columna tcFormat
     
-    //Test 12: Comprobar que se puede editar una celda de la columna tcFormat
+    //Test 14: Comprobar que se puede editar una celda de la columna tcDate
     
-    //Test 13: Comprobar que se puede editar una celda de la columna tcDate
+    //Test 15: Comprobar que el deleteButton funcione
     
-    //Test 14: Comprobar que el deleteButton funcione
+    //Test 16: Comprobar que el printButton funcione
     
-    //Test 15: Comprobar que el printButton funcione
+    //Test 17: Comprobar que el matchesButton funcione
     
-    //Test 16: Comprobar que el matchesButton funcione
-    
-    //Test 17: Comprobar que el helpButton funcione
+    //Test 18: Comprobar que el helpButton funcione
     
     
 }
