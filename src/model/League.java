@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * NamedQueries for League entity
  */
 @XmlRootElement
-public class League implements Serializable {
+public class League implements Serializable, Comparable<League> {
 
     /**
      * Id field for the league entity
@@ -136,22 +136,49 @@ public class League implements Serializable {
             return false;
         }
         final League other = (League) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        if (!Objects.equals(this.name.get(), other.name.get())) {
             return false;
         }
-        if (!Objects.equals(this.description, other.description)) {
+        if (!Objects.equals(this.description.get(), other.description.get())) {
             return false;
         }
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        if (!Objects.equals(this.startDate, other.startDate)) {
+        if (!Objects.equals(this.startDate.get(), other.startDate.get())) {
             return false;
         }
-        if (!Objects.equals(this.endDate, other.endDate)) {
+        if (!Objects.equals(this.endDate.get(), other.endDate.get())) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(League obj) {
+        if (this == obj) {
+            return 0;
+        }
+        if (obj == null) {
+            return 1;
+        }
+        if (getClass() != obj.getClass()) {
+            return 1;
+        }
+        final League other = (League) obj;
+        if (!Objects.equals(this.name.get(), other.name.get())) {
+            return 1;
+        }
+        if (!Objects.equals(this.description.get(), other.description.get())) {
+            return 1;
+        }
+        if (!Objects.equals(this.startDate.get(), other.startDate.get())) {
+            return 1;
+        }
+        if (!Objects.equals(this.endDate.get(), other.endDate.get())) {
+            return 1;
+        }
+        return 0;
     }
     
 }

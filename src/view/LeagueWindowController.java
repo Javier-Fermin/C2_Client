@@ -195,27 +195,26 @@ public class LeagueWindowController {
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tcName.setCellFactory(TextFieldTableCell.<League>forTableColumn());
             tcName.setOnEditCommit((TableColumn.CellEditEvent<League, String> t) -> {
-                ObservableList<League> findLeague = null;
                 try {
+                    ObservableList<League> findLeague = FXCollections.observableArrayList(leagueManage.findLeagueByName(t.getNewValue()));;
                     League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                    findLeague = FXCollections.observableArrayList(leagueManage.findLeagueByName(t.getNewValue()));
                     if (t.getNewValue().isEmpty()) {
                         throw new UpdateException();
                     } else {
-                        if (!findLeague.isEmpty() || t.getNewValue().matches("[0-9]+")
+                        if (!findLeague.isEmpty() || !t.getNewValue().matches("[A-za-z\\s]+")
                                 || t.getNewValue().length() > 20) {
                             throw new UpdateException();
                         } else {
                             league.setName(t.getNewValue());
                             leagueManage.updateLeague(league);
-                            refreshTable();
+                            tvLeagues.refresh();
                         }
                     }
                 } catch (ReadException | UpdateException e) {
                     if (t.getNewValue().isEmpty()) {
                         new Alert(Alert.AlertType.ERROR, "all fields are required to fill", ButtonType.OK).showAndWait();
                     } else {
-                        if (!findLeague.isEmpty() || t.getNewValue().matches("[0-9]+")
+                        if (!t.getNewValue().matches("[A-za-z\\s]+")
                                 || t.getNewValue().length() > 20) {
                             new Alert(Alert.AlertType.ERROR, "The name value is incorrect", ButtonType.OK).showAndWait();
                         } else {
@@ -223,7 +222,7 @@ public class LeagueWindowController {
                         }
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
-                    refreshTable();
+                    tvLeagues.refresh();
                 }
             });
             tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -249,7 +248,7 @@ public class LeagueWindowController {
                         }
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
-                    refreshTable();
+                    tvLeagues.refresh();
                 }
             });
 
@@ -266,7 +265,7 @@ public class LeagueWindowController {
                     } else {
                         league.setStartDate(t.getNewValue());
                         leagueManage.updateLeague(league);
-                        refreshTable();
+                        tvLeagues.refresh();
                     }
                 } catch (UpdateException e) {
                     if (league.getEndDate().before(t.getNewValue())) {
@@ -275,12 +274,13 @@ public class LeagueWindowController {
                         new Alert(Alert.AlertType.ERROR, "Server Update Error", ButtonType.OK).showAndWait();
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
+                    tvLeagues.refresh();
                 }
             });
-            tcStartDate.setOnEditCancel((TableColumn.CellEditEvent<League ,Date> t) -> {
-                    new Alert(Alert.AlertType.ERROR, "Please check a date please", ButtonType.OK).showAndWait();
-                    refreshTable();
-                });
+            tcStartDate.setOnEditCancel((TableColumn.CellEditEvent<League, Date> t) -> {
+                new Alert(Alert.AlertType.ERROR, "Start date update cancel", ButtonType.OK).showAndWait();
+                tvLeagues.refresh();
+            });
             tcEndDate.setCellValueFactory(new PropertyValueFactory<>("endDate"));
             tcEndDate.setCellFactory(dateCellFactory);
             tcEndDate.setOnEditCommit((TableColumn.CellEditEvent<League, Date> t) -> {
@@ -291,20 +291,20 @@ public class LeagueWindowController {
                     } else {
                         league.setEndDate(t.getNewValue());
                         leagueManage.updateLeague(league);
-                        refreshTable();
+                        tvLeagues.refresh();
                     }
                 } catch (UpdateException e) {
-                    if (league.getEndDate().before(t.getNewValue())) {
+                    if (t.getNewValue().before(league.getStartDate())) {
                         new Alert(Alert.AlertType.ERROR, "The EndDate value is incorrect", ButtonType.OK).showAndWait();
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Server update Error", ButtonType.OK).showAndWait();
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
-                    refreshTable();
+                    tvLeagues.refresh();
                 }
             });
             tcEndDate.setOnEditCancel((TableColumn.CellEditEvent<League, Date> t) -> {
-                new Alert(Alert.AlertType.ERROR, "Please check a date please", ButtonType.OK).showAndWait();
+                new Alert(Alert.AlertType.ERROR, "End date update cancel", ButtonType.OK).showAndWait();
                 refreshTable();
             });
 
@@ -350,7 +350,14 @@ public class LeagueWindowController {
             new Alert(Alert.AlertType.ERROR, "Create server error", ButtonType.OK).showAndWait();
             Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Create server error");
         } catch (ReadException e) {
-            if (tvLeagues.getItems().contains(league)) {
+            Boolean found = false;
+            for (Object l : tvLeagues.getItems()) {
+                if (((League) l).compareTo(league) == 0) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
                 new Alert(Alert.AlertType.ERROR, "The name already exist", ButtonType.OK).showAndWait();
                 Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The name already exist");
             } else {
@@ -362,16 +369,24 @@ public class LeagueWindowController {
 
     @FXML
     private void ClearLeagueTableButtonAction(ActionEvent event) {
-        cbSeachType.getSelectionModel().selectFirst();
-        tfsearch.setText("");
-        refreshTable();
+        try {
+            cbSeachType.getSelectionModel().selectFirst();
+            tfsearch.setText("");
+            ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findAllLeagues());
+            tvLeagues.setItems(finishedLeagueList);
+        } catch (ReadException ex) {
+            new Alert(Alert.AlertType.ERROR, "Server search error", ButtonType.OK).showAndWait();
+            Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Server search exception" + ex.getMessage());
+        }
+
     }
 
     @FXML
     private void SearchLeagueButtonAction(ActionEvent event) {
         try {
             if (cbSeachType.getSelectionModel().getSelectedItem().equals("ALL")) {
-                refreshTable();
+                ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findAllLeagues());
+                tvLeagues.setItems(finishedLeagueList);
             } else if (cbSeachType.getSelectionModel().getSelectedItem().equals("FINISHED")) {
                 String date = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toString();
                 ObservableList<League> finishedLeagueList = FXCollections.observableArrayList(leagueManage.findAllFinishLeagues(date));
@@ -493,8 +508,7 @@ public class LeagueWindowController {
     }
 
     private void refreshTable() {
-        ObservableList<League> refreshList = FXCollections.observableArrayList(tvLeagues.getItems());
-        tvLeagues.setItems(refreshList);
+        btnSearch.fire();
         tvLeagues.getSelectionModel().clearSelection();
     }
 }
