@@ -5,10 +5,12 @@
  */
 package cryptography;
 
+import static com.google.common.io.ByteStreams.toByteArray;
 import exceptions.PasswordEncryptionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -33,13 +35,12 @@ public class AsymetricClient {
         byte[] encryptedData = null;
         try {
             // Load Private Key
-            FileInputStream fis = new FileInputStream("./src/cryptography/PublicKey.der");
-            byte[] publicKeyBytes = new byte[fis.available()];
-            fis.read(publicKeyBytes);
-            fis.close();
+            InputStream input = AsymetricClient.class.getResourceAsStream("public.der");
+            byte fileKey[] = toByteArray(input);
+            input.close();
 
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(fileKey);
             
             PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
