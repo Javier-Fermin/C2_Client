@@ -11,7 +11,7 @@ import model.Match;
 /**
  * Custom TableCell for handling date editing in a TableView for Match entities.
  * 
- * @Author Imanol
+ * @author Imanol
  */
 public class DateMatchCellPicker extends TableCell<Match, Date> {
 

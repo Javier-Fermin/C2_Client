@@ -21,7 +21,8 @@ public interface StatsManager {
     /**
      * Finds a {@link Stats} by its id
      * 
-     * @param id the id of the desired stats
+     * @param matchId the match id
+     * param playerId the player id
      * @return the {@link Stats} with the given id
      * @throws ReadException if there is an exception during the method
      */
@@ -47,7 +48,7 @@ public interface StatsManager {
     /**
      * Finds a list of {@link Stats} by a match id
      * 
-     * @param matchId the match id to be searched
+     * @param matchDescription  the match id to be searched
      * @return the list of {@link Stats} that fullfilled the requirements
      * @throws ReadException if there is any exception during the method
      */
