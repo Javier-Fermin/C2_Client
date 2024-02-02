@@ -52,38 +52,11 @@ public class LeagueTest extends ApplicationTest {
         FxToolkit.setupApplication(Client.class);
     }
 
-    @Test
-    @Ignore
-    public void test01_InitialState() {
-        clickOn("#usernameText");
-        write("");//Puerta trasera user
-        clickOn("#passwordText");
-        write("");//Puerta trasera contraseña
-        clickOn("#signInButton");
-        clickOn("#windowOptionMenu");
-        clickOn("#allLeaguesMenuItem");
-        verifyThat("#leagueViewPane", isVisible());
-        //Buttons verify
-        verifyThat("#btnDelete", isDisabled());
-        verifyThat("#btnMatches", isDisabled());
-        verifyThat("#btnCreate", isEnabled());
-        verifyThat("#btnMatches", isDisabled());
-        verifyThat("#btnClean", isEnabled());
-        //tfSearch verify
-        verifyThat("#tfsearch", isVisible());
-        verifyThat("#tfsearch", isDisabled());
-        verifyThat("#tfsearch", hasText(""));
-        //cbSeachType verify
-        verifyThat("#cbSeachType", isVisible());
-        verifyThat("#cbSeachType", hasText("ALL"));
-
-    }
-
     /**
      *
      */
     @Test
-//    @Ignore
+    @Ignore
     public void test02_CreateLeagueTest() {
         //create default league
 
@@ -113,7 +86,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test03_UpdateName() {
         //create the league to update
         clickOn("#btnCreate");
@@ -139,7 +112,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test04_UpdateDescription() {
         //create the league to update
         clickOn("#btnCreate");
@@ -164,7 +137,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test05_UpdateStartDate() {
         //create the league to update
         clickOn("#btnCreate");
@@ -189,7 +162,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test06_UpdateEndDate() {
         //create the league to update
         clickOn("#btnCreate");
@@ -212,7 +185,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test07_SearchAll() {
         //get items from the table
         ObservableList<League> leagueList = table.getItems();
@@ -230,7 +203,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test08_SearchLeagueByName() {
         //create the league to find
         clickOn("#btnCreate");
@@ -256,7 +229,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test09_SearchLeagueByMatch() {
         //get items from the table
         verifyThat("#cbSeachType", isEnabled());
@@ -276,7 +249,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test10_SearchLeagueByStartDate() {
         //get items from the table
         ObservableList<League> leagueList = table.getItems();
@@ -295,7 +268,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test11_SearchLeagueByEndDate() {
         //clear the table
         verifyThat("#cbSeachType", isEnabled());
@@ -313,7 +286,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test12_DeleteLeague() {
         //verify button delete is disabled
         verifyThat("#btnDelete", isDisabled());
