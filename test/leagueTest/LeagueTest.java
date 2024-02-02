@@ -56,9 +56,9 @@ public class LeagueTest extends ApplicationTest {
     @Ignore
     public void test01_InitialState() {
         clickOn("#usernameText");
-        write("");//Puerta trasera user
+        write("root");//Puerta trasera user
         clickOn("#passwordText");
-        write("");//Puerta trasera contraseña
+        write("abcd*1234");//Puerta trasera contraseña
         clickOn("#signInButton");
         clickOn("#windowOptionMenu");
         clickOn("#allLeaguesMenuItem");

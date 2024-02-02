@@ -11,9 +11,11 @@ import exceptions.DeleteException;
 import exceptions.InsufficientValuesException;
 import exceptions.NoResultFoundException;
 import exceptions.ReadException;
+import exceptions.StatsAlreadyExists;
 import exceptions.UpdateException;
 import exceptions.WrongFilterException;
 import exceptions.WrongValueException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -24,13 +26,13 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -42,17 +44,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
@@ -77,7 +76,7 @@ import tableCells.EditingStringCells;
 /**
  * This is the controller responsible of the Stats window.
  *
- * @author javie
+ * @author Javier
  */
 public class StatsWindowController {
 
@@ -285,19 +284,19 @@ public class StatsWindowController {
         //The title of the window is set to "Stats"
         stage.setTitle("Stats");
         //Setting the icon of the window
-        stage.getIcons().add(new Image("/resources/images/Icon.png"));
+        stage.getIcons().add(new Image("/resources/images/Icon.jpg"));
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
-                    //If you accept, you will exit the application.
-                    //If you cancel, you will return to the initial window.
-                    Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit?").showAndWait();
-                    if (result.isPresent() && result.get() == ButtonType.OK) {
-                        Platform.exit();
-                    }
-                    event.consume();
+            @Override
+            public void handle(WindowEvent event) {
+                //If you accept, you will exit the application.
+                //If you cancel, you will return to the initial window.
+                Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit?").showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    Platform.exit();
                 }
-            });
+                event.consume();
+            }
+        });
 
         //--------------------------------BUTTONS-------------------------------
         LOGGER.info("Setting up the buttons");
@@ -320,6 +319,9 @@ public class StatsWindowController {
         cmPrint.setOnAction(this::handlePrintOnAction);
         LOGGER.info("Print buttons ready");
 
+        tbHelp.setOnAction(this::handleHelpOnAction);
+        LOGGER.info("Help button ready");
+
         //---------------------------------TABLE--------------------------------
         LOGGER.info("Prepairing the table");
         Callback<TableColumn<Stats, Player>, TableCell<Stats, Player>> cellPlayerFactory
@@ -328,20 +330,27 @@ public class StatsWindowController {
         tcPlayer.setCellValueFactory(
                 new PropertyValueFactory<>("Player"));
         tcPlayer.setOnEditCommit((TableColumn.CellEditEvent<Stats, Player> t) -> {
+            errorLbl.setText("");
+            Stats stat = ((Stats) t.getTableView().getItems().get(
+                    t.getTablePosition().getRow()));
             try {
                 if (!t.getNewValue().getNickname().isEmpty()) {
-                    Stats stat = ((Stats) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow()));
                     Player found = playerManager.findPlayerByNickname(t.getNewValue().getNickname());
                     Player old = new Player(t.getOldValue());
+
                     stat.setPlayer(found);
                     if (found != null) {
                         if (!stat.getMatch().getDescription().isEmpty()) {
+                            if (stats.stream()
+                                    .filter(s -> s.getPlayer().getId().equals(stat.getPlayer().getId())
+                                    && s.getMatch().getId().equals(stat.getMatch().getId())).count() == 2) {
+                                throw new StatsAlreadyExists("The stat you are trying to create already exists");
+                            }
                             if (old.getNickname().isEmpty()) {
                                 LOGGER.info("Creating stat: " + stat.toString());
                                 StatsId id = new StatsId(
-                                            stat.getMatch().getId().toString(),
-                                            stat.getPlayer().getId().toString());
+                                        stat.getMatch().getId().toString(),
+                                        stat.getPlayer().getId().toString());
                                 stat.setId(id);
                                 Stats toCreate = new Stats(
                                         id,
@@ -363,8 +372,8 @@ public class StatsWindowController {
                                         null, null);
                                 statsManager.deleteStats(toDelete);
                                 StatsId id = new StatsId(
-                                    stat.getMatch().getId().toString(),
-                                    stat.getPlayer().getId().toString());
+                                        stat.getMatch().getId().toString(),
+                                        stat.getPlayer().getId().toString());
                                 stat.setId(id);
                                 Stats toUpdate = new Stats(
                                         id,
@@ -381,6 +390,10 @@ public class StatsWindowController {
             } catch (ReadException | CreateException | DeleteException | UpdateException ex) {
                 errorLbl.setText(ex.getMessage());
                 LOGGER.severe(ex.getMessage());
+            } catch (StatsAlreadyExists e) {
+                errorLbl.setText(e.getMessage());
+                LOGGER.severe(e.getMessage());
+                stats.remove(stat);
             } finally {
                 statsTableView.refresh();
             }
@@ -393,20 +406,27 @@ public class StatsWindowController {
         tcDescription.setCellValueFactory(
                 new PropertyValueFactory<>("Match"));
         tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Stats, Match> t) -> {
+            errorLbl.setText("");
+            Stats stat = ((Stats) t.getTableView().getItems().get(
+                    t.getTablePosition().getRow()));
             try {
+
                 if (!t.getNewValue().getDescription().isEmpty()) {
-                    Stats stat = ((Stats) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow()));
                     Match found = matchManager.findMatchByDescription(t.getNewValue().getDescription());
                     Match old = new Match(t.getOldValue());
                     stat.setMatch(found);
                     if (found != null) {
                         if (!stat.getPlayer().getNickname().isEmpty()) {
+                            if (stats.stream()
+                                    .filter(s -> s.getPlayer().getId().equals(stat.getPlayer().getId())
+                                    && s.getMatch().getId().equals(stat.getMatch().getId())).count() == 2) {
+                                throw new StatsAlreadyExists("The stat you are trying to create already exists");
+                            }
                             if (old.getDescription().isEmpty()) {
                                 LOGGER.info("Creating stat: " + stat.toString());
                                 StatsId id = new StatsId(
-                                            stat.getMatch().getId().toString(),
-                                            stat.getPlayer().getId().toString());
+                                        stat.getMatch().getId().toString(),
+                                        stat.getPlayer().getId().toString());
                                 stat.setId(id);
                                 Stats toCreate = new Stats(id,
                                         stat.getKills(),
@@ -426,8 +446,8 @@ public class StatsWindowController {
                                         null, null);
                                 statsManager.deleteStats(toDelete);
                                 StatsId id = new StatsId(
-                                    stat.getMatch().getId().toString(),
-                                    stat.getPlayer().getId().toString());
+                                        stat.getMatch().getId().toString(),
+                                        stat.getPlayer().getId().toString());
                                 stat.setId(id);
                                 Stats toUpdate = new Stats(
                                         id,
@@ -444,6 +464,10 @@ public class StatsWindowController {
             } catch (ReadException | CreateException | DeleteException | NoResultFoundException | UpdateException ex) {
                 errorLbl.setText(ex.getMessage());
                 LOGGER.severe(ex.getMessage());
+            } catch (StatsAlreadyExists e) {
+                errorLbl.setText(e.getMessage());
+                LOGGER.severe(e.getMessage());
+                stats.remove(stat);
             } finally {
                 statsTableView.refresh();
             }
@@ -456,19 +480,20 @@ public class StatsWindowController {
         tcDate.setCellValueFactory(
                 new PropertyValueFactory<>("Match"));
         tcDate.setOnEditCommit((TableColumn.CellEditEvent<Stats, Match> t) -> {
-           try{
-               Stats stat = ((Stats) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow()));
-               if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
-                   throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
-               }
-               matchManager.updateMatch(t.getNewValue());
-               stat.setMatch(t.getNewValue());
-               searchBtn.fire();
-           }catch(InsufficientValuesException | UpdateException ex){
-               errorLbl.setText(ex.getMessage());
-               LOGGER.severe(ex.getMessage());
-           }finally {
+            try {
+                errorLbl.setText("");
+                Stats stat = ((Stats) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow()));
+                if (stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()) {
+                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
+                }
+                matchManager.updateMatch(t.getNewValue());
+                stat.setMatch(t.getNewValue());
+                searchBtn.fire();
+            } catch (InsufficientValuesException | UpdateException ex) {
+                errorLbl.setText(ex.getMessage());
+                LOGGER.severe(ex.getMessage());
+            } finally {
                 statsTableView.refresh();
             }
         });
@@ -478,19 +503,20 @@ public class StatsWindowController {
 
         Callback<TableColumn<Stats, String>, TableCell<Stats, String>> cellEditingCellFactory
                 = (TableColumn<Stats, String> p) -> new EditingStringCells();
-        
+
         tcKills.setCellFactory(cellEditingCellFactory);
         tcKills.setCellValueFactory(
                 new PropertyValueFactory<>("Kills"));
         tcKills.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
+            errorLbl.setText("");
             Stats stat = ((Stats) t.getTableView().getItems().get(
                     t.getTablePosition().getRow()));
             try {
-                if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
-                   throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
+                if (stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()) {
+                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
                 }
-                if(!t.getNewValue().matches("[0-9]+")){
-                   throw new WrongValueException("You can only insert numbers in the kills field");
+                if (!t.getNewValue().matches("[0-9]+")) {
+                    throw new WrongValueException("You can only insert numbers in the kills field");
                 }
                 stat.setKills(t.getNewValue());
                 Stats update = new Stats(
@@ -516,14 +542,15 @@ public class StatsWindowController {
         tcDeaths.setCellValueFactory(
                 new PropertyValueFactory<>("Deaths"));
         tcDeaths.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
+            errorLbl.setText("");
             Stats stat = ((Stats) t.getTableView().getItems().get(
                     t.getTablePosition().getRow()));
             try {
-                if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
-                   throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
+                if (stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()) {
+                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
                 }
-                if(!t.getNewValue().matches("[0-9]+")){
-                   throw new WrongValueException("You can only insert numbers in the kills field");
+                if (!t.getNewValue().matches("[0-9]+")) {
+                    throw new WrongValueException("You can only insert numbers in the kills field");
                 }
                 stat.setDeaths(t.getNewValue());
                 Stats update = new Stats(
@@ -549,14 +576,15 @@ public class StatsWindowController {
         tcAssists.setCellValueFactory(
                 new PropertyValueFactory<>("Assists"));
         tcAssists.setOnEditCommit((TableColumn.CellEditEvent<Stats, String> t) -> {
+            errorLbl.setText("");
             Stats stat = ((Stats) t.getTableView().getItems().get(
                     t.getTablePosition().getRow()));
             try {
-                if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
-                   throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
+                if (stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()) {
+                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
                 }
-                if(!t.getNewValue().matches("[0-9]+")){
-                   throw new WrongValueException("You can only insert numbers in the kills field");
+                if (!t.getNewValue().matches("[0-9]+")) {
+                    throw new WrongValueException("You can only insert numbers in the kills field");
                 }
                 stat.setAssists(t.getNewValue());
                 Stats update = new Stats(
@@ -728,11 +756,11 @@ public class StatsWindowController {
             Stats toDelete = new Stats(new StatsId(
                     selected.getMatch().getId().toString(),
                     selected.getPlayer().getId().toString()),
-                selected.getKills(),
-                selected.getDeaths(),
-                selected.getAssists(),
-                selected.getTeam(),
-                null, null);
+                    selected.getKills(),
+                    selected.getDeaths(),
+                    selected.getAssists(),
+                    selected.getTeam(),
+                    null, null);
             statsManager.deleteStats(toDelete);
             stats.remove(toDelete);
             statsTableView.getSelectionModel().clearSelection();
@@ -766,13 +794,25 @@ public class StatsWindowController {
         cbFilter.getSelectionModel().select("ALL");
         searchBtn.fire();
     }
-    
+
     /**
-     * 
-     * 
-     * @param event 
+     *
+     *
+     * @param event
      */
     public void handleHelpOnAction(ActionEvent event) {
-        //MANUAL
+        try {
+            //shows the help window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/HelpStats.fxml"));
+            Parent root = (Parent) loader.load();
+            StatsHelpController helpController
+                    = ((StatsHelpController) loader.getController());
+            //Initializes and shows help stage
+            helpController.initAndShowStage(root);
+        } catch (IOException ex) {
+            //shows the error if error
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

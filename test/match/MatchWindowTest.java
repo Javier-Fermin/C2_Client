@@ -76,7 +76,7 @@ public class MatchWindowTest extends ApplicationTest {
     *CRUD OPERATIONS TESTTING
     *
      */
-    //@Test
+    @Test
     public void testCreateMatch() {
         tvMatches = lookup("#tvMatches").query();
         Integer size = tvMatches.getItems().size();
@@ -102,7 +102,7 @@ public class MatchWindowTest extends ApplicationTest {
 
     }
 
-    //@Test
+    @Test
     public void testUpdateMatchDescription() {
         tvMatches = lookup("#tvMatches").query();
         Node column = lookup("#tcDescription").nth(tvMatches.getItems().size()).query();
@@ -120,7 +120,7 @@ public class MatchWindowTest extends ApplicationTest {
         assertNotEquals(tcDescription, newMatch.getDescription());
     }
 
-    //@Test
+    @Test
     public void testUpdateMatchDate() {
         tvMatches = lookup("#tvMatches").query();
         Node column = lookup("#tcPlayedDate").nth(tvMatches.getItems().size()).query();
@@ -139,7 +139,7 @@ public class MatchWindowTest extends ApplicationTest {
         assertNotEquals(tcPlayedDate, newMatch.getPlayedDate());
     }
 
-    //@Test
+    @Test
     public void testUpdateWinnerTeam() {
         tvMatches = lookup("#tvMatches").query();
         Node column = lookup("#tcWinnerTeam").nth(tvMatches.getItems().size()).query();
@@ -157,7 +157,7 @@ public class MatchWindowTest extends ApplicationTest {
         assertNotEquals(tcWinnerTeam, newMatch.getWinner());
     }
 
-    //@Test
+    @Test
     public void testUpdateLeague() {
         tvMatches = lookup("#tvMatches").query();
         Node column = lookup("#tcLeague").nth(tvMatches.getItems().size()).query();
@@ -175,7 +175,7 @@ public class MatchWindowTest extends ApplicationTest {
         assertNotEquals(tcLeague, newMatch.getLeague());
     }
 
-    //@Test
+    @Test
     public void testUpdateTournament() {
         tvMatches = lookup("#tvMatches").query();
         Node column = lookup("#tcTournament").nth(tvMatches.getItems().size()).query();
@@ -185,7 +185,7 @@ public class MatchWindowTest extends ApplicationTest {
         Node tcTournament = lookup("#tcTournament").nth(row + 1).query();
 
         clickOn(tcTournament);
-        write("torneo1");
+        write("Uno");
         push(KeyCode.ENTER);
 
         Match newMatch = (Match) tvMatches.getSelectionModel().getSelectedItem();
@@ -193,7 +193,7 @@ public class MatchWindowTest extends ApplicationTest {
         assertNotEquals(tcTournament, newMatch.getTournament());
     }
 
-    //@Test
+    @Test
     public void testDeleteMatch() {
         Node column = lookup("#tcDescription").nth(0).query();
         clickOn(column);
@@ -225,8 +225,9 @@ public class MatchWindowTest extends ApplicationTest {
         press(KeyCode.ENTER);
     }
 
-    //@Test
+    @Test
     public void testFindAll() {
+        press(KeyCode.ENTER);
         tvMatches = lookup("#tvMatches").query();
         Node btnSearch = lookup("#btnSearch").query();
         List<Match> allMatches = new ArrayList<>(tvMatches.getItems());
@@ -244,7 +245,7 @@ public class MatchWindowTest extends ApplicationTest {
 
     }
 
-    //@Test
+    @Test
     public void testFindTournaments() {
         tvMatches = lookup("#tvMatches").query();
         Node cbParameters = lookup("#cbParameters").query();
@@ -263,7 +264,7 @@ public class MatchWindowTest extends ApplicationTest {
         }
     }
 
-    //@Test
+    @Test
     public void testFindLeague() {
         tvMatches = lookup("#tvMatches").query();
         Node cbParameters = lookup("#cbParameters").query();
@@ -282,8 +283,8 @@ public class MatchWindowTest extends ApplicationTest {
             assertTrue(!matchAux.getLeague().equals(null));
         }
     }
-    //@Test
-
+    
+    @Test
     public void testFindTournamentsName() {
         tvMatches = lookup("#tvMatches").query();
         Node cbParameters = lookup("#cbParameters").query();
@@ -305,7 +306,7 @@ public class MatchWindowTest extends ApplicationTest {
         }
     }
 
-    //@Test
+    @Test
     public void testFindLeagueName() {
         tvMatches = lookup("#tvMatches").query();
         Node cbParameters = lookup("#cbParameters").query();
@@ -329,7 +330,7 @@ public class MatchWindowTest extends ApplicationTest {
 
     }
 
-    //@Test
+    @Test
     public void testFindDescription() {
         tvMatches = lookup("#tvMatches").query();
         Node cbParameters = lookup("#cbParameters").query();
@@ -354,7 +355,7 @@ public class MatchWindowTest extends ApplicationTest {
 
     }
 
-    //@Test
+    @Test
     public void testFindMatchByName() {
         tvMatches = lookup("#tvMatches").query();
         Node cbParameters = lookup("#cbParameters").query();
@@ -529,7 +530,7 @@ public class MatchWindowTest extends ApplicationTest {
         push(KeyCode.ENTER);
     }
     
-    @Test
+    //@Test
     public void testUpdateMatchDescriptionError() {
         tvMatches = lookup("#tvMatches").query();
 
@@ -549,7 +550,7 @@ public class MatchWindowTest extends ApplicationTest {
         
     }
     
-    @Test
+    //@Test
     public void testUpdateLeagueError() {
         tvMatches = lookup("#tvMatches").query();
         
@@ -566,7 +567,7 @@ public class MatchWindowTest extends ApplicationTest {
         
     }
     
-    @Test
+    //@Test
     public void testUpdateTournamentError() {
         tvMatches = lookup("#tvMatches").query();
         

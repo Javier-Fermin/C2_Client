@@ -234,6 +234,7 @@ public class SignInController implements ChangeListener<String> {
             new Alert(Alert.AlertType.ERROR, "An error has ocurred during data I/O").showAndWait();
             LOGGER.severe("App error");
         } catch (PasswordEncryptionException ex) {
+            ex.printStackTrace();
             LOGGER.info("Encryption Error");
             new Alert(Alert.AlertType.ERROR, "An Encryption error has ocurred").showAndWait();
         }

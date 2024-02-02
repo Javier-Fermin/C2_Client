@@ -66,15 +66,14 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 0: Acceso a la ventana
-    @Ignore
     @Test
     public void test00_openTournamentWindow() {
         clickOn("#usernameText");
-        write("manolo@gmail.com");
+        write("root");
         clickOn("#passwordText");
         write("abcd*1234");
         clickOn("#signInButton");
-        clickOn("#windowOptionMenu");
+        clickOn("#tournamentOptionMenu");
         clickOn("#allTournamentsMenuItem");
         verifyThat("#tournamentPane", isVisible());
     }
