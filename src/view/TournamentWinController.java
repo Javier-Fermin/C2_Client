@@ -249,7 +249,6 @@ public class TournamentWinController {
 
 //--------------------------------------------------------- TABLE --------------------------------------------------------------------------------------
 
-            tournaments = FXCollections.observableArrayList(tournamentable.findAllTournaments());
 
             
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -317,7 +316,6 @@ public class TournamentWinController {
                         }
                         refreshTable();
                     } catch (UpdateException ex) {
-                        
                         new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
                     }
                 });
@@ -335,35 +333,42 @@ public class TournamentWinController {
                 
                 tcDate.setOnEditCommit((TableColumn.CellEditEvent<Tournament, Date> t) -> {
                     try {
-                        LOGGER.info("Date old value: "+t.getOldValue()+"\nDate new value: "+t.getNewValue());
+                        if(t.getNewValue()==null){
+                            throw new UpdateException();
+                        }else{
+                            Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+
+                            updatedTournament.setDate(t.getNewValue());
+
+                            LOGGER.info(updatedTournament.getDate().toString());
+
+                            tournamentable.updateTournament(updatedTournament);
+
+                            refreshTable();
+                        }
                         
-                        Tournament updatedTournament = ((Tournament) t.getTableView().getItems().get(t.getTablePosition().getRow()));
-
-                        updatedTournament.setDate(t.getNewValue());
-
-                        LOGGER.info(updatedTournament.getDate().toString());
-
-                        tournamentable.updateTournament(updatedTournament);
-
-                        refreshTable();
                     } catch (UpdateException ex) {
-                        new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
-                        tvTournaments.getFocusModel().focus(t.getTablePosition());
+                        if(t.getNewValue()==null){
+                            new Alert(Alert.AlertType.ERROR, "Please check a date please.", ButtonType.OK).showAndWait();
+                            refreshTable();
+                            tvTournaments.getFocusModel().focus(t.getTablePosition());
+                        }else{
+                            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+                        }
+                        
                     }
-                });
-                
-                tcDate.setOnEditCancel((TableColumn.CellEditEvent<Tournament, Date> t) -> {
-                    new Alert(Alert.AlertType.ERROR, "Please check a date please.", ButtonType.OK).showAndWait();
-                    refreshTable();
                 });
                 
             }
 
-            tvTournaments.setItems(tournaments);
-
+            
+            tvTournaments.focusedProperty().addListener(((observable, oldValue, newValue) -> {
+                if(!newValue)
+                    tvTournaments.getSelectionModel().clearSelection();
+            }));
+            
             tvTournaments.getSelectionModel().selectedItemProperty().addListener((ObservableValue observableValue,
                     Object oldValue, Object newValue) -> {
-
                 //Check whether item is selected and set value of selected item to Label
                 if (tvTournaments.getSelectionModel().getSelectedItem() != null) {
                     bTournamentMatches.setDisable(false);
@@ -406,11 +411,15 @@ public class TournamentWinController {
 
             MenuBarController.setStage(stage);
             
-            stage.show();
-
+            tournaments = FXCollections.observableArrayList(tournamentable.findAllTournaments());
+            
+            tvTournaments.setItems(tournaments);
+            
         } catch (ReadException ex) {
             new Alert(Alert.AlertType.ERROR, "An error occurred loading the Tournament window.", ButtonType.OK).showAndWait();
             LOGGER.severe(ex.getMessage());
+        } finally{
+            stage.show();
         }
     }
     

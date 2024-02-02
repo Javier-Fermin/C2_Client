@@ -2,8 +2,8 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1aa4c891-321a-4f3a-9418-8540d747bd7d">
 	<property name="ireport.zoom" value="1.4641000000000006"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
-        <field name="name" class="java.lang.String"/>
+	<property name="ireport.y" value="141"/>
+	<field name="name" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="bestOf" class="java.lang.String"/>
 	<field name="date" class="java.util.Date"/>
@@ -11,9 +11,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch">
+		<band height="62" splitType="Stretch">
 			<staticText>
-				<reportElement x="115" y="13" width="319" height="49" uuid="cc098bb1-f757-4313-8138-f0a5e751cf0f"/>
+				<reportElement x="115" y="3" width="319" height="49" uuid="cc098bb1-f757-4313-8138-f0a5e751cf0f"/>
 				<textElement>
 					<font size="36"/>
 				</textElement>
@@ -22,7 +22,12 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="35" splitType="Stretch"/>
+		<band height="49" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="419" y="15" width="100" height="20" uuid="baf0a772-766f-488d-91d3-b639d594256c"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageHeader>
 	<columnHeader>
 		<band height="61" splitType="Stretch">
@@ -57,7 +62,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch">
+		<band height="226" splitType="Stretch">
 			<textField>
 				<reportElement x="40" y="13" width="85" height="20" uuid="342fd4cf-c0e9-40c1-8c46-ea98e3ad0c2e"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
@@ -77,12 +82,17 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="434" y="20" width="100" height="20" uuid="476ace41-4771-4b34-8276-11ba1730aa9c"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</summary>
 </jasperReport>

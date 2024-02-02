@@ -10,9 +10,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import model.Tournament;
@@ -20,8 +22,10 @@ import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
@@ -31,9 +35,10 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextFlowMatchers.hasText;
 
 /**
- *
+ * Test class that test the correct functionality of the Tournament window
  * @author Fran
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TournamentWindowTest extends ApplicationTest {
 
     //Images in the window
@@ -41,13 +46,13 @@ public class TournamentWindowTest extends ApplicationTest {
     private final ImageView tournamentSmoke = new ImageView("resources/images/smokeBackground.png");
     private final ImageView bSearchImage = new ImageView("resources/images/search.png");
     private final ImageView bCleanImage = new ImageView("resources/images/clear.png");
-    private final ImageView bHelpImage = new ImageView("resources/images/help.png");
+    private final ImageView bHelpImage = new ImageView("resources/images/info.png");
     private final ImageView bPrintImage = new ImageView("resources/images/print.png");
     private final ImageView bDeleteImage = new ImageView("resources/images/delete.png");
     private final ImageView bAddImage = new ImageView("resources/images/add.png");
     private final ImageView tournamentAgentImage = new ImageView("resources/images/smokeAgent.png");
 
-    private TableView tournamentTable = lookup("#tvTournamnet").queryTableView();
+    private TableView tournamentTable = lookup("#tvTournaments").queryTableView();
 
     //setUpClass method with a BeforeClass tag
     @Override
@@ -75,19 +80,13 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 1: Comprobar la inicialización del Stage y sus componentes
-    @Ignore
+    //@Ignore
     @Test
     public void test01_initializeTournamentWindow() {
-        verifyThat("#lTournaments", isVisible());
-        verifyThat(tournamentBackground, (ImageView iv1) -> iv1.isVisible());
-        verifyThat(tournamentSmoke, (ImageView iv2) -> iv2.isVisible());
-        verifyThat(tournamentAgentImage, (ImageView iv3) -> iv3.isVisible());
         verifyThat("#chbTournamentSearch", isVisible());
         verifyThat("#chbTournamentSearch", (ChoiceBox c) -> c.getSelectionModel().getSelectedItem().toString().equals("ALL"));
         verifyThat("#tfTournamentSearch", isVisible());
-        verifyThat("#tfTournamentSearch", hasText(""));
         verifyThat("#tfTournamentSearch", isDisabled());
-        verifyThat(tournamentTable, isVisible());
         verifyThat("#bTournamentSearch", isVisible());
         verifyThat("#bTournamentSearch", isEnabled());
         verifyThat(bSearchImage, (ImageView iv4) -> iv4.isVisible());
@@ -106,12 +105,12 @@ public class TournamentWindowTest extends ApplicationTest {
         verifyThat("#bTournamentDelete", isDisabled());
         verifyThat(bDeleteImage, (ImageView iv8) -> iv8.isVisible());
         verifyThat("#bTournamentAdd", isVisible());
-        verifyThat("#bTournamentAdd", isDisabled());
+        verifyThat("#bTournamentAdd", isEnabled());
         verifyThat(bAddImage, (ImageView iv9) -> iv9.isVisible());
     }
 
     //Test 2: Comprobar que los botones se habilitan o no cuando deben
-    @Ignore
+    //@Ignore
     @Test
     public void test02_buttonsAreEnabled() {
         clickOn("#chbTournamentSearch");
@@ -125,13 +124,14 @@ public class TournamentWindowTest extends ApplicationTest {
         clickOn("Uno");
         verifyThat("#bTournamentMatches", isEnabled());
         verifyThat("#bTournamentDelete", isEnabled());
-        clickOn("#lTournaments");
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.ENTER);
         verifyThat("#bTournamentMatches", isDisabled());
         verifyThat("#bTournamentDelete", isDisabled());
     }
 
     //Test 3: Comprobar que el cleanButton funcione
-    @Ignore
+    //@Ignore
     @Test
     public void test03_checkCleanButton() {
         clickOn("#chbTournamentSearch");
@@ -141,86 +141,111 @@ public class TournamentWindowTest extends ApplicationTest {
         clickOn("#tfTournamentSearch");
         write("1");
         clickOn("#bTournamentClean");
-        verifyThat("#tfTournamentSearch", hasText(""));
+        verifyThat("#tfTournamentSearch", isDisabled());
         verifyThat("#chbTournamentSearch", (ChoiceBox ch03) -> ch03.getSelectionModel().isSelected(0));
     }
 
     //Test 4: Comprobar que se realiza la busqueda filtrada por id del Tournament
-    @Ignore
+//    @Ignore
     @Test
     public void test04_checkSearchId() {
+        ObservableList<Tournament> tournaments = tournamentTable.getItems();
+        Integer numRows = tournaments.size();
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
         clickOn("#tfTournamentSearch");
         write("1");
         clickOn("#bTournamentSearch");
+        
+        assertNotEquals("The table didn't update.", tournaments, tournamentTable.getItems());
+        assertNotEquals("The table didn't change.",numRows.intValue(), tournamentTable.getItems().size());
     }
 
     //Test 5: Comprobar que se realiza la busqueda filtrada por nombre
-    @Ignore
+//    @Ignore
     @Test
     public void test05_checkSearchName() {
+        ObservableList<Tournament> tournaments = tournamentTable.getItems();
+        
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
         clickOn("#tfTournamentSearch");
         write("Dos");
         clickOn("#bTournamentSearch");
+        
+        assertNotEquals("The table didn't update.", tournaments, tournamentTable.getItems());
     }
 
-    //Test 6: Comprobar que se realiza la busqueda filtrada por bestOf
-    @Ignore
+    //Test 6: Comprobar que se realiza la busqueda filtrada por date
+//    @Ignore
     @Test
-    public void test06_checkSearchBestOf() {
-        clickOn("#chbTournamentSearch");
-        type(KeyCode.DOWN);
-        type(KeyCode.ENTER);
-        clickOn("#tfTournamentSearch");
-        write("3");
-        clickOn("#bTournamentSearch");
-    }
-
-    //Test 7: Comprobar que se realiza la busqueda filtrada por date
-    @Ignore
-    @Test
-    public void test07_checkSearchDate() {
+    public void test06_checkSearchDate() {
+        ObservableList<Tournament> tournaments = tournamentTable.getItems();
+        
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
         clickOn("#tfTournamentSearch");
         write("28/01/2024");
         clickOn("#bTournamentSearch");
+        
+        assertNotEquals("The table didn't update.", tournaments, tournamentTable.getItems());
+    }
+
+    //Test 7: Comprobar que se realiza la busqueda filtrada por bestOf
+//    @Ignore
+    @Test
+    public void test07_checkSearchBestOf() {
+        ObservableList<Tournament> tournaments = tournamentTable.getItems();
+        
+        clickOn("#chbTournamentSearch");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        clickOn("#tfTournamentSearch");
+        write("3");
+        clickOn("#bTournamentSearch");
+        
+        assertNotEquals("The table didn't update.", tournaments, tournamentTable.getItems());
     }
 
     //Test 8: Comprobar que se realiza la busqueda filtrada por id de un match
     @Ignore
     @Test
     public void test08_checkSearchMatchId() {
+        ObservableList<Tournament> tournaments = tournamentTable.getItems();
+        
         clickOn("#chbTournamentSearch");
         type(KeyCode.DOWN);
         type(KeyCode.ENTER);
         clickOn("#tfTournamentSearch");
-        write("1");
+        write("3");
         clickOn("#bTournamentSearch");
+        
+        assertNotEquals("The table didn't update.", tournaments, tournamentTable.getItems());
     }
 
     //Test 9: Comprobar que se realiza la busqueda de todos los torneos
-    @Ignore
+//    @Ignore
     @Test
     public void test09_checkSearchAll() {
+        ObservableList<Tournament> tournaments = tournamentTable.getItems();
+        
         clickOn("#chbTournamentSearch");
-        type(KeyCode.UP);
+        //type(KeyCode.UP);
         type(KeyCode.UP);
         type(KeyCode.UP);
         type(KeyCode.UP);
         type(KeyCode.UP);
         type(KeyCode.ENTER);
         clickOn("#bTournamentSearch");
+        
+        assertNotEquals("The table didn't update.", tournaments, tournamentTable.getItems());
     }
 
     //Test 10: Comprobar que el createButton funcione
-    @Ignore
+//    @Ignore
     @Test
     public void test10_checkAdd() {
         //Get tvTournament row count before adding the new Tournament

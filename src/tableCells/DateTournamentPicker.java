@@ -72,7 +72,7 @@ public class DateTournamentPicker extends TableCell<Tournament, Date> {
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         datePicker.setOnAction((e) -> {
                 if (datePicker.getValue() == null) {
-                    cancelEdit();
+                    commitEdit(null);
                 } else {
                     commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
