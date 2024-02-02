@@ -51,34 +51,7 @@ public class LeagueTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(Client.class);
     }
-
-    @Test
-    @Ignore
-    public void test01_InitialState() {
-        clickOn("#usernameText");
-        write("root");//Puerta trasera user
-        clickOn("#passwordText");
-        write("abcd*1234");//Puerta trasera contraseña
-        clickOn("#signInButton");
-        clickOn("#windowOptionMenu");
-        clickOn("#allLeaguesMenuItem");
-        verifyThat("#leagueViewPane", isVisible());
-        //Buttons verify
-        verifyThat("#btnDelete", isDisabled());
-        verifyThat("#btnMatches", isDisabled());
-        verifyThat("#btnCreate", isEnabled());
-        verifyThat("#btnMatches", isDisabled());
-        verifyThat("#btnClean", isEnabled());
-        //tfSearch verify
-        verifyThat("#tfsearch", isVisible());
-        verifyThat("#tfsearch", isDisabled());
-        verifyThat("#tfsearch", hasText(""));
-        //cbSeachType verify
-        verifyThat("#cbSeachType", isVisible());
-        verifyThat("#cbSeachType", hasText("ALL"));
-
-    }
-
+  
     /**
      *
      */
@@ -109,6 +82,7 @@ public class LeagueTest extends ApplicationTest {
         clickOn(row);
         clickOn("#btnDelete");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
     @Test
@@ -129,6 +103,7 @@ public class LeagueTest extends ApplicationTest {
         //verify the name is visible
         verifyThat("new Default name", isVisible());
         //verify the update is done correctly 
+        row = lookup("#tcName").nth(size).query();
         clickOn(row);
         assertNotEquals("Name update error", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
         clickOn("#btnDelete");
@@ -257,7 +232,6 @@ public class LeagueTest extends ApplicationTest {
     @Ignore
     public void test09_SearchLeagueByMatch() {
         //get items from the table
-        ObservableList<League> leagueList = table.getItems();
         verifyThat("#cbSeachType", isEnabled());
         verifyThat("#btnSearch", isEnabled());
         clickOn("#btnClear");
@@ -272,7 +246,6 @@ public class LeagueTest extends ApplicationTest {
         clickOn("#btnSearch");
         //verify the are no leagues in the table
         assertNotEquals("League search correct error", rows.intValue(), table.getItems().size());
-        assertNotEquals("League search correct error", leagueList, table.getItems());
     }
 
     @Test
@@ -292,7 +265,6 @@ public class LeagueTest extends ApplicationTest {
         //verify the are diferent leagues in the table
         assertNotEquals("League search correct error", rows.intValue(), table.getItems().size());
         assertNotEquals("League search correctl error", leagueList, table.getItems());
-
     }
 
     @Test

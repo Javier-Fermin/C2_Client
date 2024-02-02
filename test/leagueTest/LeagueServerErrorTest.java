@@ -39,7 +39,6 @@ public class LeagueServerErrorTest extends ApplicationTest {
 
     //method for test of create
     @Test
-    @Ignore
     public void test02_CreateLeagueServerErrorTest() {
         verifyThat("#btnCreate", isEnabled());
         clickOn("#btnCreate");
@@ -48,7 +47,6 @@ public class LeagueServerErrorTest extends ApplicationTest {
 
     //method for test of update
     @Test
-    @Ignore
     public void test03_UpdateServerError() {
         Integer size = table.getItems().size();
         Node row = lookup("#tcName").nth(size).query();
@@ -61,7 +59,6 @@ public class LeagueServerErrorTest extends ApplicationTest {
     
     //method for test of search
     @Test
-    @Ignore
     public void test07_SearchServerError() {
         verifyThat("#cbSeachType", isEnabled());
         verifyThat("#btnSearch", isEnabled());
@@ -71,7 +68,6 @@ public class LeagueServerErrorTest extends ApplicationTest {
 
     //method for test of delete
     @Test
-    @Ignore
     public void test12_DeleteLeagueServerError() {
         verifyThat("#btnDelete", isDisabled());
         Integer rowCount = table.getItems().size();
