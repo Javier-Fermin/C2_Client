@@ -41,6 +41,10 @@ import javafx.stage.WindowEvent;
 import businessLogic.RegistrableFactory;
 import cyrptography.AsymetricClient;
 import static cyrptography.AsymetricClient.encryptedData;
+import exceptions.PasswordEncryptionException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 import model.User;
 import model.UserType;
 
@@ -140,8 +144,8 @@ public class SignInController implements ChangeListener<String> {
     private TextField showPasswordText;
 
     /**
-     * Method that change image of the window When pressed: The ToggleButton icon
-     * is changed: If it is selected, its icon is hide.png If it is not
+     * Method that change image of the window When pressed: The ToggleButton
+     * icon is changed: If it is selected, its icon is hide.png If it is not
      * selected, its icon is show.png
      *
      * @param event ActionEvent object
@@ -173,22 +177,21 @@ public class SignInController implements ChangeListener<String> {
                 LOGGER.info("Execute signIn method to take user data");
                 //ENcrypt the password
                 byte[] bytePassword = AsymetricClient.encryptedData(passwordText.getText());
-                
+
                 String passwdEncrypted = AsymetricClient.hexadecimal(bytePassword);
-                
+
                 //The SignIn logic layer method will be used, defining the parameters with the content of usernameText and passwordText: 
                 user = registro.signIn(new User("", passwdEncrypted, "", usernameText.getText(), "", null));
-                
 
                 //If the user is null, the user will be informed with an authentication error message (AuthenticationException).
                 LOGGER.info("Open Main Window");
                 //If no exception has occurred, the user is prompted, the window will be closed and the MainWindow window will be displayed.
                 Stage sStage = new Stage();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Matches.fxml"));
                 Parent root = (Parent) loader.load();
-                StatsWindowController cont = ((StatsWindowController) loader.getController());
-                cont.setStage(sStage);
-                cont.initStage(root, user);
+                MatchWindowController cont = ((MatchWindowController) loader.getController());
+                cont.setMainStage(sStage);
+                cont.initStage(root, user, null, null);
                 stage.close();
                 // If the content does not follow an email address pattern, the user will be informed with an authentication error message (AuthenticationException).
             } else {
@@ -198,14 +201,21 @@ public class SignInController implements ChangeListener<String> {
         } catch (BadEmailException ex) {
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
             LOGGER.severe("Email have a incorrect format");
-        } catch (AuthenticationException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+
+        } catch (ProcessingException ex) {
+            LOGGER.info("Unable to connect to the server");
+            new Alert(Alert.AlertType.ERROR, "Unable to connect to the server").showAndWait();
+        } catch (AuthenticationException | InternalServerErrorException | NotFoundException ex ) {
+            new Alert(Alert.AlertType.ERROR, "Authentication error").showAndWait();
             LOGGER.severe("Authentication error");
             //In the event that it takes a while to connect to the server, the user will be informed that the timeout has occurred with the TimeOutException.
         } catch (IOException ex) {
             ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "An error has ocurred during data I/O").showAndWait();
             LOGGER.severe("App error");
+        } catch (PasswordEncryptionException ex) {
+            LOGGER.info("Encryption Error");
+            new Alert(Alert.AlertType.ERROR, "An Encryption error has ocurred").showAndWait();
         }
     }
 
@@ -309,6 +319,7 @@ public class SignInController implements ChangeListener<String> {
         } catch (Exception ex) {
             ex.printStackTrace();
             Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, null, "Inicialize error" + ex.getMessage());
+
         }
     }
 
@@ -328,7 +339,7 @@ public class SignInController implements ChangeListener<String> {
         passwordText.visibleProperty().bind(showPasswordButton.selectedProperty().not());
         showPasswordText.visibleProperty().bind(showPasswordButton.selectedProperty());
     }
-    
+
     private static final String EMAIL_PATTERN
             = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
@@ -359,12 +370,12 @@ public class SignInController implements ChangeListener<String> {
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         if (!newValue.isEmpty() && !usernameText.getText().isEmpty() && !passwordText.getText().isEmpty()) {
-            if(signInButton.isDisabled()){
+            if (signInButton.isDisabled()) {
                 LOGGER.info("signUpButton enabled.");
             }
             signInButton.disableProperty().set(false);
         } else {
-            if(!signInButton.isDisabled()){
+            if (!signInButton.isDisabled()) {
                 LOGGER.info("signUpButton disabled.");
             }
             signInButton.disableProperty().set(true);

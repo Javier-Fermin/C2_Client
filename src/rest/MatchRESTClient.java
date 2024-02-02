@@ -5,8 +5,11 @@
  */
 package rest;
 
+import exceptions.NoResultFoundException;
 import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -36,25 +39,25 @@ public class MatchRESTClient {
         webTarget = client.target(BASE_URI).path("entities.match");
     }
 
-    public <T> T findMatchesByUserNickname_XML(GenericType<T> responseType, String nickname) throws ClientErrorException {
+    public <T> T findMatchesByUserNickname_XML(GenericType<T> responseType, String nickname) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("nickname/{0}", new Object[]{nickname}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findMatchesByUserNickname_JSON(Class<T> responseType, String nickname) throws ClientErrorException {
+    public <T> T findMatchesByUserNickname_JSON(Class<T> responseType, String nickname) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("nickname/{0}", new Object[]{nickname}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findMatchesByLeagueId_XML(GenericType<T> responseType, Integer id) throws ClientErrorException {
+    public <T> T findMatchesByLeagueId_XML(GenericType<T> responseType, Integer id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("league/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findMatchesByLeagueId_JSON(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findMatchesByLeagueId_JSON(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("league/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -76,36 +79,36 @@ public class MatchRESTClient {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public <T> T findAMatch_XML(GenericType<T> responseType, String id) throws ClientErrorException {
+    public <T> T findAMatch_XML(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAMatch_JSON(GenericType<T> responseType, String id) throws ClientErrorException {
+    public <T> T findAMatch_JSON(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findMatchesByTournamentId_XML(GenericType<T> responseType, Integer id) throws ClientErrorException {
+    public <T> T findMatchesByTournamentId_XML(GenericType<T> responseType, Integer id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findMatchesByTournamentId_JSON(GenericType<T> responseType, String id) throws ClientErrorException {
+    public <T> T findMatchesByTournamentId_JSON(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findAllMatches_XML(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T findAllMatches_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAllMatches_JSON(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T findAllMatches_JSON(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
@@ -114,13 +117,13 @@ public class MatchRESTClient {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Match.class);
     }
     
-    public <T> T findMatchByDescription_XML(Class <T> responseType, String description) throws ClientErrorException {
+    public <T> T findMatchByDescription_XML(Class <T> responseType, String description) throws InternalServerErrorException, NotFoundException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{description}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findMatchByDescription_JSON(GenericType<T> responseType, String description) throws ClientErrorException {
+    public <T> T findMatchByDescription_JSON(GenericType<T> responseType, String description) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{description}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);

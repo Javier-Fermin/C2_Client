@@ -5,21 +5,31 @@
  */
 package cyrptography;
 
+import exceptions.PasswordEncryptionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
  * @author imape
  */
+
+
 public class AsymetricClient {
-    public static byte[] encryptedData(String password) {
+    public static byte[] encryptedData(String password) throws PasswordEncryptionException {
         byte[] encryptedData = null;
         try {
             // Load Private Key
@@ -37,8 +47,8 @@ public class AsymetricClient {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             encryptedData = cipher.doFinal(password.getBytes());
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
+            throw new PasswordEncryptionException();
         }
         return encryptedData;
     }

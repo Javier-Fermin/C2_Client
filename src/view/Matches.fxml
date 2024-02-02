@@ -111,7 +111,7 @@
                </image>
             </ImageView>
          </graphic></Button>
-      <Button fx:id="btnPrint" layoutX="1020.0" layoutY="702.0" mnemonicParsing="false">
+      <Button fx:id="btnPrint" layoutX="1020.0" layoutY="664.0" mnemonicParsing="false">
          <graphic>
             <ImageView fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -134,5 +134,14 @@
          </graphic>
       </Button>
       <fx:include fx:id="mbMenuBar" source="MenuBar.fxml" />
+      <Button fx:id="btnInfo" layoutX="1020.0" layoutY="719.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fx:id="btnInfoImg" fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/info.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
    </children>
 </Pane>

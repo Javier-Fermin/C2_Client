@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package view;
+package tableCells;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,16 +9,24 @@ import javafx.scene.control.TableCell;
 import model.Match;
 
 /**
- *
- * @author imape
+ * Custom TableCell for handling date editing in a TableView for Match entities.
+ * 
+ * @Author Imanol
  */
-public class DateMatchCellPicker extends TableCell<Match, Date>{
+public class DateMatchCellPicker extends TableCell<Match, Date> {
+
     private DatePicker datePicker;
 
-    DateMatchCellPicker() {
-
+    /**
+     * Constructor for the DateMatchCellPicker.
+     */
+    public DateMatchCellPicker() {
+        // Default constructor
     }
 
+    /**
+     * Overrides the startEdit method to create a DatePicker for editing.
+     */
     @Override
     public void startEdit() {
         if (!isEmpty()) {
@@ -34,15 +37,22 @@ public class DateMatchCellPicker extends TableCell<Match, Date>{
         }
     }
 
+    /**
+     * Overrides the cancelEdit method to revert changes when editing is canceled.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-
         setText(getDate().toString());
         setGraphic(null);
     }
 
-   
+    /**
+     * Overrides the updateItem method to display the date value properly in the cell.
+     *
+     * @param item  The date item to be displayed.
+     * @param empty True if the cell is empty, false otherwise.
+     */
     @Override
     public void updateItem(Date item, boolean empty) {
         super.updateItem(item, empty);
@@ -60,24 +70,31 @@ public class DateMatchCellPicker extends TableCell<Match, Date>{
             } else {
                 final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 setText(getDate().format(dateFormat));
-
                 setGraphic(null);
-
             }
         }
     }
 
+    /**
+     * Creates a DatePicker for editing the date value.
+     */
     private void createDatePicker() {
         datePicker = new DatePicker(getDate());
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         datePicker.setOnAction((e) -> {
-            System.out.println("Committed: " + datePicker.getValue().toString());
-            commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
+            if (datePicker.getValue() == null) {
+                cancelEdit();
+            } else {
+                commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            }
         });
-
     }
 
+    /**
+     * Retrieves the LocalDate representation of the Date item.
+     *
+     * @return The LocalDate representation of the Date item.
+     */
     private LocalDate getDate() {
         return getItem() == null ? LocalDate.now() : getItem().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }

@@ -4,20 +4,30 @@ import businessLogic.LeagueManage;
 import businessLogic.LeagueManageFactory;
 import businessLogic.MatchManager;
 import businessLogic.MatchManagerFactory;
-import businessLogic.MatchManagerImplementation;
 import businessLogic.PlayerManager;
 import businessLogic.PlayerManagerFactory;
 import businessLogic.TournamentManage;
 import businessLogic.TournamentManageFactory;
-import exceptions.BadFormatException;
 import exceptions.BadUserException;
 import exceptions.CreateException;
 import exceptions.DeleteException;
+import exceptions.DescriptionAlreadyExsistsException;
+import exceptions.DescriptionNotFoundException;
+import exceptions.NoResultFoundException;
 import exceptions.OperationAbortException;
 import exceptions.ReadException;
 import exceptions.UpdateException;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -26,12 +36,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -41,7 +50,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javax.naming.ldap.ManageReferralControl;
+import javax.imageio.ImageIO;
 import javax.ws.rs.InternalServerErrorException;
 import model.League;
 import model.Match;
@@ -50,11 +59,24 @@ import model.Team;
 import model.Tournament;
 import model.User;
 import model.UserType;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import tableCells.DateMatchCellPicker;
 
+/**
+ * Sets the main stage for the controller.
+ *
+ * @author Imanol
+ */
 public class MatchWindowController {
 
     protected static final Logger LOGGER = Logger.getLogger(MatchWindowController.class.getName());
-    private MatchManager manager = MatchManagerFactory.getMatchManager();
+    private final MatchManager manager = MatchManagerFactory.getMatchManager();
 
     @FXML
     private Pane rootPane;
@@ -144,6 +166,9 @@ public class MatchWindowController {
     private Button btnPrint;
 
     @FXML
+    private Button btnInfo;
+
+    @FXML
     private Text tMenuFG;
 
     @FXML
@@ -160,15 +185,24 @@ public class MatchWindowController {
 
     private Player player = null;
 
-    @FXML
-    private void initialize() {
-        // Puedes agregar cÃƒÂ³digo de inicializaciÃƒÂ³n aquÃƒÂ­ si es necesario.
-    }
-
+    /**
+     * Sets the main stage for the controller.
+     *
+     * @param stage The main stage of the application.
+     */
     public void setMainStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Initializes the stage with the specified parameters.
+     *
+     * @param root The root node of the scene.
+     * @param user The user object representing the current user.
+     * @param tournament The tournament associated with the match window (can be
+     * null).
+     * @param league The league associated with the match window (can be null).
+     */
     public void initStage(Parent root, User user, Tournament tournament, League league) {
         ObservableList<String> parameters;
         try {
@@ -248,6 +282,8 @@ public class MatchWindowController {
                 btnAddMatch.setVisible(false);
                 btnDeleteMatch.setVisible(false);
                 tvMatches.setEditable(false);
+                cmAdd.setVisible(false);
+                cmDelete.setVisible(false);
             }
 
             if (tournament != null) {
@@ -264,6 +300,8 @@ public class MatchWindowController {
             btnFilterRemoval.setOnAction(this::handleButtonFilterRemovalOnAction);
             btnSearch.setOnAction(this::handleButtonSearchOnAction);
             btnPrint.setOnAction(this::handleButtonPrintOnAction);
+            btnInfo.setOnAction(this::handleHelpOnAction);
+
             cbParameters.valueProperty().addListener(this::handleComboBoxParametersOnAction);
 
             cmAdd.setOnAction(this::handleButtonAddMatchOnAction);
@@ -275,12 +313,22 @@ public class MatchWindowController {
             tcDescription.setOnEditCommit((TableColumn.CellEditEvent<Match, String> t) -> {
                 try {
                     Match match = ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+
+                    manager.checkDescriptionForMatchAlreadyExisting(t.getNewValue());
                     match.setDescription(t.getNewValue());
                     manager.updateMatch(match);
 
                 } catch (UpdateException ex) {
-                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex.getMessage());
                     new Alert(Alert.AlertType.ERROR, "Unable to update the match", ButtonType.OK).show();
+                } catch (ReadException ex) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+                    new Alert(Alert.AlertType.ERROR, "Unable to check if description already exists", ButtonType.OK).show();
+                } catch (DescriptionAlreadyExsistsException ex) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+                    new Alert(Alert.AlertType.ERROR, "The description already exists", ButtonType.OK).show();
+                } finally {
+                    tvMatches.refresh();
                 }
             });
 
@@ -292,6 +340,8 @@ public class MatchWindowController {
                 } catch (UpdateException ex) {
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
                     new Alert(Alert.AlertType.ERROR, "Unable to update the match", ButtonType.OK).show();
+                } finally {
+                    tvMatches.refresh();
                 }
             });
 
@@ -303,8 +353,15 @@ public class MatchWindowController {
                 } catch (UpdateException ex) {
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
                     new Alert(Alert.AlertType.ERROR, "Unable to update the match", ButtonType.OK).show();
+                } finally {
+                    tvMatches.refresh();
                 }
             });
+            tcPlayedDate.setOnEditCancel((TableColumn.CellEditEvent<Match, Date> t) -> {
+                new Alert(Alert.AlertType.ERROR, "Please introduce a valid date", ButtonType.OK).show();
+                tvMatches.refresh();
+            });
+            
 
             tcLeague.setOnEditCommit((TableColumn.CellEditEvent<Match, String> t) -> {
                 Match match = null;
@@ -321,7 +378,13 @@ public class MatchWindowController {
                 } catch (ReadException e) {
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
                     new Alert(Alert.AlertType.ERROR, "Unable to find the league", ButtonType.OK).show();
+                } catch (IndexOutOfBoundsException e) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
+                    new Alert(Alert.AlertType.ERROR, "No leagues were found with that name", ButtonType.OK).show();
+                } finally {
+                    tvMatches.refresh();
                 }
+
             });
 
             tcTournament.setOnEditCommit((TableColumn.CellEditEvent<Match, String> t) -> {
@@ -330,7 +393,6 @@ public class MatchWindowController {
                 try {
 
                     match = ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow()));
-
                     match.setTournament(tournamentManager.findTournamentByName(t.getNewValue()).get(0));
                     manager.updateMatch(match);
                 } catch (UpdateException ex) {
@@ -339,73 +401,93 @@ public class MatchWindowController {
                 } catch (ReadException e) {
                     new Alert(Alert.AlertType.ERROR, "Tournament not found", ButtonType.OK).show();
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
+                } catch (IndexOutOfBoundsException e) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
+                    new Alert(Alert.AlertType.ERROR, "No tournaments were found with that name", ButtonType.OK).show();
+                } finally {
+                    tvMatches.refresh();
                 }
             });
 
             stage.show();
 
-        } catch (Exception ex) {
+        } catch (ReadException ex) {
             Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Handles the "Add Match" button action. Creates a new match, adds it to
+     * the database, refreshes the match table, and displays an information
+     * alert.
+     *
+     * @param event The ActionEvent triggered by the "Add Match" button.
+     */
     public void handleButtonAddMatchOnAction(ActionEvent event) {
         btnAddMatch.requestFocus();
-        Match match = new Match(null, null, null, null, null, null, null);
+        Match match = new Match(null, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), null, null, null, null, null);
 
         try {
-            tvMatches.setItems(FXCollections.observableArrayList(manager.findAllMatches()));
-            tvMatches.refresh();
             manager.createMatch(match);
-            matches.add(match);
+            cbParameters.setValue("All");
+            btnSearch.fire();
+
             tvMatches.scrollTo(tvMatches.getItems().size() - 1);
+            tvMatches.refresh();
             new Alert(Alert.AlertType.INFORMATION, "New row added below", ButtonType.OK).show();
         } catch (CreateException ex) {
             new Alert(Alert.AlertType.ERROR, "Unable to create the match", ButtonType.OK).show();
             Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
-
-        } catch (ReadException ex) {
-            new Alert(Alert.AlertType.ERROR, "Unable to read matches the match", ButtonType.OK).show();
-            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        tvMatches.setItems(matches);
-        tvMatches.refresh();
 
     }
 
+    /**
+     * Handles the "Delete Match" button action. Deletes the selected match,
+     * updates the match table, and displays a confirmation dialog and
+     * information alerts.
+     *
+     * @param event The ActionEvent triggered by the "Delete Match" button.
+     */
     public void handleButtonDeleteMatchOnAction(ActionEvent event) {
         btnDeleteMatch.requestFocus();
         LOGGER.info("Deleting row to the table");
 
         try {
+            Match toDelete = (Match) tvMatches.getSelectionModel().getSelectedItem();
+            if (toDelete == null) {
+                throw new OperationAbortException("Please select a match to delete");
+            }
             ButtonType result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected match?", ButtonType.OK, ButtonType.CANCEL).showAndWait().orElse(ButtonType.CANCEL);
             if (result == ButtonType.OK) {
-                tvMatches.setItems(FXCollections.observableArrayList(manager.findAllMatches()));
-                tvMatches.refresh();
-                Match toDelete = (Match) tvMatches.getSelectionModel().getSelectedItem();
+
                 manager.deleteMatch(toDelete);
                 matches.remove(toDelete);
                 tvMatches.setItems(matches);
                 tvMatches.getSelectionModel().clearSelection();
                 tvMatches.refresh();
+
                 new Alert(Alert.AlertType.INFORMATION, "Match deleted!", ButtonType.OK).show();
             } else {
-                throw new OperationAbortException();
+                throw new OperationAbortException("Operation cancelled");
             }
 
         } catch (DeleteException ex) {
             Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.ERROR, "Unable to delete the match", ButtonType.OK).show();
 
-        } catch (ReadException ex) {
-            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.ERROR, "Unable to read the matches", ButtonType.OK).show();
         } catch (OperationAbortException ex) {
             LOGGER.info("Deleting cancelled..");
-            new Alert(Alert.AlertType.ERROR, "Operation cancelled", ButtonType.OK).show();
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).show();
         }
     }
 
+    /**
+     * Handles the "Remove Filters" button action. Resets search bar, parameter
+     * combo box, and disables the search bar based on user type.
+     *
+     * @param event The ActionEvent triggered by the "Remove Filters" button.
+     */
     public void handleButtonFilterRemovalOnAction(ActionEvent event) {
         btnFilterRemoval.requestFocus();
         tfSearchBar.setText("");
@@ -416,13 +498,21 @@ public class MatchWindowController {
         LOGGER.info("Removing filters");
     }
 
+    /**
+     * Handles the "Search" button action. Searches for matches based on the
+     * selected parameter and updates the match table accordingly.
+     *
+     * @param event The ActionEvent triggered by the "Search" button.
+     */
     public void handleButtonSearchOnAction(ActionEvent event) {
         btnSearch.requestFocus();
         try {
             switch (cbParameters.getValue()) {
                 case "All":
                     LOGGER.info("Searching all matches...");
-                    tvMatches.setItems(FXCollections.observableArrayList(manager.findAllMatches()));
+                    matches = FXCollections.observableArrayList(manager.findAllMatches());
+                    tvMatches.setItems(matches);
+                    tvMatches.refresh();
                     break;
 
                 case "Tournament":
@@ -431,9 +521,10 @@ public class MatchWindowController {
                         TournamentManage tournamentManager = TournamentManageFactory.getTournamentManageImplementation();
                         List<Tournament> tournament = tournamentManager.findTournamentByName(tfSearchBar.getText());
                         Integer tournamentId = tournament.get(0).getIdTournament();
-                        ObservableList<Match> matchesAux = (ObservableList<Match>) FXCollections.observableArrayList(manager.findMatchesByTournamentId(tournamentId));
-                        tvMatches.setItems(matchesAux);
+                        matches = FXCollections.observableArrayList(manager.findMatchesByTournamentId(tournamentId));
+                        tvMatches.setItems(matches);
                         tvMatches.refresh();
+
                     } else {
                         matches = FXCollections.observableArrayList(manager.findAllMatches());
                         matches = FXCollections.observableArrayList(matches.stream().filter(m -> m.getTournament() != null).collect(Collectors.toList()));
@@ -448,7 +539,8 @@ public class MatchWindowController {
                     if (!tfSearchBar.getText().isEmpty() || !tfSearchBar.getText().equals("")) {
                         LeagueManage leagueManager = LeagueManageFactory.getRegistrable();
                         Integer leagueID = leagueManager.findLeagueByName(tfSearchBar.getText()).get(0).getId();
-                        tvMatches.setItems((ObservableList<Match>) FXCollections.observableArrayList(manager.findMatchesByLeagueId(leagueID)));
+                        matches = FXCollections.observableArrayList(manager.findMatchesByLeagueId(leagueID));
+                        tvMatches.setItems(matches);
                         tvMatches.refresh();
 
                     } else {
@@ -465,10 +557,13 @@ public class MatchWindowController {
                 case "Nickname":
                     LOGGER.info("Searching player matches");
                     if (!tfSearchBar.getText().equals("") || !tfSearchBar.getText().isEmpty()) {
-                        tvMatches.setItems(FXCollections.observableArrayList(manager.findMatchesByUserNickname(tfSearchBar.getText())));
+                        matches = FXCollections.observableArrayList(manager.findMatchesByUserNickname(tfSearchBar.getText()));
+                        tvMatches.setItems(matches);
                         if (tvMatches.getItems().isEmpty()) {
                             throw new BadUserException("No player found");
                         }
+                        tvMatches.refresh();
+
                     } else {
                         throw new BadUserException("Please introduce a player");
                     }
@@ -476,74 +571,151 @@ public class MatchWindowController {
                 case "Description":
                     LOGGER.info("Searching tournament matches by description...");
                     if (tfSearchBar.getText().equals("") || tfSearchBar.getText().isEmpty()) {
-                        new Alert(Alert.AlertType.ERROR, "Please introduce a description", ButtonType.OK).show();
+                        throw new BadUserException("Please introduce a description");
                     } else {
-                        tvMatches.setItems((ObservableList<Match>) FXCollections.observableArrayList(this.manager.findMatchByDescription(tfSearchBar.getText())));
+                        matches = FXCollections.observableArrayList(manager.findMatchByDescription(tfSearchBar.getText()));
+                        tvMatches.setItems(matches);
+                        if (tvMatches.getItems().isEmpty()) {
+                            throw new DescriptionNotFoundException("No matches found for the selected player");
+                        }
                         tvMatches.refresh();
                     }
 
                     break;
                 case "My Matches":
                     LOGGER.info("Searching my matches...");
-                    tvMatches.setItems(FXCollections.observableArrayList(manager.findMatchesByUserNickname(user.getName())));
+                    matches = FXCollections.observableArrayList(manager.findMatchesByUserNickname(user.getName()));
+                    tvMatches.setItems(matches);
                     tvMatches.refresh();
-
             }
         } catch (ReadException ex) {
             LOGGER.info("Unable to read matches...");
             new Alert(Alert.AlertType.ERROR, "Unable to find the match/es", ButtonType.OK).show();
-        } catch (IndexOutOfBoundsException ex) {
-            Logger.getLogger(StatsWindowController.class.getName()).log(Level.SEVERE, null, ex);
-            LOGGER.info("No matches were found");
-            new Alert(Alert.AlertType.ERROR, "Unable to find the match/es", ButtonType.OK).show();
-        } catch (InternalServerErrorException ex) {
+        } catch (IndexOutOfBoundsException | InternalServerErrorException ex) {
             LOGGER.info("No matches were found");
             new Alert(Alert.AlertType.ERROR, "Unable to find the match/es", ButtonType.OK).show();
         } catch (BadUserException ex) {
             LOGGER.info("No player found");
             new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).show();
+        } catch (DescriptionNotFoundException ex) {
+            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).show();
+        } catch (NoResultFoundException ex) {
+            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.ERROR, "No matches related to the description", ButtonType.OK).show();
         }
     }
 
+    /**
+     * Handles the "Print" button action. Generates and displays a JasperReports
+     * document based on the MatchesReport.jrxml template.
+     *
+     * @param event The ActionEvent triggered by the "Print" button.
+     */
     public void handleButtonPrintOnAction(ActionEvent event) {
-        btnPrint.requestFocus();
         LOGGER.info("Printing document");
+        btnPrint.requestFocus();
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream("reports/MatchesReport.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Match>) this.tvMatches.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+
+            URL url = this.getClass().getClassLoader().getResource("resources/images/Icon.jpg");
+            parameters.put("logo", url);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Unable to print a report", ButtonType.OK).showAndWait();
+            LOGGER.info("Unable to make the report\n");
+            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
+        }
+
     }
 
+    /**
+     * Handles the ComboBox parameter selection action. Adjusts the search bar
+     * state and prompt text based on the selected parameter.
+     *
+     * @param observable The property being observed (not used in this method).
+     * @param oldValue The old parameter value.
+     * @param newValue The new parameter value.
+     */
     public void handleComboBoxParametersOnAction(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         switch (newValue) {
             case "All":
                 tfSearchBar.setDisable(true);
                 tfSearchBar.clear();
+                tfSearchBar.setPromptText("");
+                tfSearchBar.setText("");
                 break;
 
             case "Tournament":
                 tfSearchBar.setDisable(false);
+                tfSearchBar.setPromptText("League name/ leave blank");
+                tfSearchBar.setText("");
 
                 break;
             case "League":
                 tfSearchBar.setDisable(false);
+                tfSearchBar.setPromptText("Tournament name/ leave blank");
+                tfSearchBar.setText("");
 
                 break;
             case "Nickname":
                 tfSearchBar.setDisable(false);
+                tfSearchBar.setPromptText("Nickname");
+                tfSearchBar.setText("");
                 break;
             case "Description":
                 tfSearchBar.setDisable(false);
+                tfSearchBar.setPromptText("Description");
+                tfSearchBar.setText("");
                 break;
             case "My matches":
                 tfSearchBar.setDisable(true);
+                tfSearchBar.setPromptText("");
+                tfSearchBar.setText("");
                 break;
 
         }
     }
 
+    /**
+     * Handles the "Refresh" button action. Refreshes the content of the match
+     * table.
+     *
+     * @param event The ActionEvent triggered by the "Refresh" button.
+     */
     public void handleRefreshOnAction(ActionEvent event) {
         tvMatches.refresh();
     }
 
+    /**
+     * Handles the "Help" button action. Displays a window with an Html page
+     * with information about the MatchWindow
+     *
+     * @param event The ActionEvent triggered by the "Help" button.
+     */
     public void handleHelpOnAction(ActionEvent event) {
+         try {
+            //shows the help window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/HelpMatch.fxml"));
+            Parent root = (Parent) loader.load();
+            MatchHelpController helpController
+                    = ((MatchHelpController) loader.getController());
+            //Initializes and shows help stage
+            helpController.initAndShowStage(root);
+        } catch (IOException ex) {
+            //shows the error if error
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    public void setStage(Stage stage) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

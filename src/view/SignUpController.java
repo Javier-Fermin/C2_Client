@@ -14,6 +14,7 @@ import exceptions.BadPasswordException;
 import exceptions.BadPhoneException;
 import exceptions.BadUserException;
 import exceptions.NotMatchingPasswordException;
+import exceptions.PasswordEncryptionException;
 import exceptions.UserAlreadyExistsException;
 import java.io.IOException;
 import java.util.Optional;
@@ -304,10 +305,11 @@ public class SignUpController {
         } else {
             LOGGER.info("Execute signUp method.");
             //Encrypting password
-            byte[] bytePassword = AsymetricClient.encryptedData(passwordTextField.getText());
 
-            String passwdEncrypted = AsymetricClient.hexadecimal(bytePassword);
             try {
+                byte[] bytePassword = AsymetricClient.encryptedData(passwordTextField.getText());
+
+                String passwdEncrypted = AsymetricClient.hexadecimal(bytePassword);
                 //Using the interface method SignUp we create a user tu later be added tod¡the DB
                 registrable.signUp(new User(
                         userTextField.getText(),
@@ -334,8 +336,12 @@ public class SignUpController {
             } catch (UserAlreadyExistsException ex) {
                 LOGGER.severe(mailTextField.getText() + "\n" + ex.getMessage());
                 new Alert(Alert.AlertType.ERROR, mailTextField.getText() + "\n" + ex.getMessage()).showAndWait();
+                Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 LOGGER.severe(ex.getMessage());
+            } catch (PasswordEncryptionException ex) {
+                Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, null, ex);
+                new Alert(Alert.AlertType.ERROR, mailTextField.getText() + "An error has ocurred while encrypting/Decrypting data").showAndWait();
             }
         }
     }
