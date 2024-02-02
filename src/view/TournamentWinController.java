@@ -566,7 +566,7 @@ public class TournamentWinController {
         try{
             LOGGER.info("Loading help view...");
             //Load node graph from fxml file
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/view/Help.fxml"));
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/view/HelpTournament.fxml"));
             
             Parent root = (Parent)loader.load();
             

@@ -206,10 +206,10 @@ public class LeagueWindowController {
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tcName.setCellFactory(TextFieldTableCell.<League>forTableColumn());
             tcName.setOnEditCommit((TableColumn.CellEditEvent<League, String> t) -> {
+                League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
                 try {
                     //search if exist a league with the same name
-                    ObservableList<League> findLeague = FXCollections.observableArrayList(leagueManage.findLeagueByName(t.getNewValue()));;
-                    League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                    ObservableList<League> findLeague = FXCollections.observableArrayList(leagueManage.findLeagueByName(t.getNewValue()));
                     //if the new value is empty, throws exception
                     if (t.getNewValue().isEmpty()) {
                         throw new UpdateException();
@@ -231,14 +231,22 @@ public class LeagueWindowController {
                         //shows alert if value empty
                         new Alert(Alert.AlertType.ERROR, "all fields are required to fill", ButtonType.OK).showAndWait();
                     } else {
-                        //shows alert if value incorrect
+                        Boolean found = false;
+                        for (Object l : tvLeagues.getItems()) {
+                            if (((League) l).compareTo(league) == 0) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        //if name exist, shows alert
                         if (!t.getNewValue().matches("[A-za-z\\s]+")
-                                || t.getNewValue().length() > 20) {
+                                || t.getNewValue().length() > 20 || found) {
                             new Alert(Alert.AlertType.ERROR, "The name value is incorrect", ButtonType.OK).showAndWait();
                         } else {
                             //shosw alert if server is down
                             new Alert(Alert.AlertType.ERROR, "Server Update Error", ButtonType.OK).showAndWait();
                         }
+
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
                     tvLeagues.refresh();
