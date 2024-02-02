@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cyrptography;
+package cryptography;
 
 import exceptions.PasswordEncryptionException;
 import java.io.File;
@@ -33,7 +33,7 @@ public class AsymetricClient {
         byte[] encryptedData = null;
         try {
             // Load Private Key
-            FileInputStream fis = new FileInputStream("C:\\Users\\imape\\Documents\\Clase\\C2_Client\\src\\cyrptography\\PublicKey.der");
+            FileInputStream fis = new FileInputStream("./src/cryptography/PublicKey.der");
             byte[] publicKeyBytes = new byte[fis.available()];
             fis.read(publicKeyBytes);
             fis.close();

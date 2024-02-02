@@ -5,6 +5,8 @@
  */
 package tableCells;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -22,7 +24,8 @@ import model.Stats;
  */
 public class DateStatsCellPicker extends TableCell<Stats, Match>{
     private DatePicker datePicker;
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(SimpleDateFormat.class.cast(dateFormat).toPattern());
     
     public DateStatsCellPicker() {
 
@@ -42,7 +45,7 @@ public class DateStatsCellPicker extends TableCell<Stats, Match>{
     public void cancelEdit() {
         super.cancelEdit();
 
-        setText(getDate().format(dateFormat));
+        setText(getDate().format(dateFormatter));
         setGraphic(null);
     }
 
@@ -62,7 +65,7 @@ public class DateStatsCellPicker extends TableCell<Stats, Match>{
                 setText(null);
                 setGraphic(datePicker);
             } else {
-                setText(getDate().format(dateFormat));
+                setText(getDate().format(dateFormatter));
 
                 setGraphic(null);
 

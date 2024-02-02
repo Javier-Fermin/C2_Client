@@ -7,7 +7,7 @@ package view;
 
 import businessLogic.Registrable;
 import businessLogic.RegistrableFactory;
-import cyrptography.AsymetricClient;
+import cryptography.AsymetricClient;
 import exceptions.BadAddressException;
 import exceptions.BadEmailException;
 import exceptions.BadPasswordException;
