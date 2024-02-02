@@ -174,7 +174,7 @@ public class SignInController implements ChangeListener<String> {
         try {
             if (usernameText.getText().equals("user")&&passwordText.getText().equals("abcd*1234")) {
                 Stage sStage = new Stage();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Matches.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
                 Parent root = (Parent) loader.load();
 
                 StatsWindowController cont = ((StatsWindowController) loader.getController());

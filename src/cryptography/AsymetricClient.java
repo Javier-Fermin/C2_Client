@@ -35,7 +35,7 @@ public class AsymetricClient {
         byte[] encryptedData = null;
         try {
             // Load Private Key
-            InputStream input = AsymetricClient.class.getResourceAsStream("public.der");
+            InputStream input = AsymetricClient.class.getResourceAsStream("PublicKey.der");
             byte fileKey[] = toByteArray(input);
             input.close();
 
