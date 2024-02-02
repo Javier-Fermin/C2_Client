@@ -363,12 +363,6 @@ public class TournamentWinController {
                 });
                 
             }
-
-            
-            tvTournaments.focusedProperty().addListener(((observable, oldValue, newValue) -> {
-                if(!newValue)
-                    tvTournaments.getSelectionModel().clearSelection();
-            }));
             
             tvTournaments.getSelectionModel().selectedItemProperty().addListener((ObservableValue observableValue,
                     Object oldValue, Object newValue) -> {
@@ -638,33 +632,33 @@ public class TournamentWinController {
             Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
             newTournament.setDate(today);
             
-            findTournament = tournamentable.findTournamentByName(newTournament.getName());
-            if(findTournament==null){
+//            findTournament = tournamentable.findTournamentByName(newTournament.getName());
+//            if(findTournament==null){
                 tournamentable.createTournament(newTournament);
                 refreshTable();
-            }else{
-                throw new ReadException();
-            }
+//            }else{
+//                throw new ReadException();
+//            }
             
             
         } catch (CreateException ex) {
             LOGGER.severe(ex.getMessage());
             new Alert(Alert.AlertType.ERROR, "An error has occurred while adding the new Tournament" + ex.getMessage(), ButtonType.OK).showAndWait();
-        } catch (ReadException ex) {
-            Boolean found = false;
-            for (Object t : tvTournaments.getItems()) {
-                if (((Tournament) t).equals(newTournament)) {
-                    found = true;
-                    break;
-                }
-            }
-            //if name exist, shows alert
-            if (found) {
-                new Alert(Alert.AlertType.ERROR, "The tournament already exists.", ButtonType.OK).showAndWait();
-                Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The tournament already exists.");
-            } else {
-                Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//        } catch (ReadException ex) {
+//            Boolean found = false;
+//            for (Object t : tvTournaments.getItems()) {
+//                if (((Tournament) t).equals(newTournament)) {
+//                    found = true;
+//                    break;
+//                }
+//            }
+//            //if name exist, shows alert
+//            if (found) {
+//                new Alert(Alert.AlertType.ERROR, "The tournament already exists.", ButtonType.OK).showAndWait();
+//                Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The tournament already exists.");
+//            } else {
+//                Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
 
     }
