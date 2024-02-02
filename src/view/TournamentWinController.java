@@ -59,6 +59,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
@@ -180,6 +181,7 @@ public class TournamentWinController {
             stage.setScene(scene);
             stage.setTitle("Tournaments");
             stage.setResizable(false);
+            stage.getIcons().add(new Image("/resources/images/Icon.jpg"));
             
             bTournamentDelete.setDisable(true);
             bTournamentMatches.setDisable(true);
