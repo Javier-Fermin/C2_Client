@@ -17,15 +17,15 @@
 
 <Pane fx:id="tournamentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../resources/css/ClientCSS.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.TournamentWinController">
    <children>
-      <ImageView fx:id="tournamentBackground" fitHeight="768.0" fitWidth="1367.0" pickOnBounds="true">
+      <ImageView fx:id="tournamentBackground" fitHeight="768.0" fitWidth="1366.0" pickOnBounds="true">
          <image>
             <Image url="@../resources/images/tournamentsBackground.jpg" />
          </image>
       </ImageView>
       <fx:include fx:id="tournamentsMenuBar" source="MenuBar.fxml" />
-      <AnchorPane fx:id="tournamentViewMainPane" layoutY="26.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="742.0" prefWidth="1366.0">
+      <AnchorPane fx:id="tournamentViewMainPane" layoutY="26.0" prefHeight="742.0" prefWidth="1366.0">
          <children>
-            <ImageView fx:id="tournamentSmoke" fitHeight="742.0" fitWidth="1367.0" pickOnBounds="true">
+            <ImageView fx:id="tournamentSmoke" fitHeight="742.0" fitWidth="1366.0" pickOnBounds="true">
                <image>
                   <Image url="@../resources/images/smokeBackground.png" />
                </image>
