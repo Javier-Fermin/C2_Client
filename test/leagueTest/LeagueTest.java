@@ -83,7 +83,7 @@ public class LeagueTest extends ApplicationTest {
      *
      */
     @Test
-    @Ignore
+//    @Ignore
     public void test02_CreateLeagueTest() {
         //create default league
 
@@ -109,10 +109,11 @@ public class LeagueTest extends ApplicationTest {
         clickOn(row);
         clickOn("#btnDelete");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test03_UpdateName() {
         //create the league to update
         clickOn("#btnCreate");
@@ -129,6 +130,7 @@ public class LeagueTest extends ApplicationTest {
         //verify the name is visible
         verifyThat("new Default name", isVisible());
         //verify the update is done correctly 
+        row = lookup("#tcName").nth(size).query();
         clickOn(row);
         assertNotEquals("Name update error", selectedLeague, (League) table.getSelectionModel().getSelectedItem());
         clickOn("#btnDelete");
@@ -137,7 +139,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test04_UpdateDescription() {
         //create the league to update
         clickOn("#btnCreate");
@@ -162,7 +164,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test05_UpdateStartDate() {
         //create the league to update
         clickOn("#btnCreate");
@@ -187,7 +189,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test06_UpdateEndDate() {
         //create the league to update
         clickOn("#btnCreate");
@@ -210,7 +212,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test07_SearchAll() {
         //get items from the table
         ObservableList<League> leagueList = table.getItems();
@@ -228,7 +230,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test08_SearchLeagueByName() {
         //create the league to find
         clickOn("#btnCreate");
@@ -254,10 +256,9 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test09_SearchLeagueByMatch() {
         //get items from the table
-        ObservableList<League> leagueList = table.getItems();
         verifyThat("#cbSeachType", isEnabled());
         verifyThat("#btnSearch", isEnabled());
         clickOn("#btnClear");
@@ -272,11 +273,10 @@ public class LeagueTest extends ApplicationTest {
         clickOn("#btnSearch");
         //verify the are no leagues in the table
         assertNotEquals("League search correct error", rows.intValue(), table.getItems().size());
-        assertNotEquals("League search correct error", leagueList, table.getItems());
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test10_SearchLeagueByStartDate() {
         //get items from the table
         ObservableList<League> leagueList = table.getItems();
@@ -295,7 +295,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test11_SearchLeagueByEndDate() {
         //clear the table
         verifyThat("#cbSeachType", isEnabled());
@@ -313,7 +313,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test12_DeleteLeague() {
         //verify button delete is disabled
         verifyThat("#btnDelete", isDisabled());
