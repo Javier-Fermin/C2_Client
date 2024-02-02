@@ -365,7 +365,7 @@ public class MatchWindowController {
 
             tcLeague.setOnEditCommit((TableColumn.CellEditEvent<Match, String> t) -> {
                 Match match = null;
-                LeagueManage leagueManager = new LeagueManageFactory().getRegistrable();
+                LeagueManage leagueManager = new LeagueManageFactory().getLeagueManage();
                 try {
 
                     match = ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow()));
@@ -537,7 +537,7 @@ public class MatchWindowController {
                 case "League":
                     LOGGER.info("Searching league matches...");
                     if (!tfSearchBar.getText().isEmpty() || !tfSearchBar.getText().equals("")) {
-                        LeagueManage leagueManager = LeagueManageFactory.getRegistrable();
+                        LeagueManage leagueManager = LeagueManageFactory.getLeagueManage();
                         Integer leagueID = leagueManager.findLeagueByName(tfSearchBar.getText()).get(0).getId();
                         matches = FXCollections.observableArrayList(manager.findMatchesByLeagueId(leagueID));
                         tvMatches.setItems(matches);

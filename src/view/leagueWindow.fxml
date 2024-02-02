@@ -17,7 +17,7 @@
 
 <VBox prefHeight="768.0" prefWidth="1363.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.LeagueWindowController">
   <children>
-      <Pane prefHeight="768.0" prefWidth="1366.0">
+      <Pane fx:id="leagueViewPane" prefHeight="768.0" prefWidth="1366.0">
          <children>
           <AnchorPane prefHeight="768.0" prefWidth="1366.0">
                <children>
@@ -149,7 +149,7 @@
                   </Button>
                </children>
           </AnchorPane>
-          <fx:include fx:id="tournamentsMenuBar" source="MenuBar.fxml" />
+          <fx:include source="MenuBar.fxml" />
          </children>
       </Pane>
   </children>
