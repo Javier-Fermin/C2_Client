@@ -168,6 +168,6 @@
                </graphic>
             </Button>
          </items></ToolBar>
-      <fx:include source="menuBar.fxml" />
+      <fx:include source="MenuBar.fxml" />
    </children>
 </Pane>

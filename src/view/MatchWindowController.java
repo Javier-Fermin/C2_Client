@@ -393,7 +393,7 @@ public class MatchWindowController {
                 try {
 
                     match = ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow()));
-                    match.setTournament(tournamentManager.findTournamentByName(t.getNewValue()).get(0));
+                    match.setTournament(tournamentManager.findTournamentByName(t.getNewValue()));
                     manager.updateMatch(match);
                 } catch (UpdateException ex) {
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
@@ -519,8 +519,8 @@ public class MatchWindowController {
                     LOGGER.info("Searching tournament matches...");
                     if (!tfSearchBar.getText().isEmpty() || !tfSearchBar.getText().equals("")) {
                         TournamentManage tournamentManager = TournamentManageFactory.getTournamentManageImplementation();
-                        List<Tournament> tournament = tournamentManager.findTournamentByName(tfSearchBar.getText());
-                        Integer tournamentId = tournament.get(0).getIdTournament();
+                        Tournament tournament = tournamentManager.findTournamentByName(tfSearchBar.getText());
+                        Integer tournamentId = tournament.getIdTournament();
                         matches = FXCollections.observableArrayList(manager.findMatchesByTournamentId(tournamentId));
                         tvMatches.setItems(matches);
                         tvMatches.refresh();
