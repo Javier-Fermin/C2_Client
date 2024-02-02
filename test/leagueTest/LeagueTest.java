@@ -292,7 +292,6 @@ public class LeagueTest extends ApplicationTest {
         //verify the are diferent leagues in the table
         assertNotEquals("League search correct error", rows.intValue(), table.getItems().size());
         assertNotEquals("League search correctl error", leagueList, table.getItems());
-
     }
 
     @Test
