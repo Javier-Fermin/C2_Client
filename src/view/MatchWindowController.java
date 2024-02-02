@@ -361,7 +361,6 @@ public class MatchWindowController {
                 new Alert(Alert.AlertType.ERROR, "Please introduce a valid date", ButtonType.OK).show();
                 tvMatches.refresh();
             });
-            
 
             tcLeague.setOnEditCommit((TableColumn.CellEditEvent<Match, String> t) -> {
                 Match match = null;
@@ -395,15 +394,15 @@ public class MatchWindowController {
                     match = ((Match) t.getTableView().getItems().get(t.getTablePosition().getRow()));
                     match.setTournament(tournamentManager.findTournamentByName(t.getNewValue()));
                     manager.updateMatch(match);
+                } catch (IndexOutOfBoundsException | InternalServerErrorException  e) {
+                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
+                    new Alert(Alert.AlertType.ERROR, "No tournaments were found with that name", ButtonType.OK).show();
                 } catch (UpdateException ex) {
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
                     new Alert(Alert.AlertType.ERROR, "Unable to update the match", ButtonType.OK).show();
                 } catch (ReadException e) {
                     new Alert(Alert.AlertType.ERROR, "Tournament not found", ButtonType.OK).show();
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
-                } catch (IndexOutOfBoundsException e) {
-                    Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
-                    new Alert(Alert.AlertType.ERROR, "No tournaments were found with that name", ButtonType.OK).show();
                 } finally {
                     tvMatches.refresh();
                 }
@@ -699,7 +698,7 @@ public class MatchWindowController {
      * @param event The ActionEvent triggered by the "Help" button.
      */
     public void handleHelpOnAction(ActionEvent event) {
-         try {
+        try {
             //shows the help window
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/HelpMatch.fxml"));
             Parent root = (Parent) loader.load();
