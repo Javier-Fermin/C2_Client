@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MatchReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cde674ab-4ac2-438a-8c7e-79b4c7a1d206">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="playedDate" class="java.util.Date"/>
+	<field name="winner" class="java.lang.Object"/>
+	<field name="league.name" class="java.lang.String"/>
+	<field name="tournament.name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="555" height="79" forecolor="#FFFFFF" backcolor="#000000" uuid="af333bb4-f78b-4d92-aabb-96c923ef70eb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="26" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Esport Six Match Report]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="134" height="30" uuid="d35b8d1c-fa1a-498d-bf82-238bfc381e49"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="134" y="0" width="89" height="30" uuid="3447b8de-5b2f-412d-9d9a-ea1b2eb4c49b"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Played Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="223" y="0" width="100" height="30" uuid="4fba16f4-19f2-4a3c-9f01-8d6dbd3908ac"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Winner]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="323" y="0" width="114" height="30" uuid="8f56b7a4-242a-4e14-b57c-4a7c8baf8ce1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[League]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="0" width="118" height="30" uuid="02e07529-2c7b-4672-860e-d5b9299d0eb1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Tournament]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="134" height="30" uuid="1e6c75ff-1972-44b4-9ad2-c3c68f7df6c7">
+					<printWhenExpression><![CDATA[!$F{description}.equals( null )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="134" y="0" width="89" height="30" uuid="b084ac43-c992-4f57-9d25-cc41b5c97925">
+					<printWhenExpression><![CDATA[!$F{playedDate}.equals( null )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{playedDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="223" y="0" width="100" height="30" uuid="53c1dabb-d2db-41c5-b741-7d2be2095ed8">
+					<printWhenExpression><![CDATA[!$F{winner}.equals( null )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{winner}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="323" y="0" width="114" height="30" uuid="60701b54-02f8-4aaf-b2a4-5d40b59895bf">
+					<printWhenExpression><![CDATA[!$F{league.name}.equals( null )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{league.name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="0" width="118" height="30" uuid="711f460d-200c-42ad-b08a-86f69d8d3a8f">
+					<printWhenExpression><![CDATA[!$F{tournament.name}.equals( null )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tournament.name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="55">
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="555" height="52" forecolor="#FFFFFF" backcolor="#000000" uuid="af333bb4-f78b-4d92-aabb-96c923ef70eb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Calibri" size="13" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[@esport_six     ]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

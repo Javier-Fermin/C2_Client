@@ -6,3 +6,35 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Created on : 16-oct-2023, 20:22:29
     Author     : javie
 */
+
+
+.boton{
+    -fx-background-radius: 5em;
+    -fx-min-width: 25px;
+    -fx-min-height: 25px;
+    -fx-max-width: 25px;
+    -fx-max-height: 25px;
+}
+
+.lblInBG{
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.decorativeBackground{
+    -fx-fill: #7c7bae;
+    -fx-background-color:  #7c7bae;
+}
+
+.textFieldWithIcon{
+    -fx-padding: 0px 30px 0px 5px;
+}
+
+.errorLabel{
+    -fx-font-weight: bold;
+    -fx-text-fill: #d83a47;
+}
+
+.textFieldError{
+    -fx-border-color: #d83a47;
+    -fx-padding: 0px 30px 0px 5px;
+}

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MatchWindowController">
+   <children>
+      <ImageView fx:id="imgBackground" fitHeight="847.0" fitWidth="1501.0" layoutX="-72.0" layoutY="-12.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../resources/images/r6bg.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgSmoke1" fitHeight="301.0" fitWidth="866.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../resources/images/Pink-Smoke.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgValkyrie" fitHeight="644.0" fitWidth="379.0" layoutX="993.0" layoutY="171.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../resources/images/Valkyrie.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgSmoke2" fitHeight="439.0" fitWidth="958.0" layoutX="459.0" layoutY="368.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../resources/images/YellowSmoke.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgLaser" fitHeight="181.0" fitWidth="492.0" layoutX="-55.0" layoutY="-42.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.1;">
+         <image>
+            <Image url="@../resources/images/laser.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgSmoke3" fitHeight="327.0" fitWidth="793.0" layoutX="-6.0" layoutY="470.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../resources/images/Blue-Smoke.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgCamera1" fitHeight="150.0" fitWidth="200.0" layoutX="-55.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.8;">
+         <image>
+            <Image url="@../resources/images/Camera.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgCamera2" fitHeight="150.0" fitWidth="200.0" layoutX="986.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true" rotate="144.3" style="-fx-opacity: 0.9;">
+         <image>
+            <Image url="@../resources/images/Camera.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imgShine" fitHeight="127.0" fitWidth="150.0" layoutX="1011.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.3;">
+         <image>
+            <Image url="@../resources/images/Shine.png" />
+         </image>
+      </ImageView>
+      <Text fx:id="tMatchesBG" layoutX="79.0" layoutY="124.0" opacity="0.7" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 90;" text="Matches">
+         <font>
+            <Font name="Rockwell" size="12.0" />
+         </font>
+      </Text>
+      <TableView fx:id="tvMatches" layoutX="54.0" layoutY="202.0" prefHeight="535.0" prefWidth="932.0">
+        <columns>
+          <TableColumn fx:id="tcDescription" prefWidth="225.59995651245117" text="Description" />
+            <TableColumn fx:id="tcPlayedDate" minWidth="0.0" prefWidth="172.79998779296875" text="Played date" />
+            <TableColumn fx:id="tcWinnerTeam" prefWidth="207.19992065429688" text="Winner team" />
+            <TableColumn fx:id="tcLeague" prefWidth="159.20001220703125" text="League" />
+            <TableColumn fx:id="tcTournament" prefWidth="167.199951171875" text="Tournament" />
+        </columns>
+         <contextMenu>
+            <ContextMenu fx:id="cmContextMenu">
+              <items>
+                <MenuItem fx:id="cmAdd" mnemonicParsing="false" text="Add" />
+                  <MenuItem fx:id="cmDelete" mnemonicParsing="false" text="Delete" />
+                  <MenuItem fx:id="cmPrint" mnemonicParsing="false" text="Print" />
+                  <MenuItem fx:id="cmRefresh" mnemonicParsing="false" text="Refresh" />
+                  <MenuItem fx:id="cmHelp" mnemonicParsing="false" text="Help" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
+      </TableView>
+      <TextField fx:id="tfSearchBar" layoutX="656.0" layoutY="135.0" prefHeight="25.0" prefWidth="226.0" />
+      <Button fx:id="btnSearch" layoutX="893.0" layoutY="134.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fitHeight="18.0" fitWidth="47.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/search.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <ComboBox fx:id="cbParameters" layoutX="492.0" layoutY="135.0" prefWidth="150.0" />
+      <Button fx:id="btnAddMatch" layoutX="1019.0" layoutY="470.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="21.0">
+         <graphic>
+            <ImageView fitHeight="54.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/add.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Button fx:id="btnDeleteMatch" layoutX="1018.0" layoutY="565.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fitHeight="32.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/delete.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Button fx:id="btnPrint" layoutX="1020.0" layoutY="664.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/print.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Text fx:id="tMenuFG" fill="WHITE" layoutX="79.0" layoutY="134.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 90;" text="Matches">
+         <font>
+            <Font name="Rockwell" size="12.0" />
+         </font>
+      </Text>
+      <Button fx:id="btnFilterRemoval" layoutX="938.0" layoutY="134.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fitHeight="18.0" fitWidth="47.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/clear.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <fx:include fx:id="mbMenuBar" source="MenuBar.fxml" />
+      <Button fx:id="btnInfo" layoutX="1020.0" layoutY="719.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fx:id="btnInfoImg" fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/info.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+   </children>
+</Pane>
