@@ -13,7 +13,6 @@ import exceptions.ReadException;
 import exceptions.UpdateException;
 import exceptions.WrongFilterException;
 import exceptions.WrongValueException;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -282,7 +281,6 @@ public class StatsWindowController {
         stage.setScene(scene);
         //The window is not modal nor resizable
         stage.setResizable(false);
-        stage.initModality(Modality.NONE);
         //The title of the window is set to "Stats"
         stage.setTitle("Stats");
         //Setting the icon of the window
@@ -340,23 +338,46 @@ public class StatsWindowController {
                         if (!stat.getMatch().getDescription().isEmpty()) {
                             if (old.getNickname().isEmpty()) {
                                 LOGGER.info("Creating stat: " + stat.toString());
-                                stat.setId(new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()));
-                                statsManager.createStats(stat);
+                                StatsId id = new StatsId(
+                                            stat.getMatch().getId().toString(),
+                                            stat.getPlayer().getId().toString());
+                                stat.setId(id);
+                                Stats toCreate = new Stats(
+                                        id,
+                                        stat.getKills(),
+                                        stat.getDeaths(),
+                                        stat.getAssists(),
+                                        stat.getTeam(),
+                                        null,
+                                        null);
+                                statsManager.createStats(toCreate);
                             } else {
                                 LOGGER.info("Updating stat: " + stat.toString());
-                                Stats update = new Stats(
-                                        new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                Stats toDelete = new Stats(
+                                        stat.getId(),
                                         stat.getKills(),
                                         stat.getDeaths(),
                                         stat.getAssists(),
                                         stat.getTeam(),
                                         null, null);
-                                statsManager.updateStats(update);
+                                statsManager.deleteStats(toDelete);
+                                StatsId id = new StatsId(
+                                    stat.getMatch().getId().toString(),
+                                    stat.getPlayer().getId().toString());
+                                stat.setId(id);
+                                Stats toUpdate = new Stats(
+                                        id,
+                                        stat.getKills(),
+                                        stat.getDeaths(),
+                                        stat.getAssists(),
+                                        stat.getTeam(),
+                                        null, null);
+                                statsManager.updateStats(toUpdate);
                             }
                         }
                     }
                 }
-            } catch (ReadException | CreateException | UpdateException ex) {
+            } catch (ReadException | CreateException | DeleteException | UpdateException ex) {
                 errorLbl.setText(ex.getMessage());
                 LOGGER.severe(ex.getMessage());
             } finally {
@@ -382,22 +403,44 @@ public class StatsWindowController {
                         if (!stat.getPlayer().getNickname().isEmpty()) {
                             if (old.getDescription().isEmpty()) {
                                 LOGGER.info("Creating stat: " + stat.toString());
-                                stat.setId(new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()));
-                                statsManager.createStats(stat);
+                                StatsId id = new StatsId(
+                                            stat.getMatch().getId().toString(),
+                                            stat.getPlayer().getId().toString());
+                                stat.setId(id);
+                                Stats toCreate = new Stats(id,
+                                        stat.getKills(),
+                                        stat.getDeaths(),
+                                        stat.getAssists(),
+                                        stat.getTeam(),
+                                        null,
+                                        null);
+                                statsManager.createStats(toCreate);
                             } else {
-                                Stats update = new Stats(
-                                        new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
+                                Stats toDelete = new Stats(
+                                        stat.getId(),
                                         stat.getKills(),
                                         stat.getDeaths(),
                                         stat.getAssists(),
                                         stat.getTeam(),
                                         null, null);
-                                statsManager.updateStats(update);
+                                statsManager.deleteStats(toDelete);
+                                StatsId id = new StatsId(
+                                    stat.getMatch().getId().toString(),
+                                    stat.getPlayer().getId().toString());
+                                stat.setId(id);
+                                Stats toUpdate = new Stats(
+                                        id,
+                                        stat.getKills(),
+                                        stat.getDeaths(),
+                                        stat.getAssists(),
+                                        stat.getTeam(),
+                                        null, null);
+                                statsManager.updateStats(toUpdate);
                             }
                         }
                     }
                 }
-            } catch (ReadException | CreateException | UpdateException ex) {
+            } catch (ReadException | CreateException | DeleteException | UpdateException ex) {
                 errorLbl.setText(ex.getMessage());
                 LOGGER.severe(ex.getMessage());
             } finally {
@@ -420,6 +463,7 @@ public class StatsWindowController {
                }
                matchManager.updateMatch(t.getNewValue());
                stat.setMatch(t.getNewValue());
+               searchBtn.fire();
            }catch(InsufficientValuesException | UpdateException ex){
                errorLbl.setText(ex.getMessage());
                LOGGER.severe(ex.getMessage());
@@ -444,7 +488,7 @@ public class StatsWindowController {
                 if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
                 }
-                if(t.getNewValue().matches("[0-9]+")){
+                if(!t.getNewValue().matches("[0-9]+")){
                    throw new WrongValueException("You can only insert numbers in the kills field");
                 }
                 stat.setKills(t.getNewValue());
@@ -477,7 +521,7 @@ public class StatsWindowController {
                 if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
                 }
-                if(t.getNewValue().matches("[0-9]+")){
+                if(!t.getNewValue().matches("[0-9]+")){
                    throw new WrongValueException("You can only insert numbers in the kills field");
                 }
                 stat.setDeaths(t.getNewValue());
@@ -510,6 +554,9 @@ public class StatsWindowController {
                 if(stat.getPlayer().getNickname().isEmpty() || stat.getMatch().getDescription().isEmpty()){
                    throw new InsufficientValuesException("The given values for match description and player nickname aren't valid or are empty");
                 }
+                if(!t.getNewValue().matches("[0-9]+")){
+                   throw new WrongValueException("You can only insert numbers in the kills field");
+                }
                 stat.setAssists(t.getNewValue());
                 Stats update = new Stats(
                         new StatsId(stat.getMatch().getId().toString(), stat.getPlayer().getId().toString()),
@@ -519,7 +566,7 @@ public class StatsWindowController {
                         stat.getTeam(),
                         null, null);
                 statsManager.updateStats(update);
-            } catch (UpdateException | InsufficientValuesException ex) {
+            } catch (UpdateException | WrongValueException | InsufficientValuesException ex) {
                 stat.setAssists(t.getOldValue());
                 errorLbl.setText(ex.getMessage());
                 LOGGER.severe(ex.getMessage());
@@ -676,7 +723,15 @@ public class StatsWindowController {
 
     public void handleDeleteOnAction(ActionEvent event) {
         try {
-            Stats toDelete = (Stats) statsTableView.getSelectionModel().getSelectedItem();
+            Stats selected = (Stats) statsTableView.getSelectionModel().getSelectedItem();
+            Stats toDelete = new Stats(new StatsId(
+                    selected.getMatch().getId().toString(),
+                    selected.getPlayer().getId().toString()),
+                selected.getKills(),
+                selected.getDeaths(),
+                selected.getAssists(),
+                selected.getTeam(),
+                null, null);
             statsManager.deleteStats(toDelete);
             stats.remove(toDelete);
             statsTableView.getSelectionModel().clearSelection();
@@ -694,7 +749,7 @@ public class StatsWindowController {
 
     public void handlePrintOnAction(ActionEvent event) {
         try {
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/report/StatsReport.jrxml"));
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/StatsReport.jrxml"));
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Stats>) this.statsTableView.getItems());
             Map<String, Object> parameters = new HashMap<>();
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
@@ -710,7 +765,12 @@ public class StatsWindowController {
         cbFilter.getSelectionModel().select("ALL");
         searchBtn.fire();
     }
-
+    
+    /**
+     * 
+     * 
+     * @param event 
+     */
     public void handleHelpOnAction(ActionEvent event) {
         //MANUAL
     }

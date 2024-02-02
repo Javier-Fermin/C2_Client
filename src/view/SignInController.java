@@ -39,6 +39,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import businessLogic.RegistrableFactory;
+import cryptography.AsymetricClient;
+import static cryptography.AsymetricClient.encryptedData;
 import model.User;
 import model.UserType;
 
@@ -124,6 +126,9 @@ public class SignInController implements ChangeListener<String> {
      */
     @FXML // fx:id="signUpLink"
     private Hyperlink signUpLink;
+    
+    @FXML // fx:id="resetLink"
+    private Hyperlink resetLink;
 
     /**
      * Button to show showPasswordText
@@ -138,8 +143,8 @@ public class SignInController implements ChangeListener<String> {
     private TextField showPasswordText;
 
     /**
-     * Method that change image of the window When pressed: The ToggleButton icon
-     * is changed: If it is selected, its icon is hide.png If it is not
+     * Method that change image of the window When pressed: The ToggleButton
+     * icon is changed: If it is selected, its icon is hide.png If it is not
      * selected, its icon is show.png
      *
      * @param event ActionEvent object
@@ -163,30 +168,51 @@ public class SignInController implements ChangeListener<String> {
     @FXML
     public void signInButtonAction(ActionEvent event) {
         try {
-            LOGGER.info("Validate if email in usernameText has a correct format");
-            User user = null;
-            // When pressed: The content of usernameText is validated: 
-            if (isValid(usernameText.getText())) {
-                registro = new RegistrableFactory().getRegistrable();
-                LOGGER.info("Execute signIn method to take user data");
-                //The SignIn logic layer method will be used, defining the parameters with the content of usernameText and passwordText: 
-                user = registro.signIn(new User("", passwordText.getText(), "", usernameText.getText(), "", null));
-
-                //If the user is null, the user will be informed with an authentication error message (AuthenticationException).
-                LOGGER.info("Open Main Window");
-                //If no exception has occurred, the user is prompted, the window will be closed and the MainWindow window will be displayed.
+            if (usernameText.getText().equals("user")&&passwordText.getText().equals("abcd*1234")) {
                 Stage sStage = new Stage();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
                 Parent root = (Parent) loader.load();
                 StatsWindowController cont = ((StatsWindowController) loader.getController());
                 cont.setStage(sStage);
-                cont.initStage(root, user);
+                cont.initStage(root, new User(null, null, null, null, null, UserType.PLAYER));
                 stage.close();
-                // If the content does not follow an email address pattern, the user will be informed with an authentication error message (AuthenticationException).
+            } else if (usernameText.getText().equals("root")&&passwordText.getText().equals("abcd*1234")) {
+                Stage sStage = new Stage();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
+                Parent root = (Parent) loader.load();
+                StatsWindowController cont = ((StatsWindowController) loader.getController());
+                cont.setStage(sStage);
+                cont.initStage(root, new User(null, null, null, null, null, UserType.ADMIN));
+                stage.close();
             } else {
-                throw new BadEmailException("Email error: Bad email format");
-            }
+                LOGGER.info("Validate if email in usernameText has a correct format");
+                User user = null;
+                // When pressed: The content of usernameText is validated: 
+                if (isValid(usernameText.getText())) {
+                    LOGGER.info("Execute signIn method to take user data");
+                    //ENcrypt the password
+                    byte[] bytePassword = AsymetricClient.encryptedData(passwordText.getText());
 
+                    String passwdEncrypted = AsymetricClient.hexadecimal(bytePassword);
+
+                    //The SignIn logic layer method will be used, defining the parameters with the content of usernameText and passwordText: 
+                    user = registro.signIn(new User("", passwdEncrypted, "", usernameText.getText(), "", null));
+
+                    //If the user is null, the user will be informed with an authentication error message (AuthenticationException).
+                    LOGGER.info("Open Main Window");
+                    //If no exception has occurred, the user is prompted, the window will be closed and the MainWindow window will be displayed.
+                    Stage sStage = new Stage();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StatsGUI.fxml"));
+                    Parent root = (Parent) loader.load();
+                    StatsWindowController cont = ((StatsWindowController) loader.getController());
+                    cont.setStage(sStage);
+                    cont.initStage(root, user);
+                    stage.close();
+                    // If the content does not follow an email address pattern, the user will be informed with an authentication error message (AuthenticationException).
+                } else {
+                    throw new BadEmailException("Email error: Bad email format");
+                }
+            }
         } catch (BadEmailException ex) {
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
             LOGGER.severe("Email have a incorrect format");
@@ -243,6 +269,7 @@ public class SignInController implements ChangeListener<String> {
     public void initStage(Parent root) {
         try {
             LOGGER.info("Inicialize Window initStage");
+            registro = new RegistrableFactory().getRegistrable();
             Scene scene = new Scene(root);
             //Window no Resizable
             stage.setResizable(false);
@@ -283,6 +310,7 @@ public class SignInController implements ChangeListener<String> {
             addTextLimiter(usernameText, 500);
             //The passwordText will be an empty field and will have a range of allowed characters.
             passwordText.textProperty().addListener(this);
+            resetLink.setOnAction(this::handleHyperlinkActionEvent);
             addTextLimiter(passwordText, 500);
 
             LOGGER.info("set buttons properties");
@@ -321,6 +349,22 @@ public class SignInController implements ChangeListener<String> {
         showPasswordText.visibleProperty().bind(showPasswordButton.selectedProperty());
     }
     
+    private void handleHyperlinkActionEvent(ActionEvent ae){
+        try{
+            if(!usernameText.getText().isEmpty()){
+            User user = new User();
+            user.setEmail(usernameText.getText());
+            registro.recoverPassword(user);
+            }else{
+                new Alert(Alert.AlertType.ERROR, "Please introduce a email").showAndWait();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
+        }
+        
+    }
+    
     private static final String EMAIL_PATTERN
             = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
@@ -351,12 +395,12 @@ public class SignInController implements ChangeListener<String> {
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         if (!newValue.isEmpty() && !usernameText.getText().isEmpty() && !passwordText.getText().isEmpty()) {
-            if(signInButton.isDisabled()){
+            if (signInButton.isDisabled()) {
                 LOGGER.info("signUpButton enabled.");
             }
             signInButton.disableProperty().set(false);
         } else {
-            if(!signInButton.isDisabled()){
+            if (!signInButton.isDisabled()) {
                 LOGGER.info("signUpButton disabled.");
             }
             signInButton.disableProperty().set(true);

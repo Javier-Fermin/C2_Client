@@ -53,6 +53,9 @@ public class Stats implements Serializable{
      */
     private SimpleObjectProperty<Match> match;
     
+    /**
+     * Default constructor
+     */
     public Stats(){
         this.id = new SimpleObjectProperty<StatsId>();
         this.kills = new SimpleStringProperty();
@@ -63,6 +66,17 @@ public class Stats implements Serializable{
         this.match = new SimpleObjectProperty<Match>();
     }
     
+    /**
+     * A constructor with all the values
+     * 
+     * @param id the ID of the stat
+     * @param kills the kills of the stat
+     * @param deaths the deaths of the stat
+     * @param assists the assist of the stat
+     * @param team the <code>Team</code> of the stats
+     * @param player the <code>Player</code> of the stats
+     * @param match the <code>Match</code> of the stats
+     */
     public Stats(StatsId id,String kills, String deaths, String assists, Team team, Player player, Match match) {
         this.id = new SimpleObjectProperty<StatsId>(id);
         this.kills = new SimpleStringProperty(kills);

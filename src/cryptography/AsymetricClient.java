@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cyrptography;
+package cryptography;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,7 @@ public class AsymetricClient {
         byte[] encryptedData = null;
         try {
             // Load Private Key
-            FileInputStream fis = new FileInputStream(".\\Client\\PublicKey.der");
+            FileInputStream fis = new FileInputStream("./src/cryptography/PublicKey.der");
             byte[] publicKeyBytes = new byte[fis.available()];
             fis.read(publicKeyBytes);
             fis.close();

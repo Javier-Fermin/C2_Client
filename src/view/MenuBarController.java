@@ -86,8 +86,8 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             SignInController cont = ((SignInController) loader.getController());
             cont.setStage(sStage);
-            cont.initStage(root);
             stage.close();
+            cont.initStage(root);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -100,8 +100,8 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             StatsWindowController cont = ((StatsWindowController) loader.getController());
             cont.setStage(sStage);
-            cont.initStage(root, user);
             stage.close();
+            cont.initStage(root, user);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -114,8 +114,8 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             TournamentWinController cont = ((TournamentWinController) loader.getController());
             cont.setMainStage(sStage);
-            cont.initStage(root, user);
             stage.close();
+            cont.initStage(root, user);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -128,8 +128,8 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             LeagueWindowController cont = ((LeagueWindowController) loader.getController());
             cont.setLeagueStage(sStage);
-            cont.initStage(root, user);
             stage.close();
+            cont.initStage(root, user);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -142,8 +142,8 @@ public class MenuBarController implements Initializable{
             Parent root = (Parent) loader.load();
             MatchWindowController cont = ((MatchWindowController) loader.getController());
             cont.setMainStage(sStage);
-            cont.initStage(root, user, null, null);
             stage.close();
+            cont.initStage(root, user, null, null);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }

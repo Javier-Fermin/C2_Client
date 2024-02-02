@@ -40,6 +40,7 @@
             </ImageView>
          </children>
       </Pane>
+      <Hyperlink fx:id="resetLink" layoutX="295.0" layoutY="329.0" prefHeight="28.0" prefWidth="224.0" text="Forgot password? reset it now." />
       
    </children>
    
