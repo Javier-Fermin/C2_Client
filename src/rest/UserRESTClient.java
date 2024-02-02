@@ -5,6 +5,7 @@
  */
 package rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -26,7 +27,7 @@ public class UserRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/CLON/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.Client").getString("BASE_URI");
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -98,5 +99,16 @@ public class UserRESTClient {
     public void close() {
         client.close();
     }
-    
+
+    public <T> T recoverPassword_XML(Class<T> responseType, String email) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("recoverPassword/{0}", new Object[]{email}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public <T> T recoverPassword_JSON(Class<T> responseType, String email) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("recoverPassword/{0}", new Object[]{email}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
 }

@@ -15,7 +15,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-
 <Pane fx:id="statsViewMainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../resources/css/ClientCSS.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.StatsWindowController">
    <children>
       <ImageView fx:id="backgroundImage" fitHeight="768.0" fitWidth="1366.0" pickOnBounds="true" preserveRatio="true">
@@ -66,7 +65,7 @@
                   </ContextMenu>
                </contextMenu>
             </TableView>
-            <Label fx:id="errorLbl" layoutX="22.0" layoutY="620.0" prefHeight="30.0" prefWidth="766.0" AnchorPane.bottomAnchor="10.0" />
+            <Label fx:id="errorLbl" layoutX="22.0" layoutY="620.0" prefHeight="30.0" prefWidth="766.0" styleClass="lblInBG" AnchorPane.bottomAnchor="10.0" />
             <Label layoutX="32.0" layoutY="630.0" prefHeight="30.0" prefWidth="200.0" styleClass="lblInBG" text="Search By:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="10.0" />
             <ComboBox fx:id="cbFilter" layoutX="22.0" layoutY="14.0" prefHeight="30.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0" />
             <Label layoutX="42.0" layoutY="640.0" prefHeight="30.0" prefWidth="400.0" styleClass="lblInBG" text="To Be Searched:" AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="10.0" />
@@ -169,6 +168,6 @@
                </graphic>
             </Button>
          </items></ToolBar>
-      <fx:include source="menuBar.fxml" />
+      <fx:include source="MenuBar.fxml" />
    </children>
 </Pane>

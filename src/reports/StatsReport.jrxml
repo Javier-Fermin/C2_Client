@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fd6efda7-c451-4369-b253-80d509187f3d">
+	<property name="ireport.zoom" value="1.771561000000002"/>
+	<property name="ireport.x" value="93"/>
+	<property name="ireport.y" value="0"/>
+	<field name="player.nickname" class="java.lang.String"/>
+	<field name="match.description" class="java.lang.String"/>
+	<field name="match.playedDate" class="java.util.Date"/>
+	<field name="kills" class="java.lang.String"/>
+	<field name="deaths" class="java.lang.String"/>
+	<field name="assists" class="java.lang.String"/>
+	<field name="team" class="java.lang.Object"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="407" y="0" width="148" height="33" uuid="380ba935-6541-40e7-a622-2c59be5b5f2c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="33" uuid="080b2737-26f0-46fc-9705-4d0ed534d8fa"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ESport Six]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="217" y="0" width="120" height="79" uuid="1ecfd405-e5eb-4a18-93cf-da29d896d4e3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[STATS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="33" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="18" width="555" height="1" uuid="4da1f1d7-f505-46cc-9b8c-d764bfca302c"/>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="81" height="20" uuid="de676a21-1fe3-41ce-8eb2-e4dcba6859b9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Player Nickname]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="91" y="0" width="89" height="20" uuid="711385ea-84bd-44db-afb9-6ac5365062ad"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Match Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="327" y="0" width="34" height="20" uuid="47fa0410-3037-4cf0-9e78-9e1af527eadb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Kills]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="367" y="0" width="34" height="20" uuid="66db8b61-dde9-4986-9828-bab33ecc0def"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Deaths]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="407" y="0" width="34" height="20" uuid="db8d63a3-7269-483b-b6d2-6dea546db89a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Assists]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="466" y="0" width="89" height="20" uuid="0b6de36d-e29e-4429-b439-ed4f6f7d9a25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Team]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="0" width="100" height="20" uuid="33d49173-8d2b-44c1-b1ce-61c3fda93877"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Match Played Date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="40" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="10" width="81" height="20" uuid="9085ff3a-5b3d-4dbc-bad4-1146464bd371"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{player.nickname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="91" y="10" width="89" height="20" uuid="c01d1a11-97e4-49dc-9ea2-c31cb9e4972f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{match.description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="407" y="10" width="34" height="20" uuid="ad593146-f6c9-4c37-acff-0fe139c660f0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{assists}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="327" y="10" width="34" height="20" uuid="ba8f244d-c679-43eb-be0c-a6e737a2fd9e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{kills}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="367" y="10" width="34" height="20" uuid="9ae27702-c232-40b3-8fa4-27ad4736d9a6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{deaths}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="199" y="10" width="100" height="20" uuid="017ad954-4392-4158-9688-99d442d39db9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{match.playedDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="466" y="10" width="89" height="20" uuid="126a725e-c873-403a-ac5b-873e0e22ff2c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{team}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="22" width="555" height="1" uuid="4ac11fff-4bb9-4989-ba8a-8c0930c081b6"/>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="455" y="11" width="100" height="20" uuid="f31de9a3-9345-493a-a970-85929c5df13e"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

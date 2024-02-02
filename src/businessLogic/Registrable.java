@@ -34,4 +34,11 @@ public interface Registrable {
      * @throws UserAlreadyExistsException in case the given user already exists in the database
      */
     public User signUp(User user) throws UserAlreadyExistsException;
+    
+    /**
+     * This method sends a mail to the User that requests it with a new password
+     * 
+     * @param user The <code>User</code> trying to recover its password
+     */
+    public void recoverPassword(User user);
 }

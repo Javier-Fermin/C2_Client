@@ -1,16 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package businessLogic;
 
 /**
+ * A factory class for creating instances of {@link MatchManager}.
+ * <p>
+ * This factory provides a convenient method to obtain an instance of the {@link MatchManager} interface,
+ * allowing easy access to the functionality provided by the underlying implementation.
+ * </p>
  *
  * @author imape
+ * @version 1.0
+ * @see MatchManager
+ * @see MatchManagerImplementation
  */
 public class MatchManagerFactory {
-    public static MatchManager getMatchManager(){
+
+    /**
+     * Returns an instance of {@link MatchManager}.
+     *
+     * @return An instance of {@link MatchManager}.
+     */
+    public static MatchManager getMatchManager() {
         return (MatchManager) new MatchManagerImplementation();
     }
 }

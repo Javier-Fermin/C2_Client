@@ -30,11 +30,11 @@ public interface TournamentManage {
     
     public List<Tournament> findAllTournaments() throws ReadException;
     
-    public List<Tournament> findTournamentByName(String name) throws ReadException;
+    public Tournament findTournamentByName(String name) throws ReadException;
     
     public List<Tournament> findTournamentByBestOf(String bestOf) throws ReadException;
      
     public List<Tournament> findTournamentByDate(String date) throws ReadException;
     
-     public Tournament findTournamentByMatch() throws ReadException;
+    public Tournament findTournamentByMatch(String matchId) throws ReadException;
 }

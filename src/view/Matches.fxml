@@ -67,10 +67,11 @@
       </Text>
       <TableView fx:id="tvMatches" layoutX="54.0" layoutY="202.0" prefHeight="535.0" prefWidth="932.0">
         <columns>
-          <TableColumn fx:id="tcDescription" prefWidth="302.3999710083008" text="Description" />
-            <TableColumn fx:id="tcPlayedDate" minWidth="0.0" prefWidth="215.99996948242188" text="Played date" />
-            <TableColumn fx:id="tcWinnerTeam" prefWidth="197.5999755859375" text="Winner team" />
-            <TableColumn fx:id="tcLeagueTournament" prefWidth="217.5999755859375" text="League/Tournament name" />
+          <TableColumn fx:id="tcDescription" prefWidth="225.59995651245117" text="Description" />
+            <TableColumn fx:id="tcPlayedDate" minWidth="0.0" prefWidth="172.79998779296875" text="Played date" />
+            <TableColumn fx:id="tcWinnerTeam" prefWidth="207.19992065429688" text="Winner team" />
+            <TableColumn fx:id="tcLeague" prefWidth="159.20001220703125" text="League" />
+            <TableColumn fx:id="tcTournament" prefWidth="167.199951171875" text="Tournament" />
         </columns>
          <contextMenu>
             <ContextMenu fx:id="cmContextMenu">
@@ -110,7 +111,7 @@
                </image>
             </ImageView>
          </graphic></Button>
-      <Button fx:id="btnPrint" layoutX="1020.0" layoutY="702.0" mnemonicParsing="false">
+      <Button fx:id="btnPrint" layoutX="1020.0" layoutY="664.0" mnemonicParsing="false">
          <graphic>
             <ImageView fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -133,5 +134,14 @@
          </graphic>
       </Button>
       <fx:include fx:id="mbMenuBar" source="MenuBar.fxml" />
+      <Button fx:id="btnInfo" layoutX="1020.0" layoutY="719.0" mnemonicParsing="false">
+         <graphic>
+            <ImageView fx:id="btnInfoImg" fitHeight="28.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/images/info.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
    </children>
 </Pane>

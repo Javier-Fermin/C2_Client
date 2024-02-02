@@ -51,7 +51,7 @@ public class LeagueTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(Client.class);
     }
-
+  
     /**
      *
      */

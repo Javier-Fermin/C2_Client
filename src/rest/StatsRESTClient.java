@@ -5,10 +5,12 @@
  */
 package rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import model.Stats;
 
 /**
  * Jersey REST client generated for REST resource:StatsREST [stats]<br>
@@ -26,7 +28,7 @@ public class StatsRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/CLON/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.Client").getString("BASE_URI");
 
     public StatsRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -82,7 +84,7 @@ public class StatsRESTClient {
     }
 
     public void create_XML(Object requestEntity) throws ClientErrorException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Stats.class);
     }
 
     public void create_JSON(Object requestEntity) throws ClientErrorException {

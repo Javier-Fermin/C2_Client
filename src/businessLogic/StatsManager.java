@@ -13,8 +13,9 @@ import java.util.List;
 import model.Stats;
 
 /**
- *
- * @author javie
+ * This is an interface to manage all operations related with <code>Stats</code>
+ * 
+ * @author Javier
  */
 public interface StatsManager {
     /**

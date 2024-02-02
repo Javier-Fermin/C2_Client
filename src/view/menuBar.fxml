@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+
+
+<HBox fx:id="menuMainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MenuBarController">
+   <children>
+      <MenuBar fx:id="menuMenuBar" prefHeight="26.0" prefWidth="1366.0">
+        <menus>
+          <Menu fx:id="windowOptionMenu" mnemonicParsing="false" text="League">
+            <items>
+              <MenuItem fx:id="allLeaguesMenuItem" mnemonicParsing="false" text="All leagues" />
+            </items>
+          </Menu>
+            <Menu fx:id="windowOptionMenu1" mnemonicParsing="false" text="Match">
+               <items>
+                  <MenuItem fx:id="allMatchesMenuItem" mnemonicParsing="false" text="All matches" />
+               </items>
+            </Menu>
+            <Menu fx:id="tournamentOptionMenu" mnemonicParsing="false" text="Tournament">
+               <items>
+                  <MenuItem fx:id="allTournamentsMenuItem" mnemonicParsing="false" text="All tournaments" />
+               </items>
+            </Menu>
+            <Menu fx:id="statsOptionMenu" mnemonicParsing="false" text="Stats">
+               <items>
+                  <MenuItem fx:id="allStatsMenuItem" mnemonicParsing="false" text="All stats" />
+               </items>
+            </Menu>
+            <Menu fx:id="blankSpaceMenu" disable="true" mnemonicParsing="false" text="                                                                                                                                                                                                                                       " />
+            <Menu fx:id="exitOptionMenu" mnemonicParsing="false" text="Exit">
+               <items>
+                  <MenuItem fx:id="logOutMenuItem" mnemonicParsing="false" text="Log out" />
+               </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</HBox>
