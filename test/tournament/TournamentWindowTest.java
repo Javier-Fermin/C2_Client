@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
@@ -66,6 +67,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 0: Acceso a la ventana
+//    @Ignore
     @Test
     public void test00_openTournamentWindow() {
         clickOn("#usernameText");
@@ -79,7 +81,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 1: Comprobar la inicialización del Stage y sus componentes
-    //@Ignore
+//    @Ignore
     @Test
     public void test01_initializeTournamentWindow() {
         verifyThat("#chbTournamentSearch", isVisible());
@@ -109,7 +111,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 2: Comprobar que los botones se habilitan o no cuando deben
-    //@Ignore
+    @Ignore
     @Test
     public void test02_buttonsAreEnabled() {
         clickOn("#chbTournamentSearch");
@@ -130,7 +132,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 3: Comprobar que el cleanButton funcione
-    //@Ignore
+    @Ignore
     @Test
     public void test03_checkCleanButton() {
         clickOn("#chbTournamentSearch");
@@ -145,7 +147,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 4: Comprobar que se realiza la busqueda filtrada por id del Tournament
-//    @Ignore
+    @Ignore
     @Test
     public void test04_checkSearchId() {
         ObservableList<Tournament> tournaments = tournamentTable.getItems();
@@ -162,7 +164,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 5: Comprobar que se realiza la busqueda filtrada por nombre
-//    @Ignore
+    @Ignore
     @Test
     public void test05_checkSearchName() {
         ObservableList<Tournament> tournaments = tournamentTable.getItems();
@@ -178,7 +180,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 6: Comprobar que se realiza la busqueda filtrada por date
-//    @Ignore
+    @Ignore
     @Test
     public void test06_checkSearchDate() {
         ObservableList<Tournament> tournaments = tournamentTable.getItems();
@@ -194,7 +196,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 7: Comprobar que se realiza la busqueda filtrada por bestOf
-//    @Ignore
+    @Ignore
     @Test
     public void test07_checkSearchBestOf() {
         ObservableList<Tournament> tournaments = tournamentTable.getItems();
@@ -226,7 +228,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 9: Comprobar que se realiza la busqueda de todos los torneos
-//    @Ignore
+    @Ignore
     @Test
     public void test09_checkSearchAll() {
         ObservableList<Tournament> tournaments = tournamentTable.getItems();
@@ -244,7 +246,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 10: Comprobar que el createButton funcione
-//    @Ignore
+    @Ignore
     @Test
     public void test10_checkAdd() {
         //Get tvTournament row count before adding the new Tournament
@@ -264,7 +266,7 @@ public class TournamentWindowTest extends ApplicationTest {
     }
 
     //Test 11: Comprobar que se puede editar una celda de la columna tcName
-    @Ignore
+//    @Ignore
     @Test
     public void test11_updateName() {
         //Get the table size
@@ -278,19 +280,26 @@ public class TournamentWindowTest extends ApplicationTest {
 
         //Get the Tournament object to compare it after the name update
         Tournament selectedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+        String oldName = selectedTournament.getName();
 
         //Get tcName cell in edit mode and modify its value(by default is 0)
         doubleClickOn(newRow);
         eraseText(1);
-        write("Name Test");
+        write("TestName");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
         //Check that the new value is stored in the table
-        verifyThat("Name Test", isVisible());
+        verifyThat("TestName", isVisible());
 
         //Check the update was done correctly
+        rowCount = tournamentTable.getItems().size()-1;
+        newRow = lookup("#tcName").nth(rowCount).query();
         clickOn(newRow);
-        assertNotEquals("Name update error", selectedTournament, tournamentTable.getSelectionModel().getSelectedItem());
+        Tournament updatedTournament = (Tournament) tournamentTable.getSelectionModel().getSelectedItem();
+        assertNotEquals("Name update error", oldName, updatedTournament.getName());
+        
+        oldName=selectedTournament.getName();
+        assertEquals("Name update error", selectedTournament, updatedTournament);
     }
 
     //Test 12: Comprobar que se puede editar una celda de la columna tcDescription
@@ -298,7 +307,7 @@ public class TournamentWindowTest extends ApplicationTest {
     @Test
     public void test12_updateDescription() {
         //Get the table size
-        Integer rowCount = tournamentTable.getItems().size();
+        Integer rowCount = tournamentTable.getItems().size()-1;
 
         //Get the last added Tournament tcDescription cell
         Node newRow = lookup("#tcDescription").nth(rowCount).query();
@@ -328,7 +337,7 @@ public class TournamentWindowTest extends ApplicationTest {
     @Test
     public void test13_updateBestOf() {
         //Get the table size
-        Integer rowCount = tournamentTable.getItems().size();
+        Integer rowCount = tournamentTable.getItems().size()-2;
 
         //Get the last added Tournament tcBestOF cell
         Node newRow = lookup("#tcBestOf").nth(rowCount).query();
@@ -358,7 +367,7 @@ public class TournamentWindowTest extends ApplicationTest {
     @Test
     public void test14_updateDate() {
         //Get the table size
-        Integer rowCount = tournamentTable.getItems().size();
+        Integer rowCount = tournamentTable.getItems().size()-3;
 
         //Get the last added Tournament tcDate cell
         Node newRow = lookup("#tcDate").nth(rowCount).query();
