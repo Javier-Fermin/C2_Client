@@ -185,7 +185,7 @@ public class LeagueWindowController {
             });
 
             //fill the combobox
-            cbSeachType.setItems(FXCollections.observableArrayList("ALL", "FINISHED", "UNSTARTED", "NAME", "MATCH"));
+            cbSeachType.setItems(FXCollections.observableArrayList("ALL", "NAME"));
             //set the first value
             cbSeachType.getSelectionModel().selectFirst();
 
@@ -240,13 +240,14 @@ public class LeagueWindowController {
                         }
                         //if name exist, shows alert
                         if (!t.getNewValue().matches("[A-za-z\\s]+")
-                                || t.getNewValue().length() > 20 || found) {
-                            new Alert(Alert.AlertType.ERROR, "The name value is incorrect", ButtonType.OK).showAndWait();
+                                || t.getNewValue().length() > 20) {
+                            new Alert(Alert.AlertType.ERROR, "The name value is incorrect. The name must contain only characters and have less than 20 characters", ButtonType.OK).showAndWait();
+                        } else if (found) {
+                            new Alert(Alert.AlertType.ERROR, "The name already exist", ButtonType.OK).showAndWait();
                         } else {
                             //shosw alert if server is down
                             new Alert(Alert.AlertType.ERROR, "Server Update Error", ButtonType.OK).showAndWait();
                         }
-
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
                     tvLeagues.refresh();
@@ -260,7 +261,8 @@ public class LeagueWindowController {
                 try {
                     //if the value is empty or have more than 120 characters, throw exception
                     League league = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                    if (t.getNewValue().isEmpty() || t.getNewValue().length() > 120) {
+                    if (t.getNewValue().isEmpty() || !t.getNewValue().matches("[A-za-z\\s]+")
+                            || t.getNewValue().length() > 120) {
                         throw new UpdateException();
                     } else {
                         //update description
@@ -273,9 +275,9 @@ public class LeagueWindowController {
                         //shows alert if value is empty
                         new Alert(Alert.AlertType.ERROR, "all fields are required to fill", ButtonType.OK).showAndWait();
                     } else {
-                        if (t.getNewValue().length() > 120) {
+                        if (t.getNewValue().length() > 120 || !t.getNewValue().matches("[A-za-z\\s]+")) {
                             //shows alert if value is greater than 120
-                            new Alert(Alert.AlertType.ERROR, "The description value is incorrect", ButtonType.OK).showAndWait();
+                            new Alert(Alert.AlertType.ERROR, "The description value is incorrect. The description must contain only characters and contain less than 120 characters", ButtonType.OK).showAndWait();
                         } else {
                             //shows if server is down
                             new Alert(Alert.AlertType.ERROR, "Server Update Error", ButtonType.OK).showAndWait();
@@ -308,7 +310,7 @@ public class LeagueWindowController {
                 } catch (UpdateException e) {
                     if (league.getEndDate().before(t.getNewValue())) {
                         //shows alert if value is incorrect
-                        new Alert(Alert.AlertType.ERROR, "The StartDate value is incorrect", ButtonType.OK).showAndWait();
+                        new Alert(Alert.AlertType.ERROR, "The StartDate value is incorrect. The Start date can't be a date after the End date", ButtonType.OK).showAndWait();
                     } else {
                         //shows alert if server is down
                         new Alert(Alert.AlertType.ERROR, "Server Update Error", ButtonType.OK).showAndWait();
@@ -339,10 +341,10 @@ public class LeagueWindowController {
                 } catch (UpdateException e) {
                     if (t.getNewValue().before(league.getStartDate())) {
                         //shows alert if value is incorrect
-                        new Alert(Alert.AlertType.ERROR, "The EndDate value is incorrect", ButtonType.OK).showAndWait();
+                        new Alert(Alert.AlertType.ERROR, "The EndDate value is incorrect. The End date can't be a date before the Start date", ButtonType.OK).showAndWait();
                     } else {
                         //shows alert if server is down
-                        new Alert(Alert.AlertType.ERROR, "Server update Error", ButtonType.OK).showAndWait();
+                        new Alert(Alert.AlertType.ERROR, "Server update Error.", ButtonType.OK).showAndWait();
                     }
                     Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "Update error" + e.getMessage());
                     tvLeagues.refresh();

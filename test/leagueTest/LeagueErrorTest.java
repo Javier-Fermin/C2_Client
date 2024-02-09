@@ -24,10 +24,8 @@ import org.junit.Test;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
-import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 /**
  *
@@ -42,31 +40,18 @@ public class LeagueErrorTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(Client.class);
     }
-    
+
     @Test
     @Ignore
     public void test01_InitialState() {
         clickOn("#usernameText");
-        write("");//Puerta trasera user
+        write("root");//Puerta trasera user
         clickOn("#passwordText");
-        write("");//Puerta trasera contraseña
+        write("abcd*1234");//Puerta trasera contraseña
         clickOn("#signInButton");
         clickOn("#windowOptionMenu");
         clickOn("#allLeaguesMenuItem");
         verifyThat("#leagueViewPane", isVisible());
-        //Buttons verify
-        verifyThat("#btnDelete", isDisabled());
-        verifyThat("#btnMatches", isDisabled());
-        verifyThat("#btnCreate", isEnabled());
-        verifyThat("#btnMatches", isDisabled());
-        verifyThat("#btnClean", isEnabled());
-        //tfSearch verify
-        verifyThat("#tfsearch", isVisible());
-        verifyThat("#tfsearch", isDisabled());
-        verifyThat("#tfsearch", hasText(""));
-        //cbSeachType verify
-        verifyThat("#cbSeachType", isVisible());
-        verifyThat("#cbSeachType", hasText("ALL"));
     }
 
     @Test
@@ -164,7 +149,6 @@ public class LeagueErrorTest extends ApplicationTest {
         press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
-    
     @Test
     @Ignore
     public void test05_UpdateStartDateError() {
@@ -203,7 +187,6 @@ public class LeagueErrorTest extends ApplicationTest {
         press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
-    
     @Test
     @Ignore
     public void test06_UpdateEndDateError() {

@@ -30,7 +30,6 @@ import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 /**
  *
@@ -51,6 +50,20 @@ public class LeagueTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(Client.class);
     }
+    
+     @Test
+//    @Ignore
+    public void test01_InitialState() {
+        clickOn("#usernameText");
+        write("root");//Puerta trasera user
+        clickOn("#passwordText");
+        write("abcd*1234");//Puerta trasera contraseña
+        clickOn("#signInButton");
+        clickOn("#windowOptionMenu");
+        clickOn("#allLeaguesMenuItem");
+        verifyThat("#leagueViewPane", isVisible());
+    }
+
   
     /**
      *
@@ -86,7 +99,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test03_UpdateName() {
         //create the league to update
         clickOn("#btnCreate");
@@ -112,7 +125,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test04_UpdateDescription() {
         //create the league to update
         clickOn("#btnCreate");
@@ -137,7 +150,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test05_UpdateStartDate() {
         //create the league to update
         clickOn("#btnCreate");
@@ -162,7 +175,7 @@ public class LeagueTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test06_UpdateEndDate() {
         //create the league to update
         clickOn("#btnCreate");

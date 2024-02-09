@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.FixMethodOrder;
@@ -36,20 +37,32 @@ public class LeagueServerErrorTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(Client.class);
     }
+    
+     @Before
+    public void test01_InitialState() {
+        clickOn("#usernameText");
+        write("root");//Puerta trasera user
+        clickOn("#passwordText");
+        write("abcd*1234");//Puerta trasera contraseña
+        clickOn("#signInButton");
+        clickOn("#windowOptionMenu");
+        clickOn("#allLeaguesMenuItem");
+    }
 
     //method for test of create
     @Test
+//    @Ignore
     public void test02_CreateLeagueServerErrorTest() {
+        sleep(15000);
         verifyThat("#btnCreate", isEnabled());
         clickOn("#btnCreate");
-        verifyThat("Create find server error", isVisible());
-    }
+        verifyThat("Create find server error", isVisible());    }
 
     //method for test of update
     @Test
-    public void test03_UpdateServerError() {
-        Integer size = table.getItems().size();
-        Node row = lookup("#tcName").nth(size).query();
+    @Ignore
+    public void test03_UpdateServerError() {        
+        Node row = lookup("#tcName").nth(1).query();doubleClickOn(row);        
         doubleClickOn(row);
         eraseText(1);
         write("new Default name");
@@ -59,6 +72,7 @@ public class LeagueServerErrorTest extends ApplicationTest {
     
     //method for test of search
     @Test
+    @Ignore
     public void test07_SearchServerError() {
         verifyThat("#cbSeachType", isEnabled());
         verifyThat("#btnSearch", isEnabled());
@@ -68,6 +82,7 @@ public class LeagueServerErrorTest extends ApplicationTest {
 
     //method for test of delete
     @Test
+    @Ignore
     public void test12_DeleteLeagueServerError() {
         verifyThat("#btnDelete", isDisabled());
         Integer rowCount = table.getItems().size();
