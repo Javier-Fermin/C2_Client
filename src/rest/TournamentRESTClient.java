@@ -5,12 +5,16 @@
  */
 package rest;
 
+import java.net.ConnectException;
 import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import model.Match;
+import model.Tournament;
 
 /**
  * Jersey REST client generated for REST resource:TournamentREST
@@ -38,91 +42,94 @@ public class TournamentRESTClient{
         webTarget = client.target(BASE_URI).path("tournaments");
     }
 
-    public <T> T findTournamentById_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findTournamentById_XML(Class<T> responseType, String id) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findTournamentById_JSON(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findTournamentById_JSON(Class<T> responseType, String id) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findTournamentByName_XML(Class<T> responseType, String name) throws ClientErrorException {
+    public <T> T findTournamentByName_XML(Class<T> responseType, String name) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findTournamentByName_JSON(Class<T> responseType, String name) throws ClientErrorException {
+    public <T> T findTournamentByName_JSON(Class<T> responseType, String name) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("tournament/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findTournamentByFormat_XML(GenericType<T> responseType, String bestOf) throws ClientErrorException {
+    public <T> T findTournamentByFormat_XML(GenericType<T> responseType, String bestOf) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("bestOf/{0}", new Object[]{bestOf}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findTournamentByFormat_JSON(GenericType<T> responseType, String bestOf) throws ClientErrorException {
+    public <T> T findTournamentByFormat_JSON(GenericType<T> responseType, String bestOf) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("bestOf/{0}", new Object[]{bestOf}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findAllTournaments_XML(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T findAllTournaments_XML(GenericType<T> responseType) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAllTournaments_JSON(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T findAllTournaments_JSON(GenericType<T> responseType) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void create_XML(Object requestEntity) throws ClientErrorException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public void create_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Tournament.class);
     }
 
-    public void create_JSON(Object requestEntity) throws ClientErrorException {
+    public void create_JSON(Object requestEntity) throws WebApplicationException, ConnectException, ProcessingException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public void update_XML(Object requestEntity) throws ClientErrorException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public void update_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Tournament.class);
     }
 
-    public void update_JSON(Object requestEntity) throws ClientErrorException {
+    public void update_JSON(Object requestEntity) throws WebApplicationException, ConnectException, ProcessingException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public <T> T findTournamentByDate_XML(GenericType<T> responseType, String date) throws ClientErrorException {
+    public <T> T findTournamentByDate_XML(GenericType<T> responseType, String date) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("date/{0}", new Object[]{date}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findTournamentByDate_JSON(GenericType<T> responseType, String date) throws ClientErrorException {
+    public <T> T findTournamentByDate_JSON(GenericType<T> responseType, String date) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("date/{0}", new Object[]{date}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void delete(String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+    public void delete(String id) throws WebApplicationException, ConnectException, ProcessingException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request()
+                .delete(Tournament.class);
     }
 
-    public <T> T findTournamentByMatch_XML(Class<T> responseType, Match match) throws ClientErrorException {
+    public <T> T findTournamentByMatch_XML(Class<T> responseType, Match match) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("match/{0}", match));
+        resource = resource.path(java.text.MessageFormat.format("match/{0}", match.getId()));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findTournamentByMatch_JSON(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findTournamentByMatch_JSON(Class<T> responseType, String id) throws WebApplicationException, ConnectException, ProcessingException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("match/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);

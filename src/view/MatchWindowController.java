@@ -20,6 +20,7 @@ import exceptions.UpdateException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -67,6 +68,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 import tableCells.DateMatchCellPicker;
+import static view.TournamentWinController.LOGGER;
 
 /**
  * Sets the main stage for the controller.
@@ -403,6 +405,9 @@ public class MatchWindowController {
                 } catch (ReadException e) {
                     new Alert(Alert.AlertType.ERROR, "Tournament not found", ButtonType.OK).show();
                     Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, e);
+                } catch(ConnectException e){
+                    LOGGER.severe(e.getMessage());
+                    new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
                 } finally {
                     tvMatches.refresh();
                 }
@@ -602,6 +607,9 @@ public class MatchWindowController {
         } catch (NoResultFoundException ex) {
             Logger.getLogger(MatchWindowController.class.getName()).log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.ERROR, "No matches related to the description", ButtonType.OK).show();
+        } catch(ConnectException e){
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 

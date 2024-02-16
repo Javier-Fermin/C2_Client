@@ -38,6 +38,7 @@ import exceptions.DeleteException;
 import exceptions.ReadException;
 import exceptions.UpdateException;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,6 +65,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
+import javax.ws.rs.ProcessingException;
 import model.User;
 import model.UserType;
 import net.sf.jasperreports.engine.JRException;
@@ -271,8 +273,15 @@ public class TournamentWinController {
                             tournamentable.updateTournament(updatedTournament);
                         }
                         refreshTable();
+                    } catch(ConnectException | ProcessingException e){
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+                    } catch (ReadException e) {
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + e.getMessage(), ButtonType.OK).showAndWait();
                     } catch (UpdateException ex) {
-                        new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+                        LOGGER.severe(ex.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Error during the tournament update: " + ex.getMessage(), ButtonType.OK).showAndWait();
                     }
                 });
             }
@@ -295,8 +304,15 @@ public class TournamentWinController {
                         }
                         
                         refreshTable();
+                    } catch(ConnectException | ProcessingException e){
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+                    } catch (ReadException e) {
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + e.getMessage(), ButtonType.OK).showAndWait();
                     } catch (UpdateException ex) {
-                        new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+                        LOGGER.severe(ex.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Error during the tournament update: " + ex.getMessage(), ButtonType.OK).showAndWait();
                     }
                 });
             }
@@ -318,8 +334,15 @@ public class TournamentWinController {
                             new Alert(Alert.AlertType.ERROR, "Value can only be numbers.", ButtonType.OK).showAndWait();
                         }
                         refreshTable();
+                    } catch(ConnectException | ProcessingException e){
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+                    } catch (ReadException e) {
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + e.getMessage(), ButtonType.OK).showAndWait();
                     } catch (UpdateException ex) {
-                        new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+                        LOGGER.severe(ex.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Error during the tournament update: " + ex.getMessage(), ButtonType.OK).showAndWait();
                     }
                 });
             }
@@ -350,13 +373,29 @@ public class TournamentWinController {
                             refreshTable();
                         }
                         
+                    } catch(ConnectException | ProcessingException e){
+                        LOGGER.severe(e.getMessage());
+                         new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+                    } catch (ReadException e) {
+                        LOGGER.severe(e.getMessage());
+                        new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content: " + e.getMessage(), ButtonType.OK).showAndWait();
                     } catch (UpdateException ex) {
                         if(t.getNewValue()==null){
                             new Alert(Alert.AlertType.ERROR, "Please check a date please.", ButtonType.OK).showAndWait();
-                            refreshTable();
+                            try {
+                                refreshTable();
+                            }  catch(ConnectException e){
+                                LOGGER.severe(e.getMessage());
+                                new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+                            } catch (ReadException e) {
+                                LOGGER.severe(ex.getMessage());
+                                new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content: " + ex.getMessage(), ButtonType.OK).showAndWait();
+                            }
                             tvTournaments.getFocusModel().focus(t.getTablePosition());
                         }else{
-                            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+                            LOGGER.severe(ex.getMessage());
+                            new Alert(Alert.AlertType.ERROR, "Error during the tournament update: " + ex.getMessage(), ButtonType.OK).showAndWait();
+//                            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
                         }
                         
                     }
@@ -412,6 +451,9 @@ public class TournamentWinController {
             
             tvTournaments.setItems(tournaments);
             
+        } catch(ConnectException | ProcessingException e){
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
         } catch (ReadException ex) {
             new Alert(Alert.AlertType.ERROR, "An error occurred loading the Tournament window.", ButtonType.OK).showAndWait();
             LOGGER.severe(ex.getMessage());
@@ -444,7 +486,9 @@ public class TournamentWinController {
                         String tfSearchText = tfTournamentSearch.getText();
                         if (isNumeric(tfSearchText)) {
                             tournaments = FXCollections.observableArrayList(tournamentable.findTournament(new Integer(tfSearchText)));
-                            refreshTable(tournaments);
+                            if(!tournaments.get(0).getIdTournament().equals(null)){
+                               refreshTable(tournaments);
+                            }
                         } else {
                             new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
                         }
@@ -453,7 +497,9 @@ public class TournamentWinController {
                         tfSearchText = tfTournamentSearch.getText();
                         if (!isNumeric(tfSearchText)) {
                             tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByName(tfSearchText));
-                            refreshTable(tournaments);
+                            if(!tournaments.get(0).getIdTournament().equals(null)){
+                               refreshTable(tournaments);
+                            }
                         } else {
                             new Alert(Alert.AlertType.ERROR, "Value can only be characters", ButtonType.OK).showAndWait();
                         }
@@ -469,35 +515,56 @@ public class TournamentWinController {
                             String date = localDate.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime().toString();
 
                             tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByDate(date));
-                            refreshTable(tournaments);
+                            if(!tournaments.get(0).getIdTournament().equals(null)){
+                               refreshTable(tournaments);
+                            }
                     
+                        }catch (IndexOutOfBoundsException e) {
+                            LOGGER.severe(e.getMessage());
+                            new Alert(Alert.AlertType.ERROR, "Tournament not found: " + e.getMessage(), ButtonType.OK).showAndWait();
                         } catch (ParseException ex) {
                             new Alert(Alert.AlertType.ERROR, "Incorrect date format", ButtonType.OK).showAndWait();
                         }
                         break;
                     case "FORMAT":
-                        tfSearchText = tfTournamentSearch.getText();
-                        if (isNumeric(tfSearchText)) {
-                            tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByBestOf(tfSearchText));
-                            refreshTable(tournaments);
-                        } else {
-                            new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
+                        try{
+                            tfSearchText = tfTournamentSearch.getText();
+
+                            if (isNumeric(tfSearchText)) {
+                                tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByBestOf(tfSearchText));
+                                if(!tournaments.get(0).getIdTournament().equals(null)){
+                                    refreshTable(tournaments);
+                                }
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
+                            }
+                        }catch (IndexOutOfBoundsException e) {
+                            LOGGER.severe(e.getMessage());
+                            new Alert(Alert.AlertType.ERROR, "Tournament not found: " + e.getMessage(), ButtonType.OK).showAndWait();
                         }
                         break;
                     case "MATCH":
-                        String matchId = tfTournamentSearch.getText();
-                        if (isNumeric(matchId)) {
-                            tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByMatch(matchId));
+                        String matchDescription = tfTournamentSearch.getText();
+                        if (!isNumeric(matchDescription)) {
+                            tournaments = FXCollections.observableArrayList(tournamentable.findTournamentByMatch(matchDescription));
                             refreshTable(tournaments);
                         }else {
-                            new Alert(Alert.AlertType.ERROR, "Value can only be numbers", ButtonType.OK).showAndWait();
+                            refreshTable(null);
+                            new Alert(Alert.AlertType.ERROR, "Value can only be characters", ButtonType.OK).showAndWait();
                         }
                         break;
                 }
             }
+        } catch(ConnectException | ProcessingException e){
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        } catch (NullPointerException e) {
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Tournament not found: " + e.getMessage(), ButtonType.OK).showAndWait();
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Tournament not found: " + ex.getMessage(), ButtonType.OK).showAndWait();
+//            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
@@ -530,8 +597,9 @@ public class TournamentWinController {
             stage.close();
             
         } catch (IOException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+//            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
             LOGGER.severe(ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Error opening Matches window.", ButtonType.OK).showAndWait();
         }
     }
 
@@ -590,7 +658,8 @@ public class TournamentWinController {
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
         } catch (JRException e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Error printing the selected tournament.", ButtonType.OK).showAndWait();
         }
     }
 
@@ -605,17 +674,23 @@ public class TournamentWinController {
             Optional<ButtonType> resultDelete = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this Tournament?").showAndWait();
             if (resultDelete.isPresent() && resultDelete.get() == ButtonType.OK) {
                 tournamentable.deleteTournament((Tournament) tvTournaments.getSelectionModel().getSelectedItem());
+                refreshTable();
                 tvTournaments.getItems().remove(tvTournaments.getSelectionModel().getSelectedItem());
-                tvTournaments.refresh();
-                new Alert(Alert.AlertType.CONFIRMATION, "Tournament droped correctly", ButtonType.OK).showAndWait();
             } else {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tournament delete canceled", ButtonType.OK).showAndWait();
             }
             tvTournaments.getSelectionModel().clearSelection();
+        } catch(ConnectException | ProcessingException e){
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }  catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + ex.getMessage(), ButtonType.OK).showAndWait();
         } catch (DeleteException ex) {
             LOGGER.severe(ex.getMessage());
             new Alert(Alert.AlertType.ERROR, "Delete error:" + ex.getMessage(), ButtonType.OK).showAndWait();
-        }
+            //CAUTION: Preguntar a Javi si el Alert debe mostrar el mensaje de la Excpeption o no
+        } 
     }
 
     /**
@@ -625,40 +700,25 @@ public class TournamentWinController {
      */
     @FXML
     private void addTournament(ActionEvent event) {
-        
-        Tournament newTournament = new Tournament(null, "T name", "T description", "1", null, null);
         try {
+            Tournament newTournament = new Tournament(null, "T name", "T description", "1", null, null);
+        
             Tournament findTournament = null;
             Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
             newTournament.setDate(today);
             
-//            findTournament = tournamentable.findTournamentByName(newTournament.getName());
-//            if(findTournament==null){
-                tournamentable.createTournament(newTournament);
-                refreshTable();
-//            }else{
-//                throw new ReadException();
-//            }
+            tournamentable.createTournament(newTournament);
+            refreshTable();
             
-            
+        } catch(ConnectException | ProcessingException e){
+            LOGGER.severe(e.getMessage());
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }  catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + ex.getMessage(), ButtonType.OK).showAndWait();
         } catch (CreateException ex) {
             LOGGER.severe(ex.getMessage());
             new Alert(Alert.AlertType.ERROR, "An error has occurred while adding the new Tournament" + ex.getMessage(), ButtonType.OK).showAndWait();
-//        } catch (ReadException ex) {
-//            Boolean found = false;
-//            for (Object t : tvTournaments.getItems()) {
-//                if (((Tournament) t).equals(newTournament)) {
-//                    found = true;
-//                    break;
-//                }
-//            }
-//            //if name exist, shows alert
-//            if (found) {
-//                new Alert(Alert.AlertType.ERROR, "The tournament already exists.", ButtonType.OK).showAndWait();
-//                Logger.getLogger(LeagueWindowController.class.getName()).log(Level.SEVERE, null, "The tournament already exists.");
-//            } else {
-//                Logger.getLogger(TournamentWinController.class.getName()).log(Level.SEVERE, null, ex);
-//            }
         }
 
     }
@@ -675,16 +735,12 @@ public class TournamentWinController {
     /**
      * This method refreshes the content of the table, showing all the registered tournaments.
      */
-    private void refreshTable() {
-        try {
-            ObservableList<Tournament> refreshedTableItems = FXCollections.observableArrayList(tournamentable.findAllTournaments());
-            tvTournaments.getItems().clear();
-            tvTournaments.setItems(refreshedTableItems);
+    private void refreshTable() throws ConnectException, ReadException {
+        
+        ObservableList<Tournament> refreshedTableItems = FXCollections.observableArrayList(tournamentable.findAllTournaments());
+        tvTournaments.getItems().clear();
+        tvTournaments.setItems(refreshedTableItems);
 
-        } catch (ReadException ex) {
-            LOGGER.severe(ex.getMessage());
-            new Alert(Alert.AlertType.ERROR, "Unexpected error while refreshing the table content" + ex.getMessage(), ButtonType.OK).showAndWait();
-        }
     }
 
     /**
@@ -727,7 +783,7 @@ public class TournamentWinController {
                 tfTournamentSearch.setPromptText("e.g.: 5");
                 break;
             case "MATCH":
-                tfTournamentSearch.setPromptText("e.g.: 2");
+                tfTournamentSearch.setPromptText("e.g.: Cuatro");
                 break;
         }
     }
